@@ -1,0 +1,28 @@
+Package: postcAIC
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Katarzyna",
+           family = "Reluga",
+           role = c("aut", "cre"),
+           email = "katarzyna.reluga@utoronto.ca",
+           comment = c(ORCID = "0000-0001-9651-5030"))
+Description: Package postcAIC povides post-cAIC selection inference tools for fixed and mixed parameters.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Imports:
+	data.table (>= 1.12.2),
+	dplyr (>= 1.0.2),
+	ks (>= 1.11.7), 
+	Matrix (>= 1.2-18),
+	mgcv (>= 1.8-33),
+	nlme (>= 3.1-149), 
+	stats (>= 4.0.3),
+	tmg (>= 0.3), 
+	utils (>= 4.0.3)
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+RoxygenNote: 7.1.1
