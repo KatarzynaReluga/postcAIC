@@ -11,6 +11,13 @@
 #' @details
 #' * The parameter \code{boot} is needed for the calculation of the boostrap post-OBSP MSE of mixed effects
 #'
+#' @return List with parameters
+#' * \code{OBSP_min}  - Index of selected model
+#' * \code{OBSP_models} - cAIC for all considered parameters
+#' * \code{postOBSP_up} - upper boundary of CI for mixed effects
+#' * \code{postOBSP_do} - lower boundary of CI for mixed effects
+#' * \code{mu_hat_sel} - mixed effects of the selected model
+#'
 #'
 #' @importFrom stats aggregate
 #' @importFrom stats rnorm
@@ -166,7 +173,9 @@ postOBSP_CI <- function(X_full, y, clusterID, Z, X_cluster_full,
 
   output = list(postOBSP_up = postOBSP_up,
                 postOBSP_do = postOBSP_do,
-                mu_hat_sel = mu_hat_sel)
+                mu_hat_sel = mu_hat_sel,
+                OBSP_min = OBSP_min,
+                OBSP_models = OBSP_models)
   output
 
 }
