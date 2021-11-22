@@ -23,7 +23,8 @@ find_starting_points <- function(n_starting_points,
 
   starting_points = matrix(0, nrow = p,
                            ncol = n_starting_points)
-  for (l in 1:p) {
+
+  for (k in 1:n_starting_points) {
     temp_initial = NULL
     loop = 1
     check_sum0 = n_models_to_compare
@@ -40,10 +41,10 @@ find_starting_points <- function(n_starting_points,
         check_negative_elements[i] = temp
       }
       check_sum0 = sum(check_negative_elements < 0)
-      #       loop=loop+1
+             loop=loop+1
       #        print(loop)
     }
-    starting_points[, l] = temp_initial
+    starting_points[, k] = temp_initial
   }
 
   starting_points
