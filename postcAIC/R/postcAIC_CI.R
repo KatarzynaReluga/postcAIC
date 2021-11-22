@@ -87,7 +87,7 @@ postcAIC_CI  = function(cAIC_min,
   compute_Sigma_results  = compute_Sigma(X = X_full, invR = invR_full,
                                          invV = invV_full)
 
-  Sigma_full = compute_Sigma_results$Sigma
+  Sigma_full = as.matrix(compute_Sigma_results$Sigma)
   sqrt_invxVx_full = compute_Sigma_results$sqrt_invxVx
 
   # Compute selection matrix upsilon  -------------------------------------
@@ -217,8 +217,6 @@ postcAIC_CI  = function(cAIC_min,
   # Post-cAIC CI for mixed effects-------------------------------------------
   invK_sel = invK[-indices_not_selected,-indices_not_selected]
   invK_sqrt_sel = invK_sqrt[-indices_not_selected,-indices_not_selected]
-  #  test = dim(invK_sqrt_sel)
-  #  test2 = dim(sample_mix_sel)
   temp0_mixed_invK = tcrossprod(invK_sqrt_sel, sample_mix_sel)
   C_cluster_sel = C_cluster_full[,-indices_not_selected]
   temp_mixed_invK = crossprod(t(C_cluster_sel), temp0_mixed_invK)
@@ -241,7 +239,6 @@ postcAIC_CI  = function(cAIC_min,
     output = list(
       beta_PoSI_CI_up = beta_PoSI_CI_up,
       beta_PoSI_CI_do = beta_PoSI_CI_do,
-      #                  test = test, test2 = test2,
       mixed_PoSI_CI_up = mixed_PoSI_CI_up,
       mixed_PoSI_CI_do = mixed_PoSI_CI_do
     )
@@ -250,7 +247,6 @@ postcAIC_CI  = function(cAIC_min,
     output = list(
       beta_PoSI_CI_up = beta_PoSI_CI_up,
       beta_PoSI_CI_do = beta_PoSI_CI_do,
-      #                  test = test, test2 = test2,
       mixed_PoSI_CI_up = mixed_PoSI_CI_up,
       mixed_PoSI_CI_do = mixed_PoSI_CI_do,
       beta_x_PoSI_CI_up = beta_x_PoSI_CI_up,
