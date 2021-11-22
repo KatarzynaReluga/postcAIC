@@ -47,15 +47,13 @@ postOBSP_CI <- function(X_full, y, clusterID, Z, X_cluster_full,
   OBSP_models = numeric(nrow(modelset_matrix))
 
   # Compute OBSP for the set of models ---------------------------------------------------------------------
-  #X_list = list()
   mu_hat_model = list()
-  #Ga = diag(m_total)-Z%*%G_m5%*%t.Z%*%solV_m5
+  a = Sys.time()
   for (k in 1 : nrow(modelset_matrix)) {
     covariates = modelset_matrix[k, ]
     indices0 <- (1:ncol(X_full)) * covariates
     indices = indices0[indices0!=0]
     X = format_data_matrix(as.matrix(X_full[, indices]))
-    #  X_list[[k]] <- X
     t_X = t(X)
     X_cluster <- format_data_matrix(as.matrix(X_cluster_full[, indices]))
 
@@ -74,7 +72,7 @@ postOBSP_CI <- function(X_full, y, clusterID, Z, X_cluster_full,
     beta_model_matrix[k, indices] <- beta_model
 
   }
-
+  b = Sys.time()
   OBSP_min = which.min(OBSP_models)
 
   covariates_sel = modelset_matrix[OBSP_min, ]
