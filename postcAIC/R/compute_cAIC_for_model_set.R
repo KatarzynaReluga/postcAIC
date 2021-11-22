@@ -11,7 +11,7 @@
 
 #' @return List with parameters
 #' * \code{cAIC_min}  - Index of selected model
-## #' * cAIC_models -
+#' * \code{cAIC_models} - cAIC for all considered parameters
 #' * \code{degcAIC_models} - Penalty for all considered models
 #' * \code{beta_sel} - fixed effects (regression parameters) of the selected model
 #' * \code{mu_sel} - mixed effects of the selected model
@@ -156,7 +156,7 @@ compute_cAIC_for_model_set = function(X, y,
 
 
   output = list(cAIC_min = cAIC_min,
-#                cAIC_models = cAIC_models,
+                cAIC_models = cAIC_models,
                 degcAIC_models = degcAIC_models,
 
                 beta_sel = beta_sel,
