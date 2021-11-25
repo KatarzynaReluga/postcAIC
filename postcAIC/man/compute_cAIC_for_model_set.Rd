@@ -46,6 +46,7 @@ Default: intercept = TRUE}
 List with parameters
 \itemize{
 \item \code{cAIC_min}  - Index of selected model
+\item \code{cAIC_models} - cAIC for all considered parameters
 \item \code{degcAIC_models} - Penalty for all considered models
 \item \code{beta_sel} - fixed effects (regression parameters) of the selected model
 \item \code{mu_sel} - mixed effects of the selected model

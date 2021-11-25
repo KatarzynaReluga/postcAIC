@@ -16,10 +16,11 @@ postcAIC_CI(
   beta_sel,
   mu_sel,
   modelset = "all_subsets",
+  common = NULL,
   modelset_matrix,
   x_beta_lin_com = NULL,
   n_starting_points = 5,
-  scale_mvrnorm
+  scale_mvrnorm = 1
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ postcAIC_CI(
 \item \code{"nested"} - a sequence of nested models for all parameters
 \item \code{"part_subset"} - all possible models for a subset of parameters
 }}
+
+\item{common}{A vector indicating variables forced to be present in each model}
 
 \item{modelset_matrix}{Matrix composed of zeros and ones.}
 

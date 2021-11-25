@@ -44,6 +44,16 @@ postOBSP_CI(
 
 \item{boot}{Number of boostrap samples}
 }
+\value{
+List with parameters
+\itemize{
+\item \code{OBSP_min}  - Index of selected model
+\item \code{OBSP_models} - cAIC for all considered parameters
+\item \code{postOBSP_up} - upper boundary of CI for mixed effects
+\item \code{postOBSP_do} - lower boundary of CI for mixed effects
+\item \code{mu_hat_sel} - mixed effects of the selected model
+}
+}
 \description{
 Function \code{postOBSP_CI} provides post-OBSP confidence intervals for mixed parameters
 }
