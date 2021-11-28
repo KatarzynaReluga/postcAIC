@@ -16,6 +16,7 @@ library(devtools)
 
 install_version("tmg", version = "0.3", repos = "http://cran.r-project.org")
 install_github("KatarzynaReluga/postcAIC")
+library(postcAIC)
 ```
 
 ## Simulation Study
