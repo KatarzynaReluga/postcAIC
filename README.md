@@ -10,12 +10,13 @@ postcAIC implements post-cAIC confidence intervals for mixed and fixed parameter
 
 You can install the most recent version of postcAIC from GitHub with:
 
+``` r
 install.pacakges("devtools")
 library(devtools)
 
 install_version("tmg", version = "0.3", repos = "http://cran.r-project.org")
 install_github("KatarzynaReluga/postcAIC")
-
+```
 
 ## Simulation Study
 
