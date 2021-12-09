@@ -70,6 +70,9 @@ G_full = cAIC_model_set$G_full
 R_full = cAIC_model_set$R_full
 V_full = cAIC_model_set$V_full
 
+pp  = diag(m_total) - Z %*%G_full %*%t(Z)%*%solve(V_full)
+pp2 = R_full%*%solve(V_full)
+
 beta_sel = cAIC_model_set$beta_sel
 mu_sel = cAIC_model_set$mu_sel
 

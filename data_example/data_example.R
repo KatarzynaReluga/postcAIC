@@ -1,3 +1,7 @@
+library(devtools)
+install_github("KatarzynaReluga/postcAIC/postcAIC", 
+               auth_token = "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")
+
 library(dplyr)
 library(mosaic)
 library(NHANES)
