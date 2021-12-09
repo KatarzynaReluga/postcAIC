@@ -1,0 +1,10 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^data_example$
+^simulations$
+^data-raw$
+^LICENSE\.md$
+^README\.Rmd$
+^README\.md$
+^\.git$
+^git$

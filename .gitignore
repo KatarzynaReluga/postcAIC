@@ -1,0 +1,8 @@
+.Rproj.user
+.Rhistory
+.RData
+simulations/
+data_example/
+LICENSE.md
+README.Rmd
+README.md
