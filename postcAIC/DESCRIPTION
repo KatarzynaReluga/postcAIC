@@ -1,5 +1,5 @@
 Package: postcAIC
-Title: Post-cAIC selection confidence interval
+Title: Post-cAIC selection inference under Linear Mixed Models
 Version: 1.0.0
 Authors@R: 
     person(given = "Katarzyna",
