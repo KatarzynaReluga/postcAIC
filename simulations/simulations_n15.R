@@ -25,7 +25,7 @@ beta = c(2.25, -1.1, 2.43, rep(0, 2))
 sig_e = 1
 sig_u = 1
 
-# Load matrix X ----------------------------------
+# Load appropriate matrix X from data ----------------------------------
 X = simulations_n15_mi5
 
 # Add intercept -----------------------------------------------------
