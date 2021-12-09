@@ -14,7 +14,7 @@
 set.seed(10)
 #
 # Define the number of clusters and units in each cluster -------------
-# 
+#
 n = 15
 m_i = 5
 m_total = n * m_i
@@ -26,7 +26,7 @@ sig_e = 1
 sig_u = 1
 
 # Load matrix X ----------------------------------
-X = as.matrix(read.table("X_n15.csv", header = TRUE, sep = ";"))
+X = simulations_n15_mi5
 
 # Add intercept -----------------------------------------------------
 X_intercept = cbind(rep(1, m_total), X)
@@ -59,7 +59,7 @@ cAIC_model_set = compute_cAIC_for_model_set(X, y, clusterID,
 
 
 
-cAIC_min = cAIC_model_set$cAIC_min 
+cAIC_min = cAIC_model_set$cAIC_min
 degcAIC_models = cAIC_model_set$degcAIC_models
 
 Z = cAIC_model_set$Z
@@ -69,9 +69,6 @@ X_cluster_full = cAIC_model_set$X_cluster_full
 G_full = cAIC_model_set$G_full
 R_full = cAIC_model_set$R_full
 V_full = cAIC_model_set$V_full
-
-pp  = diag(m_total) - Z %*%G_full %*%t(Z)%*%solve(V_full)
-pp2 = R_full%*%solve(V_full)
 
 beta_sel = cAIC_model_set$beta_sel
 mu_sel = cAIC_model_set$mu_sel
@@ -84,13 +81,13 @@ x_beta_lin_com = cAIC_model_set$X_cluster_full
 postcAIC_CI_results = postcAIC_CI(cAIC_min, degcAIC_models,
                                  Z, X_full, X_cluster_full,
                                  G_full, R_full, V_full,
-                        
+
                                  beta_sel, mu_sel,
-                        
+
                                  modelset  = "part_subset",
                                  common = c(1:2),
                                  modelset_matrix, x_beta_lin_com,
-                                 n_starting_points = 5, 
+                                 n_starting_points = 5,
                                  scale_mvrnorm = 10)
 
 # Naive CI for mixed and fixed parameters -------------------------------------

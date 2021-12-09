@@ -25,8 +25,8 @@ beta = c(2.25, -1.1, 2.43, rep(0, 2))
 sig_e = 1
 sig_u = 1
 
-# Load matrix X ----------------------------------
-X = as.matrix(read.table("X_n30.csv", header = TRUE, sep = ";"))
+# Load appropriate matrix X from data ----------------------------------
+X = simulations_n30_mi5
 
 # Add intercept -----------------------------------------------------
 X_intercept = cbind(rep(1, m_total), X)
