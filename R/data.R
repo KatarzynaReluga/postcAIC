@@ -75,3 +75,26 @@
 #' where \code{Omega} is a variance covariance matrix with 1 on the diagonal
 #' and 0.25 elsewhere
 "simulations_n30_mi20"
+
+
+#' Subset of NHAENS data from R pacakge NHAENS
+#'
+#' Fixed effect covariates with 30 cluster and 5 units in each
+#' cluster to run simulations in Claeskens, Reluga and Sperlich (2021)
+#'
+#'
+#' @format A data frame with 3009 rows and 7 variables:
+#' \describe{
+#' \item{\code{PhysActive}}{Participant does sport, fitness or recreational activities (Yes or No).}
+#' \item{\code{CurrentSmokingStatus}}{Derived variable indicating if person is smoking (1) or is not smoking}
+#' \item{\code{Diabetes}}{Is person suffering from diabetes?}
+#' \item{\code{SleepHrsNight}}{NUmber of sleeping hours}
+#' \item{\code{BPSys2}}{Systolic blood pressure (numeric value)}
+#' \item{\code{DirectChol}}{Level of direct cholesterol}
+#' \item{\code{Poverty}}{Numerci indicator with smaller values indicating more poverty}
+#' \item{\code{clusterID}}{Cluster indicator. Cross-section of varaibles age, biological sex and entinicity. }
+#' \item{\code{log_BMI}}{Natuarl logartihm of Body Mass Index (BMI)}
+#' }
+#' 
+#' @source \url{https://cran.r-project.org/web/packages/NHANES/}
+"postcAIC_nhaens"
