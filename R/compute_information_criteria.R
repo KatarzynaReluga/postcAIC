@@ -53,20 +53,43 @@
 #' @export
 
 
-compute_information_criteria <- function(X,
-                                         y,
-                                         Z,
-                                         detV,
-                                         invV,
-                                         detR,
-                                         invR,
-                                         G,
-                                         sig_u,
-                                         sig_e,
+compute_information_criteria <- function(X, y, Z, clusterID,
+                                         model,
+#                                         detV,
+#                                         invV,
+#                                         detR,
+#                                         invR,
+#                                         invG,
+                                         sig_u, sig_e,
                                          fit_model_fixed,
-                                         fit_model_mixed,
-                                         size_fixed_params) {
-  m_total = length(y)
+                                         fit_model_mixed) {
+
+  # Recover parameters
+  n = nlevels(clusterID)
+  Z = create_Z(model = model, clusterID)
+  m_total = nrow(X)
+  size_fixed_params = ncol(X) + 2
+
+  # Estimate matrices and inverses
+  R = sig_e * diag(m_total)
+  invR = 1/sig_e * diag(m_total)
+  detR = max(det(Matrix(R, sparse = T)),(0.1)^8)
+  invG = 1/sig_u * diag(n)
+  n_cluster_units = as.data.frame(table(clusterID))$Freq
+
+  V_list <- list()
+  invV_list <- list()
+
+    for (i in 1:n) {
+      V_list[[i]] <- sig_e * diag(n_cluster_units[i]) +
+        sig_u * matrix(1, nrow = n_cluster_units[i], ncol = n_cluster_units[i])
+      invV_list[[i]] <- solve(V_list[[i]])
+    }
+  V = bdiag(V_list)
+  invV = bdiag(invV_list)
+  detV = max(det(Matrix(V, sparse = T)), (0.1)^8)
+
+
   loglik_marginal = m_total * log(2 * pi) + log(detV) +
     (t(y - fit_model_fixed) %*% invV %*% (y - fit_model_fixed))
 
@@ -80,7 +103,7 @@ compute_information_criteria <- function(X,
   t_X  = t(X)
   t_Z = t(Z)
   trace1 = solve(rbind(cbind(t_X %*% X, t_X %*% Z),
-                       cbind(t_Z %*% X, t_Z %*% Z + solve(G))))
+                       cbind(t_Z %*% X, t_Z %*% Z + invG)))
   trace2 = rbind(cbind(t_X %*% X, t_X %*% Z), cbind(t_Z %*% X, t_Z %*% Z))
   trace_model = sum(diag(trace1 %*% trace2))
 

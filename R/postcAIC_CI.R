@@ -9,9 +9,9 @@
 #' @param cAIC_min Index of the selected model among models in the modelset
 #' @param X_full Matrix with a full set of covariates
 #' @param X_cluster_full Matrix with cluster level covariates for fixed effects of the full model
-#' @param R_full Covariance matrix of errors of the full model
-#' @param G_full Covariance matrix of random effects of the full model
-#' @param V_full Covariance matrix of response of the full model
+# #' @param R_full Covariance matrix of errors of the full model
+# #' @param G_full Covariance matrix of random effects of the full model
+# #' @param V_full Covariance matrix of response of the full model
 #' @param beta_sel Fixed effects (regression parameters) of the selected model
 #' @param mu_sel Mixed effects of the selected model
 #' @param x_beta_lin_com Vector or matrix to create linear combinations with
@@ -53,6 +53,7 @@
 #'
 #'
 #' @importFrom stats quantile
+#' @importFrom Matrix bdiag
 #'
 #' @export
 #'
@@ -63,15 +64,17 @@ postcAIC_CI  = function(cAIC_min,
                         Z,
                         X_full,
                         X_cluster_full,
-                        G_full,
-                        R_full,
-                        V_full,
+#                        G_full,
+#                        R_full,
+#                        V_full,
+                        sig_e_full,
+                        sig_u_full,
 
                         beta_sel,
                         mu_sel,
 
-                        modelset = "all_subsets",
-                        common = NULL,
+                        modelset,
+                        common,
                         modelset_matrix,
                         x_beta_lin_com = NULL,
                         n_starting_points = 5, scale_mvrnorm = 1) {
@@ -79,8 +82,21 @@ postcAIC_CI  = function(cAIC_min,
   p_full = ncol(X_full)
   n = ncol(Z)
   C_cluster_full = cbind(X_cluster_full, diag(n))
-  invR_full = solve(R_full)
-  invV_full = solve(V_full)
+  R_full = sig_e_full * diag(nrow(X_full))
+  invR_full = 1/sig_e_full * diag(nrow(X_full))
+  G_full = sig_u_full * diag(n)
+
+  V_full_list <- list()
+  invV_full_list <- list()
+
+  for (i in 1:n) {
+    V_full_list[[i]] <- sig_e_full * diag(n_cluster_units[i]) +
+      sig_u_full * matrix(1, nrow = n_cluster_units[i], ncol = n_cluster_units[i])
+    invV_full_list[[i]] <- solve(V_list[[i]])
+  }
+
+  V_full = bdiag(V_full_list)
+  invV_full = bdiag(invV_full_list)
 
   # Compute matrix Sigma for a full model ---------------------------------
 

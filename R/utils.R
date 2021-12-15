@@ -109,3 +109,18 @@ ind_nu = function(x, vec0) {
   vec0[x] <- 1
   vec0
 }
+
+#
+# Elements to create matrix Z
+#
+
+cluster_matrix  <- function(params = list(id_cluster = 1, n_units = 5),
+                            n_cluster) {
+  id_cluster = params$id_cluster
+  n_units = params$n_units
+
+  stopifnot("value of 'id_cluster' must be <= n_cluster" = id_cluster <= n_cluster)
+  mat_i <- matrix(0, nrow = n_units, ncol = n_cluster)
+  mat_i[, id_cluster] <- 1
+  mat_i
+}

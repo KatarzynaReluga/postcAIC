@@ -70,7 +70,6 @@ compute_cAIC_for_model_set = function(X, y,
   p_full = ncol(X_full)
   n = nlevels(clusterID)
 
-  Z = create_Z(model = model, clusterID)
 
   # Create model sets --------------------------------------
 
@@ -85,11 +84,11 @@ compute_cAIC_for_model_set = function(X, y,
                               clusterID = clusterID,
                               X_cluster = X_cluster_full)
 
-  invV_full = params_full$invV
-  V_full = params_full$V
-  invR_full = params_full$invR
-  R_full = params_full$R
-  G_full = params_full$G
+#  invV_full = params_full$invV
+#  V_full = params_full$V
+#  invR_full = params_full$invR
+#  R_full = params_full$R
+#  G_full = params_full$G
   sig_e_full = params_full$sig_e
   sig_u_full = params_full$sig_u
 
@@ -99,9 +98,9 @@ compute_cAIC_for_model_set = function(X, y,
   degcAIC_models = numeric(nrow(modelset_matrix))
   beta_models = list()
   mu_models = list()
-  R_models = list()
-  G_models = list()
-  V_models = list()
+#  R_models = list()
+#  G_models = list()
+#  V_models = list()
   sig_u_models = numeric(nrow(modelset_matrix))
   sig_e_models = numeric(nrow(modelset_matrix))
 
@@ -119,23 +118,22 @@ compute_cAIC_for_model_set = function(X, y,
 
     beta_models[[k]] = params$beta
     mu_models[[k]] = params$mu
-    R_models[[k]] = params$R
-    G_models[[k]] = params$G
-    V_models[[k]] = params$V
+#    R_models[[k]] = params$R
+#    G_models[[k]] = params$G
+#    V_models[[k]] = params$V
     sig_u_models[k] = params$sig_u
     sig_e_models[k] = params$sig_e
 
-    IC = compute_information_criteria(X, y, Z,
-                                      detV = params$detV,
-                                      invV = params$invV,
-                                      detR = params$detR,
-                                      invR = params$invR,
-                                      G = params$G,
+    IC = compute_information_criteria(X, y, clusterID = clusterID, model = "NERM",
+#                                      detV = params$detV,
+#                                      invV = params$invV,
+#                                      detR = params$detR,
+#                                      invR = params$invR,
+#                                      invG = params$invG,
                                       sig_u = params$sig_u,
                                       sig_e = params$sig_e,
                                       fit_model_fixed = params$fit_model_fixed,
-                                      fit_model_mixed = params$fit_model_mixed,
-                                      size_fixed_params = ncol(X) + 2)
+                                      fit_model_mixed = params$fit_model_mixed)
     cAIC_models[k] = IC$cAIC
     degcAIC_models[k] = IC$deg_cAIC
   }
@@ -143,9 +141,9 @@ compute_cAIC_for_model_set = function(X, y,
   cAIC_min = which.min(cAIC_models)
   beta_sel  = beta_models[[cAIC_min]]
   mu_sel  = mu_models[[cAIC_min]]
-  R_sel  = R_models[[cAIC_min]]
-  G_sel  = G_models[[cAIC_min]]
-  V_sel  = V_models[[cAIC_min]]
+#  R_sel  = R_models[[cAIC_min]]
+#  G_sel  = G_models[[cAIC_min]]
+#  V_sel  = V_models[[cAIC_min]]
   sig_u_sel = sig_u_models[cAIC_min]
   sig_e_sel = sig_e_models[cAIC_min]
 
@@ -161,24 +159,24 @@ compute_cAIC_for_model_set = function(X, y,
 
                 beta_sel = beta_sel,
                 mu_sel = mu_sel,
-                G_sel = G_sel,
-                R_sel = R_sel,
-                V_sel = V_sel,
-                X_sel = X_sel,
+#               G_sel = G_sel,
+#                R_sel = R_sel,
+#                V_sel = V_sel,
+#                X_sel = X_sel,
                 indices_sel = indices_sel,
                 sig_e_sel = sig_e_sel,
                 sig_u_sel = sig_u_sel,
 
-                invV_full = invV_full,
-                V_full = V_full,
-                invR_full = invR_full,
-                R_full = R_full,
-                G_full = G_full,
+#                invV_full = invV_full,
+#                V_full = V_full,
+#                invR_full = invR_full,
+#               R_full = R_full,
+#                G_full = G_full,
                 X_full = X_full,
                 sig_e_full = sig_e_full,
                 sig_u_full = sig_u_full,
                 X_cluster_full = X_cluster_full,
-                Z = Z,
+#                Z = Z,
                 modelset_matrix = modelset_matrix)
 
   output

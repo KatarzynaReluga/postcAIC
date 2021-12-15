@@ -11,12 +11,13 @@
 # Set seed ------------------------------------------------------------
 #
 #
+library(postcAIC)
 set.seed(10)
 #
 # Define the number of clusters and units in each cluster -------------
 #
-n = 15
-m_i = 5
+n = 100
+m_i = 50
 m_total = n * m_i
 
 # Define beta and sigmas ----------------------------------------------
@@ -26,8 +27,10 @@ sig_e = 1
 sig_u = 1
 
 # Load appropriate matrix X from data ----------------------------------
-X = simulations_n15_mi5
-
+#X = simulations_n15_mi5
+Omega = matrix(0.25, 4, 4)
+diag(Omega) <- 1
+X = rmvn(n * m_i, mu  = rep(0, 4), V = Omega)
 # Add intercept -----------------------------------------------------
 X_intercept = cbind(rep(1, m_total), X)
 
@@ -35,7 +38,7 @@ X_intercept = cbind(rep(1, m_total), X)
 # Create (and validate) a factor vector with clusters ------------
 
 clusterID = rep(1:n, each = m_i)
-clusterID = validate_observations(clusterID, X, cluster = TRUE)
+#clusterID = validate_observations(clusterID, X, cluster = TRUE)
 
 
 # Create responses, errors and random effects  -------------------
@@ -49,15 +52,16 @@ y = X_intercept%*% beta + u_i_aug + e_ij
 #
 # Compute cAIC for models from the set of models
 #
-
+a = Sys.time()
 cAIC_model_set = compute_cAIC_for_model_set(X, y, clusterID,
                            model = "NERM",
                            covariate_selection_matrix = NULL,
-                           modelset  = "part_subset",
-                           common = c(1:2),
+                           modelset  = "all_subset",
                            intercept = FALSE)
 
 
+b = Sys.time()
+b-a
 
 cAIC_min = cAIC_model_set$cAIC_min
 degcAIC_models = cAIC_model_set$degcAIC_models
@@ -84,9 +88,9 @@ postcAIC_CI_results = postcAIC_CI(cAIC_min, degcAIC_models,
 
                                  beta_sel, mu_sel,
 
-                                 modelset  = "part_subset",
-                                 common = c(1:2),
-                                 modelset_matrix, x_beta_lin_com,
+                                 modelset  = "all_subset",
+                                 modelset_matrix = modelset_matrix,
+                                 x_beta_lin_com,
                                  n_starting_points = 5,
                                  scale_mvrnorm = 10)
 

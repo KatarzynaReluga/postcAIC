@@ -13,8 +13,8 @@
 #' @return Z matrix of covariates for random effects
 #'
 #'
-#' @details 
-#' Matrix X is only needed if we select an option model = "RIRS" 
+#' @details
+#' Matrix X is only needed if we select an option model = "RIRS"
 #'
 #' @examples
 #'
@@ -53,17 +53,38 @@ create_Z <- function(model = c("NERM", "FHM", "RIRS"),
 
   if (model == "NERM") {
     n_cluster_units = as.data.frame(table(clusterID))$Freq
-    cluster_list <- list()
+#    cluster_list     <- list()
+#
+#    for (i in 1 : n_cluster) {
+#      mat_i <- matrix(0, nrow = n_cluster_units[i],
+#                      ncol = n_cluster)
+#      mat_i[, i] <- 1
+#      cluster_list[[i]] <- data.table(mat_i)
+#    }
 
-    for (i in 1 : n_cluster) {
-      mat_i <- matrix(0, nrow = n_cluster_units[i],
-                      ncol = n_cluster)
-      mat_i[, i] <- 1
+#    cluster_matrix  <- function(params = list(id_cluster = 1, n_units = 5),
+#                                n_cluster) {
+#      id_cluster = params$id_cluster
+#      n_units = params$n_units
 
-      cluster_list[[i]] <- data.table(mat_i)
+#      stopifnot("value of 'id_cluster' must be <= n_cluster" = id_cluster <= n_cluster)
+#      mat_i <- matrix(0, nrow = n_units, ncol = n_cluster)
+#      mat_i[, id_cluster] <- 1
+#      mat_i
+#    }
+#    pp  = cluster_matrix(params = list(id_cluster = 2, n_units = 6),
+#                         1000)
+
+    params_list  = list()
+
+    for (i in 1:n_cluster) {
+      params_list[[i]] = list(id_cluster = i,
+                              n_units = n_cluster_units[i])
     }
 
-    Z <- as.matrix(rbindlist(cluster_list))
+    cluster_list  = lapply(params_list, cluster_matrix, n_cluster)
+
+    Z <- as.matrix(rbindlist(list(cluster_list)))
 
   } else if (model == "FHM") {
     Z = diag(n_cluster)
