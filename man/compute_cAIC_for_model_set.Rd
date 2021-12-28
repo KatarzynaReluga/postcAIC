@@ -8,7 +8,7 @@ compute_cAIC_for_model_set(
   X,
   y,
   clusterID,
-  X_cluster = NULL,
+  X_cluster_full = NULL,
   model = "NERM",
   covariate_selection_matrix = NULL,
   modelset = "all_subsets",
@@ -23,11 +23,12 @@ compute_cAIC_for_model_set(
 
 \item{clusterID}{Vector with cluster labels}
 
-\item{X_cluster}{Matrix with cluster level covariates for fixed effects}
+\item{X_cluster_full}{Matrix with cluster level covariates for fixed effects of the full model}
 
 \item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).}
 
-\item{covariate_selection_matrix}{Matrix composed of zeros and ones indicating fixed models in each parameter.
+\item{covariate_selection_matrix}{Matrix composed of zeros and ones
+indicating fixed models in each parameter.
 Default: intercept = TRUE}
 
 \item{modelset}{Type of model set:
@@ -50,20 +51,11 @@ List with parameters
 \item \code{degcAIC_models} - Penalty for all considered models
 \item \code{beta_sel} - fixed effects (regression parameters) of the selected model
 \item \code{mu_sel} - mixed effects of the selected model
-\item \code{V_sel} - covariance matrix of response of the selected model
-\item \code{G_sel} - covariance matrix of random effects of the selected model
-\item \code{R_sel} - covariance matrix of response of the selected model
-\item \code{X_sel} - matrix with fixed effects covariates of the selected model
 \item \code{indices_sel} - indices of the selected covaraites among full covariate set
 \item \code{sig_u_sel} - variance parameter of random effects of the selected model
 \item \code{sig_e_sel} - variance parameter of errors of the selected model
-\item \code{V_sel} -  covariance matrix of response of the selected model
-\item \code{invV_full} - inverse of covariance matrix of response of the full model
-\item \code{G_full} - covariance matrix of random effects of the selected model
-\item \code{R_full} - covariance matrix of response of the full model
 \item \code{X_full} - matrix with fixed effects covariates of the full model
 \item \code{X_cluster_full} - matrix with cluster level covariates for fixed effects of the full model
-\item \code{Z} - matrix of covariates for random effects
 \item \code{modelset_matrix} -  matrix composed of zeros and ones. Ones correspond to
 parameters in a model which is represented in nth row.
 }
@@ -77,4 +69,26 @@ for fixed and mixed parameters under LMM
 \item \code{model}  - for the moments, only NERM is supported.
 \item \code{covariate_selection_matrix} - necessary only if modelset = NULL
 }
+}
+\examples{
+n = 10
+m_i = 5
+m_total = 50
+
+clusterID = rep(1:n, m_i)
+p = 10
+beta = rep(2, p)
+u_i = rnorm(n, 0, 2)
+u_i_aug = rep(u_i, each = m_i)
+X = matrix(rnorm(m_total * p), m_total, p)
+y = X\%*\%beta + u_i_aug + rnorm(m_total, 0, 1)
+
+cAIC_model_set =
+compute_cAIC_for_model_set(X, y, clusterID,
+                           model = "NERM",
+                           covariate_selection_matrix = NULL,
+                           modelset  = "part_subset",
+                           common = c(1:8),
+                           intercept = FALSE)
+
 }

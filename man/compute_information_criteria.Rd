@@ -7,17 +7,12 @@
 compute_information_criteria(
   X,
   y,
-  Z,
-  detV,
-  invV,
-  detR,
-  invR,
-  G,
+  clusterID,
+  model,
   sig_u,
   sig_e,
   fit_model_fixed,
-  fit_model_mixed,
-  size_fixed_params
+  fit_model_mixed
 )
 }
 \arguments{
@@ -25,17 +20,9 @@ compute_information_criteria(
 
 \item{y}{Vector of responses}
 
-\item{Z}{Z matrix of covariates for random effects}
+\item{clusterID}{Vector with cluster labels}
 
-\item{detV}{Determinant of covariance matrix of response}
-
-\item{invV}{Inverse of covariance matrix of response}
-
-\item{detR}{Determinant of covariance matrix of errors}
-
-\item{invR}{Inverse of covariance matrix of errors}
-
-\item{G}{Covariance matrix of random effects}
+\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).}
 
 \item{sig_u}{Variance parameter of random effects}
 
@@ -44,8 +31,6 @@ compute_information_criteria(
 \item{fit_model_fixed}{Estimated model using fixed effects}
 
 \item{fit_model_mixed}{Estimated model using fixed and random effects}
-
-\item{size_fixed_params}{Size of fixed parameters (p + variance parameters)}
 }
 \value{
 List with information criteria
@@ -63,8 +48,7 @@ Function \code{compute_infromation_criteria} provides mAIC, cAIC and mBIC for NE
 n = 10
 m_i = 5
 m_total = 50
-
-clusterID = rep(1:5, n)
+clusterID = rep(1:n, m_i)
 p = 10
 beta = rep(2, p)
 u_i = rnorm(n, 0, 2)
@@ -72,17 +56,12 @@ u_i_aug = rep(u_i, each = m_i)
 X = matrix(rnorm(m_total * p), m_total, p)
 y = X\%*\%beta + u_i_aug + rnorm(m_total, 0, 1)
 fit <- estimate_NERM(X, y, clusterID)
-
-Z = create_Z("NERM", clusterID)
-
-IC <- compute_information_criteria(X = X, y = y, Z = Z,
- detV = fit$detV, invV = fit$invV,
- detR = fit$detR, invR = fit$invR,
- G = fit$G,
- sig_u = fit$sig_u,
- sig_e = fit$sig_e,
- fit_model_fixed = fit$fit_model_fixed,
- fit_model_mixed = fit$fit_model_mixed,
- size_fixed_params = fit$size_fixed_params)
+IC <- compute_information_criteria(X = X, y = y,
+                                   clusterID = clusterID,
+                                   model = "NERM",
+                                   sig_u = fit$sig_u,
+                                   sig_e = fit$sig_e,
+                                   fit_model_fixed = fit$fit_model_fixed,
+                                   fit_model_mixed = fit$fit_model_mixed)
 
 }

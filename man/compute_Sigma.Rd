@@ -23,3 +23,4 @@ A list with the following elements:
 \description{
 Function \code{compute_Sigma} computes matrix Sigma
 }
+\keyword{internal}

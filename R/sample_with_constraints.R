@@ -12,8 +12,9 @@
 #'
 #'
 #' @details
-#' * \code{n_starting_points}  - in practice we use 2 times n_starting_points, becasue
-#' we sample using initial values and negative inital values obtained applying function
+#' * \code{n_starting_points}  - in practice we use 2 times n_starting_points, because
+#' we sample using initial values and negative initial values obtained applying function
+#' \code{find_starting_points}
 #' * \code{burn.in} -  parameter of function rtmg
 #'
 #'
@@ -26,7 +27,7 @@ sample_with_constraints <- function(n_starting_points,
                                     n_models_to_compare,
                                     list_constraints,
                                     n_samples = 10000,
-                                      burn.in = 1000, scale_mvrnorm) {
+                                    burn.in = 1000, scale_mvrnorm) {
 
   starting_points  = find_starting_points(n_starting_points,
                                           p,
@@ -49,7 +50,7 @@ sample_with_constraints <- function(n_starting_points,
                                   g, list_constraints, burn.in)
   }
   sample_fixed_full = do.call("rbind", sample_fixed_list)
-  sample_random = rmvn(2 *n_starting_points * n_samples,
+  sample_random = rmvn(2 * n_starting_points * n_samples,
                         mu = rep(0, n), V = diag(n))
 
   sample_mix_full = cbind(sample_fixed_full, sample_random)

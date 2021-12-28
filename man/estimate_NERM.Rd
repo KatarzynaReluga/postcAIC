@@ -22,13 +22,6 @@ List with parameters
 \item \code{fit_model_mixed} - estimated model using fixed and random effects
 \item \code{sig_u} - variance parameter of random effects
 \item \code{sig_e} - variance parameter of errors
-\item \code{R} - covariance matrix of errors
-\item \code{invR} - inverse of covariance matrix of errors
-\item \code{detR} - determinant of covariance matrix of errors
-\item \code{G} - covariance matrix of random effects
-\item \code{V} - covariance matrix of response
-\item \code{invV} - inverse of covariance matrix of response
-\item \code{detV} - determinant of covariance matrix of response
 \item \code{beta} - fixed effects (regression parameters)
 \item \code{u} - random effects
 \item \code{mu} - mixed effects

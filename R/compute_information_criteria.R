@@ -3,19 +3,11 @@
 #' Function \code{compute_infromation_criteria} provides mAIC, cAIC and mBIC for NERM
 #'
 #' @inheritParams estimate_NERM
-#' @param Z Z matrix of covariates for random effects
-#' @param detV Determinant of covariance matrix of response
-#' @param invV Inverse of covariance matrix of response
-#' @param detR Determinant of covariance matrix of errors
-#' @param invR Inverse of covariance matrix of errors
+#' @param model Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).
 #' @param sig_u Variance parameter of random effects
 #' @param sig_e Variance parameter of errors
-#' @param G Covariance matrix of random effects
 #' @param fit_model_fixed Estimated model using fixed effects
 #' @param fit_model_mixed Estimated model using fixed and random effects
-#' @param size_fixed_params Size of fixed parameters (p + variance parameters)
-#'
-#'
 #'
 #' @return List with information criteria
 #'
@@ -24,12 +16,13 @@
 #' * \code{cAIC} - conditional AIC
 #' * \code{deg_cAIC} - penalty of conditional AIC
 #'
+#' @importFrom Matrix Matrix det
+#'
 #' @examples
 #' n = 10
 #' m_i = 5
 #' m_total = 50
-#'
-#' clusterID = rep(1:5, n)
+#' clusterID = rep(1:n, m_i)
 #' p = 10
 #' beta = rep(2, p)
 #' u_i = rnorm(n, 0, 2)
@@ -37,34 +30,28 @@
 #' X = matrix(rnorm(m_total * p), m_total, p)
 #' y = X%*%beta + u_i_aug + rnorm(m_total, 0, 1)
 #' fit <- estimate_NERM(X, y, clusterID)
-#'
-#' Z = create_Z("NERM", clusterID)
-#'
-#' IC <- compute_information_criteria(X = X, y = y, Z = Z,
-#'  detV = fit$detV, invV = fit$invV,
-#'  detR = fit$detR, invR = fit$invR,
-#'  G = fit$G,
-#'  sig_u = fit$sig_u,
-#'  sig_e = fit$sig_e,
-#'  fit_model_fixed = fit$fit_model_fixed,
-#'  fit_model_mixed = fit$fit_model_mixed,
-#'  size_fixed_params = fit$size_fixed_params)
+#' IC <- compute_information_criteria(X = X, y = y,
+#'                                    clusterID = clusterID,
+#'                                    model = "NERM",
+#'                                    sig_u = fit$sig_u,
+#'                                    sig_e = fit$sig_e,
+#'                                    fit_model_fixed = fit$fit_model_fixed,
+#'                                    fit_model_mixed = fit$fit_model_mixed)
 #'
 #' @export
 
 
-compute_information_criteria <- function(X, y, Z, clusterID,
+compute_information_criteria <- function(X, y, clusterID,
                                          model,
-#                                         detV,
-#                                         invV,
-#                                         detR,
-#                                         invR,
-#                                         invG,
                                          sig_u, sig_e,
                                          fit_model_fixed,
                                          fit_model_mixed) {
 
   # Recover parameters
+  if (is.factor(clusterID)== TRUE) {
+    clusterID
+  } else { clusterID  = sort(factor(clusterID))
+  }
   n = nlevels(clusterID)
   Z = create_Z(model = model, clusterID)
   m_total = nrow(X)
@@ -110,7 +97,6 @@ compute_information_criteria <- function(X, y, Z, clusterID,
   #Corrections depends on the model: for the moment NERM is supported
 
   b_c = 1 + 2 / (m_total - 1) + 2 / (1 + m_total * sig_u / sig_e)
-
 
   deg_cAIC = trace_model + b_c
 

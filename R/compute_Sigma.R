@@ -11,7 +11,7 @@
 #' * sqrt_invxVx - Square root of variance matrix of fixed effects
 #'
 #'
-#' @export
+#' @keywords internal
 
 compute_Sigma <- function(X, invR, invV) {
 

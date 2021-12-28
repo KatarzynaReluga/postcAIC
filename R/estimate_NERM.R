@@ -12,21 +12,13 @@
 #' * \code{fit_model_mixed} - estimated model using fixed and random effects
 #' * \code{sig_u} - variance parameter of random effects
 #' * \code{sig_e} - variance parameter of errors
-#' * \code{R} - covariance matrix of errors
-#' * \code{invR} - inverse of covariance matrix of errors
-#' * \code{detR} - determinant of covariance matrix of errors
-#' * \code{G} - covariance matrix of random effects
-#' * \code{V} - covariance matrix of response
-#' * \code{invV} - inverse of covariance matrix of response
-#' * \code{detV} - determinant of covariance matrix of response
 #' * \code{beta} - fixed effects (regression parameters)
 #' * \code{u} - random effects
 #' * \code{mu} - mixed effects
 #'
 #'
 #' @importFrom nlme lme VarCorr
-#' @importFrom data.table data.table
-#' @importFrom Matrix bdiag det Matrix
+## #' @importFrom data.table data.table
 #' @importFrom stats aggregate
 #'
 #' @examples
@@ -46,7 +38,7 @@
 #' @export
 
 estimate_NERM <- function(X = NULL, y = NULL, clusterID = NULL,
-                         X_cluster = NULL) {
+                          X_cluster = NULL) {
   # Fromat X
   X = format_data_matrix(X)
 
@@ -73,51 +65,6 @@ estimate_NERM <- function(X = NULL, y = NULL, clusterID = NULL,
   # Variance parameters for NERM -----------------------------------
   sig_u = as.numeric(VarCorr(fit_model)[1, 1])
   sig_e = (summary(fit_model)$sigma) ^ 2
-#  a = Sys.time()
-#  R = Matrix((sig_e * diag(m_total)), sparse = T)
-#  invR = solve(R)
-#  detR = max(det(R),(0.1)^8)
-#  b = Sys.time()
-#  b-a
-#  G = Matrix((sig_u * diag(n)), sparse = T)
-
-#  n_cluster_units = as.data.frame(table(clusterID))$Freq
-#  G_big <- list()
-#  for (i in 1:n) {
-#    G_big[[i]] <- matrix(1, nrow = n_cluster_units[i],
-#                         ncol = n_cluster_units[i])
-#  }
-
-#  V = R + sig_u * bdiag(G_big)
-#  invV = solve(V)
-#  detV = max(det(V), (0.1)^8)
-
-
-#  a2 = Sys.time()
-#  R = sig_e * diag(m_total)
-#  invR = 1/sig_e * diag(m_total)
-#  detR = max(det(Matrix(R, sparse = T)),(0.1)^8)
-#  G = sig_u * diag(n)
-#  invG = 1/sig_u * diag(n)
-#  n_cluster_units = as.data.frame(table(clusterID))$Freq
-
-#  V_list <- list()
-#  invV_list <- list()
-
-#  for (i in 1:n) {
-#    V_list[[i]] <- sig_e * diag(n_cluster_units[i]) +
-#      sig_u * matrix(1, nrow = n_cluster_units[i], ncol = n_cluster_units[i])
-#    invV_list[[i]] <- solve(V_list[[i]])
-#  }
-
-#  V = bdiag(V_list)
-#  invV = bdiag(invV_list)
-#  detV = max(det(Matrix(V, sparse = T)), (0.1)^8)
-
-#  b2 = Sys.time()
-#  b2-a2
-
-
 
   #Cluster-level parameter -------------------------------------------
   if (is.null(X_cluster)) {
@@ -141,9 +88,6 @@ estimate_NERM <- function(X = NULL, y = NULL, clusterID = NULL,
   output <- list(fit_model_fixed = fit_model_fixed,
                  fit_model_mixed = fit_model_mixed,
                  sig_u = sig_u, sig_e = sig_e,
-#                 R = R, invR = invR, detR = detR,
-#                 G = G, invG = invG,
-#                 V = V, invV = invV, detV = detV,
                  beta = beta, u = u,
                  mu = mu)
 

@@ -7,7 +7,7 @@
 create_Z(
   model = c("NERM", "FHM", "RIRS"),
   clusterID,
-  nrandom = 2,
+  nrandom = 1,
   X = NULL,
   intercept = TRUE
 )

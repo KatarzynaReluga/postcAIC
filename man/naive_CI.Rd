@@ -7,13 +7,11 @@
 naive_CI(
   beta_sel,
   mu_sel,
-  G_sel,
-  R_sel,
-  V_full,
   sig_u_sel,
   sig_e_sel,
+  sig_u_full,
+  sig_e_full,
   X_full,
-  Z,
   C_cluster_sel,
   clusterID,
   indices_sel = NULL,
@@ -26,19 +24,15 @@ naive_CI(
 
 \item{mu_sel}{Mixed effects of the selected model}
 
-\item{G_sel}{Covariance matrix of random effects from the selected model}
-
-\item{R_sel}{Covariance matrix of errors from the selected model}
-
-\item{V_full}{Covariance matrix of y from the full model}
-
 \item{sig_u_sel}{Variance parameter of random effects of the selected model}
 
 \item{sig_e_sel}{Variance parameter of errors of the selected model}
 
-\item{X_full}{Matrix with a full set of covariates}
+\item{sig_u_full}{Variance parameter of random effects from the full model}
 
-\item{Z}{Matrix with covariates for random effects}
+\item{sig_e_full}{Variance parameter of errors from the full model}
+
+\item{X_full}{Matrix with a full set of covariates}
 
 \item{C_cluster_sel}{Matrix with cluster level covariates for fixed and random effects}
 
@@ -66,4 +60,62 @@ List with parameters
 }
 \description{
 Function \code{naive_CI} provides naive CI for fixed and mixed effects after model selection
+}
+\examples{
+n = 10
+m_i = 5
+m_total = 50
+
+clusterID = rep(1:n, m_i)
+p = 10
+beta = rep(2, p)
+u_i = rnorm(n, 0, 2)
+u_i_aug = rep(u_i, each = m_i)
+X = matrix(rnorm(m_total * p), m_total, p)
+y = X\%*\%beta + u_i_aug + rnorm(m_total, 0, 1)
+
+cAIC_model_set =
+compute_cAIC_for_model_set(X, y, clusterID,
+                           model = "NERM",
+                           covariate_selection_matrix = NULL,
+                           modelset  = "part_subset",
+                           common = c(1:8),
+                           intercept = FALSE)
+
+
+cAIC_min = cAIC_model_set$cAIC_min
+degcAIC_models = cAIC_model_set$degcAIC_models
+
+X_full = cAIC_model_set$X_full
+X_cluster_full = cAIC_model_set$X_cluster_full
+
+sig_u_full = cAIC_model_set$sig_u_full
+sig_e_full = cAIC_model_set$sig_u_full
+
+beta_sel = cAIC_model_set$beta_sel
+mu_sel = cAIC_model_set$mu_sel
+
+sig_u_sel = cAIC_model_set$sig_u_sel
+sig_e_sel = cAIC_model_set$sig_e_sel
+indices_sel = cAIC_model_set$indices_sel
+X_cluster_sel = cAIC_model_set$X_cluster_full[, indices_sel]
+C_cluster_sel = cbind(as.matrix(X_cluster_sel), diag(n))
+
+
+x_beta_lin_com = cAIC_model_set$X_cluster_full
+
+naive_CI_results  = naive_CI(
+  beta_sel,
+  mu_sel,
+  sig_u_sel,
+  sig_e_sel,
+  sig_u_full,
+  sig_e_full,
+  X_full,
+  C_cluster_sel,
+  clusterID,
+  indices_sel,
+  type_MSE_mixed = "regular",
+  x_beta_lin_com)
+
 }

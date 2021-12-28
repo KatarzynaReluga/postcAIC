@@ -6,7 +6,9 @@
 #' @inheritParams estimate_NERM
 #' @inheritParams create_modelset
 #' @inheritParams create_Z
-#' @param covariate_selection_matrix Matrix composed of zeros and ones indicating fixed models in each parameter.
+#' @param X_cluster_full Matrix with cluster level covariates for fixed effects of the full model
+#' @param covariate_selection_matrix Matrix composed of zeros and ones
+#' indicating fixed models in each parameter.
 #' Default: intercept = TRUE
 
 #' @return List with parameters
@@ -15,20 +17,11 @@
 #' * \code{degcAIC_models} - Penalty for all considered models
 #' * \code{beta_sel} - fixed effects (regression parameters) of the selected model
 #' * \code{mu_sel} - mixed effects of the selected model
-#' * \code{V_sel} - covariance matrix of response of the selected model
-#' * \code{G_sel} - covariance matrix of random effects of the selected model
-#' * \code{R_sel} - covariance matrix of response of the selected model
-#' * \code{X_sel} - matrix with fixed effects covariates of the selected model
 #' * \code{indices_sel} - indices of the selected covaraites among full covariate set
 #' * \code{sig_u_sel} - variance parameter of random effects of the selected model
 #' * \code{sig_e_sel} - variance parameter of errors of the selected model
-#' * \code{V_sel} -  covariance matrix of response of the selected model
-#' * \code{invV_full} - inverse of covariance matrix of response of the full model
-#' * \code{G_full} - covariance matrix of random effects of the selected model
-#' * \code{R_full} - covariance matrix of response of the full model
 #' * \code{X_full} - matrix with fixed effects covariates of the full model
 #' * \code{X_cluster_full} - matrix with cluster level covariates for fixed effects of the full model
-#' * \code{Z} - matrix of covariates for random effects
 #' * \code{modelset_matrix} -  matrix composed of zeros and ones. Ones correspond to
 #' parameters in a model which is represented in nth row.
 #'
@@ -39,12 +32,34 @@
 #'
 #' @importFrom stats aggregate
 #'
+#' @examples
+#' n = 10
+#' m_i = 5
+#' m_total = 50
+#'
+#' clusterID = rep(1:n, m_i)
+#' p = 10
+#' beta = rep(2, p)
+#' u_i = rnorm(n, 0, 2)
+#' u_i_aug = rep(u_i, each = m_i)
+#' X = matrix(rnorm(m_total * p), m_total, p)
+#' y = X%*%beta + u_i_aug + rnorm(m_total, 0, 1)
+#'
+#' cAIC_model_set =
+#' compute_cAIC_for_model_set(X, y, clusterID,
+#'                            model = "NERM",
+#'                            covariate_selection_matrix = NULL,
+#'                            modelset  = "part_subset",
+#'                            common = c(1:8),
+#'                            intercept = FALSE)
+#'
 #' @export
+#'
 #'
 
 compute_cAIC_for_model_set = function(X, y,
                                       clusterID,
-                                      X_cluster = NULL,
+                                      X_cluster_full = NULL,
                                       model = "NERM",
                                       covariate_selection_matrix = NULL,
                                       modelset  = "all_subsets",
@@ -61,7 +76,14 @@ compute_cAIC_for_model_set = function(X, y,
   X_full = format_data_matrix(validate_matrix(X), name_col = "X")
   t_X_full = t(X_full)
 
-  X_cluster_full = aggregate(X_full ~ clusterID, FUN = "mean")[,-1]
+  if (is.null(X_cluster_full)) {
+    X_cluster_full = aggregate(X_full ~ clusterID, FUN = "mean")[,-1]
+  } else {
+    X_cluster_full = format_data_matrix(validate_matrix(X_cluster_full),
+                                       name_col = "X")
+
+  }
+
   t_X_cluster_full = t(X_cluster_full)
 
   clusterID = validate_observations(clusterID, X_full, cluster = TRUE)
@@ -84,11 +106,6 @@ compute_cAIC_for_model_set = function(X, y,
                               clusterID = clusterID,
                               X_cluster = X_cluster_full)
 
-#  invV_full = params_full$invV
-#  V_full = params_full$V
-#  invR_full = params_full$invR
-#  R_full = params_full$R
-#  G_full = params_full$G
   sig_e_full = params_full$sig_e
   sig_u_full = params_full$sig_u
 
@@ -98,9 +115,6 @@ compute_cAIC_for_model_set = function(X, y,
   degcAIC_models = numeric(nrow(modelset_matrix))
   beta_models = list()
   mu_models = list()
-#  R_models = list()
-#  G_models = list()
-#  V_models = list()
   sig_u_models = numeric(nrow(modelset_matrix))
   sig_e_models = numeric(nrow(modelset_matrix))
 
@@ -118,18 +132,11 @@ compute_cAIC_for_model_set = function(X, y,
 
     beta_models[[k]] = params$beta
     mu_models[[k]] = params$mu
-#    R_models[[k]] = params$R
-#    G_models[[k]] = params$G
-#    V_models[[k]] = params$V
     sig_u_models[k] = params$sig_u
     sig_e_models[k] = params$sig_e
 
-    IC = compute_information_criteria(X, y, clusterID = clusterID, model = "NERM",
-#                                      detV = params$detV,
-#                                      invV = params$invV,
-#                                      detR = params$detR,
-#                                      invR = params$invR,
-#                                      invG = params$invG,
+    IC = compute_information_criteria(X, y, clusterID = clusterID,
+                                      model = "NERM",
                                       sig_u = params$sig_u,
                                       sig_e = params$sig_e,
                                       fit_model_fixed = params$fit_model_fixed,
@@ -141,9 +148,6 @@ compute_cAIC_for_model_set = function(X, y,
   cAIC_min = which.min(cAIC_models)
   beta_sel  = beta_models[[cAIC_min]]
   mu_sel  = mu_models[[cAIC_min]]
-#  R_sel  = R_models[[cAIC_min]]
-#  G_sel  = G_models[[cAIC_min]]
-#  V_sel  = V_models[[cAIC_min]]
   sig_u_sel = sig_u_models[cAIC_min]
   sig_e_sel = sig_e_models[cAIC_min]
 
@@ -159,24 +163,14 @@ compute_cAIC_for_model_set = function(X, y,
 
                 beta_sel = beta_sel,
                 mu_sel = mu_sel,
-#               G_sel = G_sel,
-#                R_sel = R_sel,
-#                V_sel = V_sel,
-#                X_sel = X_sel,
                 indices_sel = indices_sel,
                 sig_e_sel = sig_e_sel,
                 sig_u_sel = sig_u_sel,
 
-#                invV_full = invV_full,
-#                V_full = V_full,
-#                invR_full = invR_full,
-#               R_full = R_full,
-#                G_full = G_full,
                 X_full = X_full,
                 sig_e_full = sig_e_full,
                 sig_u_full = sig_u_full,
                 X_cluster_full = X_cluster_full,
-#                Z = Z,
                 modelset_matrix = modelset_matrix)
 
   output

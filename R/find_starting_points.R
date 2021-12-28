@@ -6,7 +6,7 @@
 #' @param n_starting_points Number of initial starting points for sampling from truncated distribution
 #' @param p Number of all fixed parameters under consideration (intercept included)
 #' @param n_models_to_compare Number of models in the model set to compare with
-#' @param list_constraints List witch describes the constraints imposed on the normal distribution
+#' @param list_constraints List wich describes the constraints imposed on the normal distribution
 #' @param scale_mvrnorm Scale parameter for multivariate normal distribution to sample
 #'
 #' @importFrom mgcv rmvn
@@ -41,8 +41,7 @@ find_starting_points <- function(n_starting_points,
         check_negative_elements[i] = temp
       }
       check_sum0 = sum(check_negative_elements < 0)
-             loop=loop+1
-      #        print(loop)
+      loop = loop + 1
     }
     starting_points[, k] = temp_initial
   }

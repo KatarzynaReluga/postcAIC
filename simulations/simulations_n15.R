@@ -66,13 +66,11 @@ b-a
 cAIC_min = cAIC_model_set$cAIC_min
 degcAIC_models = cAIC_model_set$degcAIC_models
 
-Z = cAIC_model_set$Z
 X_full = cAIC_model_set$X_full
 X_cluster_full = cAIC_model_set$X_cluster_full
 
-G_full = cAIC_model_set$G_full
-R_full = cAIC_model_set$R_full
-V_full = cAIC_model_set$V_full
+sig_u_full = cAIC_model_set$sig_u_full
+sig_e_full = cAIC_model_set$sig_u_full
 
 beta_sel = cAIC_model_set$beta_sel
 mu_sel = cAIC_model_set$mu_sel
@@ -82,17 +80,20 @@ x_beta_lin_com = cAIC_model_set$X_cluster_full
 
 
 # Post-cAIC CI for mixed and fixed parameters -------------------------------------
-postcAIC_CI_results = postcAIC_CI(cAIC_min, degcAIC_models,
-                                 Z, X_full, X_cluster_full,
-                                 G_full, R_full, V_full,
+postcAIC_CI_results = postcAIC_CI(cAIC_min,
+                                  degcAIC_models,
 
-                                 beta_sel, mu_sel,
+                                  X_full,
+                                  X_cluster_full,
+                                  sig_u_full,
+                                  sig_e_full,
+                                  model = "NERM",
+                                  clusterID,
 
-                                 modelset  = "all_subset",
-                                 modelset_matrix = modelset_matrix,
-                                 x_beta_lin_com,
-                                 n_starting_points = 5,
-                                 scale_mvrnorm = 10)
+                                  beta_sel,
+                                  mu_sel,
+
+                                  modelset_matrix)
 
 # Naive CI for mixed and fixed parameters -------------------------------------
 

@@ -2,29 +2,28 @@
 #'
 #' Function \code{compute_upsilon} computes extended selection matrix upsilon
 #'
-#' @inheritParams create_modelset
-#' @inherit create_modelset details
+#' @param modelset_matrix Matrix composed of zeros and ones.
 #'
 #' @importFrom dplyr select arrange
 #' @importFrom utils combn
-#' @examples
 #'
-#' upsilon_all_subset = compute_upsilon(modelset = "all_subsets", p = 5)
+#' @examples
+#' modelset_matrix  = create_modelset("all_subsets", p = 5)
+#' upsilon_example = compute_upsilon(modelset_matrix)
 #'
 #' @export
 #'
 
 
-compute_upsilon <- function(modelset, p, common = NULL){
+compute_upsilon <- function(modelset_matrix){
 
-  modelset_matrix  = create_modelset(modelset, p = p, common)
+  p = ncol(modelset_matrix)
 
   ## Preparatory steps to construct matrix upsilon ----------------
   index_cov  = which(apply(modelset_matrix, 1, sum) != 1)
   index_no_cov  = which(apply(modelset_matrix, 1, sum) == 1)
   index_cov_no_cov_order = c(index_cov, index_no_cov)
   index_full_model = which.max(apply(modelset_matrix[index_cov,], 1, sum))
-
 
   models_more_1_cov  = modelset_matrix[index_cov,]
 

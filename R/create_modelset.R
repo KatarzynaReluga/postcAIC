@@ -38,7 +38,7 @@
 
 create_modelset <- function(modelset  = c("all_subsets", "nested",
                                             "part_subset"),
-                             common = NULL, p  = 5){
+                            common = NULL, p  = 5){
 
   modelset <- match.arg(modelset)
 

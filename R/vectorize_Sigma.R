@@ -9,12 +9,13 @@
 #' @param p Number of all fixed parameters under consideration (intercept included)
 #' @param index_full_model Index of a full model in the model set
 #'
-#'
+#' @keywords internal
 
 
-vectorize_Sigma <- function(Sigma, index_cov_terms,
-                            p, index_full_model) {
-
+vectorize_Sigma <- function(Sigma,
+                            index_cov_terms,
+                            p,
+                            index_full_model) {
   Sigma_cov = Sigma[t(lower.tri(Sigma))]
 
   Sigma_cov_var0 = c(diag(Sigma), Sigma_cov)
@@ -24,7 +25,7 @@ vectorize_Sigma <- function(Sigma, index_cov_terms,
 
   order_cov_var = sort(c(var_index,
                          index_cov_terms[[index_full_model]]),
-                       index.return=T)$ix
+                       index.return = T)$ix
 
   Sigma_ordered = Sigma_cov_var0[order_cov_var]
 

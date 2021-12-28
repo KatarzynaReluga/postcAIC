@@ -7,20 +7,19 @@
 postcAIC_CI(
   cAIC_min,
   degcAIC_models,
-  Z,
   X_full,
   X_cluster_full,
-  G_full,
-  R_full,
-  V_full,
+  sig_u_full,
+  sig_e_full,
+  model = "NERM",
+  clusterID,
   beta_sel,
   mu_sel,
-  modelset = "all_subsets",
-  common = NULL,
   modelset_matrix,
   x_beta_lin_com = NULL,
   n_starting_points = 5,
-  scale_mvrnorm = 1
+  scale_mvrnorm = 1,
+  alpha = 0.05
 )
 }
 \arguments{
@@ -28,30 +27,21 @@ postcAIC_CI(
 
 \item{degcAIC_models}{Penalty for all considered models}
 
-\item{Z}{Matrix with covariates for random effects covariates}
-
 \item{X_full}{Matrix with a full set of covariates}
 
 \item{X_cluster_full}{Matrix with cluster level covariates for fixed effects of the full model}
 
-\item{G_full}{Covariance matrix of random effects of the full model}
+\item{sig_u_full}{Variance parameter of random effects from the full model}
 
-\item{R_full}{Covariance matrix of errors of the full model}
+\item{sig_e_full}{Variance parameter of errors from the full model}
 
-\item{V_full}{Covariance matrix of response of the full model}
+\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).}
+
+\item{clusterID}{Vector with cluster labels}
 
 \item{beta_sel}{Fixed effects (regression parameters) of the selected model}
 
 \item{mu_sel}{Mixed effects of the selected model}
-
-\item{modelset}{Type of model set:
-\itemize{
-\item \code{"all_subsets"} - all possible models for all parameters
-\item \code{"nested"} - a sequence of nested models for all parameters
-\item \code{"part_subset"} - all possible models for a subset of parameters
-}}
-
-\item{common}{A vector indicating variables forced to be present in each model}
 
 \item{modelset_matrix}{Matrix composed of zeros and ones.}
 
@@ -61,32 +51,10 @@ fixed parameters. Default: 'x_beta_lin_com = NULL'}
 \item{n_starting_points}{Number of initial starting points for sampling from truncated distribution}
 
 \item{scale_mvrnorm}{Scale parameter for multivariate normal distribution to sample}
+
+\item{alpha}{Construct 1 - alpha confidence intervals}
 }
 \value{
-List with parameters
-\itemize{
-\item \code{cAIC_min}  - Index of selected model
-\item \code{degcAIC_models} - Penalty for all considered models
-\item \code{beta_sel} - fixed effects (regression parameters) of the selected model
-\item \code{mu_sel} - mixed effects of the selected model
-\item \code{V_sel} - covariance matrix of response of the selected model
-\item \code{G_sel} - covariance matrix of random effects of the selected model
-\item \code{R_sel} - covariance matrix of response of the selected model
-\item \code{X_sel} - matrix with fixed effects covariates of the selected model
-\item \code{indices_sel} - indices of the selected covaraites among full covariate set
-\item \code{sig_u_sel} - variance parameter of random effects of the selected model
-\item \code{sig_e_sel} - variance parameter of errors of the selected model
-\item \code{V_sel} -  covariance matrix of response of the selected model
-\item \code{invV_full} - inverse of covariance matrix of response of the full model
-\item \code{G_full} - covariance matrix of random effects of the selected model
-\item \code{R_full} - covariance matrix of response of the full model
-\item \code{X_full} - matrix with fixed effects covariates of the full model
-\item \code{X_cluster_full} - matrix with cluster level covariates for fixed effects of the full model
-\item \code{Z} - matrix of covariates for random effects
-\item \code{modelset_matrix} -  matrix composed of zeros and ones. Ones correspond to
-parameters in a model which is represented in nth row.
-}
-
 List with parameters
 \itemize{
 \item \code{beta_PoSI_CI_up}  - upper boundary of CI for fixed effects
@@ -100,4 +68,57 @@ List with parameters
 \description{
 Function \code{postcAIC_CI} provides post-cAIC confidence intervals for
 mixed and fixed effects under NERM
+}
+\examples{
+n = 10
+m_i = 5
+m_total = 50
+
+clusterID = rep(1:n, m_i)
+p = 10
+beta = rep(2, p)
+u_i = rnorm(n, 0, 2)
+u_i_aug = rep(u_i, each = m_i)
+X = matrix(rnorm(m_total * p), m_total, p)
+y = X\%*\%beta + u_i_aug + rnorm(m_total, 0, 1)
+
+cAIC_model_set =
+compute_cAIC_for_model_set(X, y, clusterID,
+                           model = "NERM",
+                           covariate_selection_matrix = NULL,
+                           modelset  = "part_subset",
+                           common = c(1:8),
+                           intercept = FALSE)
+
+cAIC_min = cAIC_model_set$cAIC_min
+degcAIC_models = cAIC_model_set$degcAIC_models
+X_full = cAIC_model_set$X_full
+X_cluster_full = cAIC_model_set$X_cluster_full
+
+sig_u_full = cAIC_model_set$sig_u_full
+sig_e_full = cAIC_model_set$sig_u_full
+
+beta_sel = cAIC_model_set$beta_sel
+mu_sel = cAIC_model_set$mu_sel
+
+modelset_matrix = cAIC_model_set$modelset_matrix
+x_beta_lin_com = cAIC_model_set$X_cluster_full
+
+postcAIC_CI_results = postcAIC_CI(cAIC_min,
+                                 degcAIC_models,
+
+                                 X_full,
+                                 X_cluster_full,
+                                 sig_u_full,
+                                 sig_e_full,
+                                 model = "NERM",
+                                 clusterID,
+
+                                 beta_sel,
+                                 mu_sel,
+
+                                 modelset_matrix,
+                                 x_beta_lin_com = NULL)
+
+
 }

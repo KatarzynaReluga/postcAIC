@@ -20,3 +20,4 @@ vectorize_Sigma(Sigma, index_cov_terms, p, index_full_model)
 Function \code{vectorise_Sigma} vectorizes and orders
 unique elements of variance matrix Sigma
 }
+\keyword{internal}

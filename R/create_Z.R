@@ -37,44 +37,26 @@
 #'
 #' @export
 #'
+
 create_Z <- function(model = c("NERM", "FHM", "RIRS"),
                      clusterID,
-                     nrandom = 2,  X = NULL,
+                     nrandom = 1,
+                     X = NULL,
                      intercept = TRUE) {
   model <- match.arg(model)
 
-  if (is.factor(clusterID)== TRUE) {
+  if (is.factor(clusterID) == TRUE) {
     clusterID
-  } else { clusterID  = sort(factor(clusterID))
+  } else {
+    clusterID  = sort(factor(clusterID))
   }
 
   n_cluster = nlevels(clusterID)
 
-
-  if (model == "NERM") {
+  if (model == "FHM") {
+    Z = diag(n_cluster)
+  } else {
     n_cluster_units = as.data.frame(table(clusterID))$Freq
-#    cluster_list     <- list()
-#
-#    for (i in 1 : n_cluster) {
-#      mat_i <- matrix(0, nrow = n_cluster_units[i],
-#                      ncol = n_cluster)
-#      mat_i[, i] <- 1
-#      cluster_list[[i]] <- data.table(mat_i)
-#    }
-
-#    cluster_matrix  <- function(params = list(id_cluster = 1, n_units = 5),
-#                                n_cluster) {
-#      id_cluster = params$id_cluster
-#      n_units = params$n_units
-
-#      stopifnot("value of 'id_cluster' must be <= n_cluster" = id_cluster <= n_cluster)
-#      mat_i <- matrix(0, nrow = n_units, ncol = n_cluster)
-#      mat_i[, id_cluster] <- 1
-#      mat_i
-#    }
-#    pp  = cluster_matrix(params = list(id_cluster = 2, n_units = 6),
-#                         1000)
-
     params_list  = list()
 
     for (i in 1:n_cluster) {
@@ -82,39 +64,28 @@ create_Z <- function(model = c("NERM", "FHM", "RIRS"),
                               n_units = n_cluster_units[i])
     }
 
-    cluster_list  = lapply(params_list, cluster_matrix, n_cluster)
+    if (model == "RIRS") {
+      if (!intercept) {
+        X = cbind(rep(1, NROW(X)), X)
+      }
+      p = ncol(X)
+      stopifnot(
+        "Value of 'nrandom' must be 1 < nrandom <= p.
+              Choose model 'NERM' for 'nrandom' = 1" = nrandom > 1 &
+          nrandom <= p
+      )
 
-    Z <- as.matrix(rbindlist(list(cluster_list)))
-
-  } else if (model == "FHM") {
-    Z = diag(n_cluster)
-  } else {
-    n_cluster_units = as.data.frame(table(clusterID))$Freq
-    cluster_list <- list()
-
-    if (!intercept) {
-      X = cbind(rep(1, NROW(X)), X)
-    }
-    p = ncol(X)
-    stopifnot("Value of 'nrandom' must be 1 < nrandom <= p.
-              Choose model 'NERM' for 'nrandom' = 1" = nrandom > 1 & nrandom <= p)
-
-    stopifnot("X cannot be empty for model 'RS' " = is.null(X) != 1)
-
-    for (i in 1 : n_cluster) {
-      mat_i <- matrix(0, nrow = n_cluster_units[i],
-                      ncol = n_cluster * nrandom)
-      down <- (i-1) * nrandom + 1
-      up <- (i-1) * nrandom + nrandom
-      mat_i[, c(down:up)] <- 1
-
-      cluster_list[[i]] <- data.table(mat_i)
+      stopifnot("X cannot be empty for model 'RS' " = is.null(X) != 1)
     }
 
-    Z <- as.matrix(rbindlist(cluster_list))
+    cluster_list  = lapply(params_list, cluster_matrix,
+                           n_cluster, nrandom)
 
+    Z <- do.call(rbind, cluster_list)
   }
-
   Z
+
 }
+
+
 

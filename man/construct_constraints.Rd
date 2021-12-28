@@ -11,7 +11,7 @@ construct_constraints(degcAIC_models, cAIC_min, var_cov_terms, p)
 
 \item{cAIC_min}{Index of the selected model among models in the modelset}
 
-\item{var_cov_terms}{Varaince and covaraince each model (appropriate elements from matrix Sigma)}
+\item{var_cov_terms}{Variance and covariance terms in each model (appropriate elements from matrix Sigma)}
 
 \item{p}{Number of all fixed parameters under consideration (intercept included)}
 }
@@ -19,3 +19,4 @@ construct_constraints(degcAIC_models, cAIC_min, var_cov_terms, p)
 Function \code{construct_constraints} provides a list of constraints
 for multivariate normal distributions
 }
+\keyword{internal}

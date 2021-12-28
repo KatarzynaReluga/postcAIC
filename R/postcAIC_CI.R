@@ -3,15 +3,14 @@
 #' Function \code{postcAIC_CI} provides post-cAIC confidence intervals for
 #' mixed and fixed effects under NERM
 #'
-#' @inheritParams create_modelset
-#' @inheritParams estimate_invK
 #' @param degcAIC_models Penalty for all considered models
 #' @param cAIC_min Index of the selected model among models in the modelset
 #' @param X_full Matrix with a full set of covariates
 #' @param X_cluster_full Matrix with cluster level covariates for fixed effects of the full model
-# #' @param R_full Covariance matrix of errors of the full model
-# #' @param G_full Covariance matrix of random effects of the full model
-# #' @param V_full Covariance matrix of response of the full model
+#' @param model Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).
+#' @param clusterID  Vector with cluster labels
+#' @param sig_u_full Variance parameter of random effects from the full model
+#' @param sig_e_full Variance parameter of errors from the full model
 #' @param beta_sel Fixed effects (regression parameters) of the selected model
 #' @param mu_sel Mixed effects of the selected model
 #' @param x_beta_lin_com Vector or matrix to create linear combinations with
@@ -19,28 +18,7 @@
 #' @param modelset_matrix Matrix composed of zeros and ones.
 #' @param n_starting_points Number of initial starting points for sampling from truncated distribution
 #' @param scale_mvrnorm Scale parameter for multivariate normal distribution to sample
-#'
-#' @return List with parameters
-#' * \code{cAIC_min}  - Index of selected model
-#' * \code{degcAIC_models} - Penalty for all considered models
-#' * \code{beta_sel} - fixed effects (regression parameters) of the selected model
-#' * \code{mu_sel} - mixed effects of the selected model
-#' * \code{V_sel} - covariance matrix of response of the selected model
-#' * \code{G_sel} - covariance matrix of random effects of the selected model
-#' * \code{R_sel} - covariance matrix of response of the selected model
-#' * \code{X_sel} - matrix with fixed effects covariates of the selected model
-#' * \code{indices_sel} - indices of the selected covaraites among full covariate set
-#' * \code{sig_u_sel} - variance parameter of random effects of the selected model
-#' * \code{sig_e_sel} - variance parameter of errors of the selected model
-#' * \code{V_sel} -  covariance matrix of response of the selected model
-#' * \code{invV_full} - inverse of covariance matrix of response of the full model
-#' * \code{G_full} - covariance matrix of random effects of the selected model
-#' * \code{R_full} - covariance matrix of response of the full model
-#' * \code{X_full} - matrix with fixed effects covariates of the full model
-#' * \code{X_cluster_full} - matrix with cluster level covariates for fixed effects of the full model
-#' * \code{Z} - matrix of covariates for random effects
-#' * \code{modelset_matrix} -  matrix composed of zeros and ones. Ones correspond to
-#' parameters in a model which is represented in nth row.
+#' @param alpha Construct 1 - alpha confidence intervals
 #'
 #' @return List with parameters
 #' * \code{beta_PoSI_CI_up}  - upper boundary of CI for fixed effects
@@ -51,9 +29,60 @@
 #' * \code{beta_x_PoSI_CI_do} - lower boundary of CI for linear combinations of fixed effects
 #'
 #'
-#'
 #' @importFrom stats quantile
 #' @importFrom Matrix bdiag
+#'
+#' @examples
+#' n = 10
+#' m_i = 5
+#' m_total = 50
+#'
+#' clusterID = rep(1:n, m_i)
+#' p = 10
+#' beta = rep(2, p)
+#' u_i = rnorm(n, 0, 2)
+#' u_i_aug = rep(u_i, each = m_i)
+#' X = matrix(rnorm(m_total * p), m_total, p)
+#' y = X%*%beta + u_i_aug + rnorm(m_total, 0, 1)
+#'
+#' cAIC_model_set =
+#' compute_cAIC_for_model_set(X, y, clusterID,
+#'                            model = "NERM",
+#'                            covariate_selection_matrix = NULL,
+#'                            modelset  = "part_subset",
+#'                            common = c(1:8),
+#'                            intercept = FALSE)
+#'
+#' cAIC_min = cAIC_model_set$cAIC_min
+#' degcAIC_models = cAIC_model_set$degcAIC_models
+#' X_full = cAIC_model_set$X_full
+#' X_cluster_full = cAIC_model_set$X_cluster_full
+#'
+#' sig_u_full = cAIC_model_set$sig_u_full
+#' sig_e_full = cAIC_model_set$sig_u_full
+#'
+#' beta_sel = cAIC_model_set$beta_sel
+#' mu_sel = cAIC_model_set$mu_sel
+#'
+#' modelset_matrix = cAIC_model_set$modelset_matrix
+#' x_beta_lin_com = cAIC_model_set$X_cluster_full
+#'
+#' postcAIC_CI_results = postcAIC_CI(cAIC_min,
+#'                                  degcAIC_models,
+#'
+#'                                  X_full,
+#'                                  X_cluster_full,
+#'                                  sig_u_full,
+#'                                  sig_e_full,
+#'                                  model = "NERM",
+#'                                  clusterID,
+#'
+#'                                  beta_sel,
+#'                                  mu_sel,
+#'
+#'                                  modelset_matrix,
+#'                                  x_beta_lin_com = NULL)
+#'
 #'
 #' @export
 #'
@@ -61,38 +90,38 @@
 
 postcAIC_CI  = function(cAIC_min,
                         degcAIC_models,
-                        Z,
+
                         X_full,
                         X_cluster_full,
-#                        G_full,
-#                        R_full,
-#                        V_full,
-                        sig_e_full,
                         sig_u_full,
+                        sig_e_full,
+                        model = "NERM",
+                        clusterID,
 
                         beta_sel,
                         mu_sel,
 
-                        modelset,
-                        common,
                         modelset_matrix,
                         x_beta_lin_com = NULL,
-                        n_starting_points = 5, scale_mvrnorm = 1) {
+                        n_starting_points = 5, scale_mvrnorm = 1,
+                        alpha = 0.05) {
   # Parameters to recover -------------------------------------------------
   p_full = ncol(X_full)
+  Z = create_Z(model, clusterID)
   n = ncol(Z)
   C_cluster_full = cbind(X_cluster_full, diag(n))
   R_full = sig_e_full * diag(nrow(X_full))
   invR_full = 1/sig_e_full * diag(nrow(X_full))
   G_full = sig_u_full * diag(n)
+  n_cluster_units = as.data.frame(table(clusterID))$Freq
 
   V_full_list <- list()
   invV_full_list <- list()
 
   for (i in 1:n) {
     V_full_list[[i]] <- sig_e_full * diag(n_cluster_units[i]) +
-      sig_u_full * matrix(1, nrow = n_cluster_units[i], ncol = n_cluster_units[i])
-    invV_full_list[[i]] <- solve(V_list[[i]])
+    sig_u_full * matrix(1, nrow = n_cluster_units[i], ncol = n_cluster_units[i])
+    invV_full_list[[i]] <- solve(V_full_list[[i]])
   }
 
   V_full = bdiag(V_full_list)
@@ -107,7 +136,7 @@ postcAIC_CI  = function(cAIC_min,
   sqrt_invxVx_full = compute_Sigma_results$sqrt_invxVx
 
   # Compute selection matrix upsilon  -------------------------------------
-  upsilon_output  = compute_upsilon(modelset, p  = p_full, common)
+  upsilon_output  = compute_upsilon(modelset_matrix)
 
   upsilon = upsilon_output$upsilon
   upsilon_cAIC = upsilon[cAIC_min,]
@@ -135,9 +164,9 @@ postcAIC_CI  = function(cAIC_min,
 
   # Calculate invK, its inverse and square root-- ------------------------
   invK = estimate_invK(X = X_full,
-                       Z = Z,
-                       G = G_full,
-                       R = R_full)
+                       sig_u = sig_u_full,
+                       sig_e = sig_e_full,
+                       model = "NERM", clusterID)
   invK_vec = eigen(invK)$vectors
   invK_val = sqrt(eigen(invK)$values)
   solinvK_vec = solve(invK_vec)
@@ -157,7 +186,7 @@ postcAIC_CI  = function(cAIC_min,
                                             var_cov_terms, p = p_full)
 
   sample_constraints_results  = sample_with_constraints(
-    n_starting_points,
+    n_starting_points = n_starting_points,
     p = p_full,
     n = n,
     n_models_to_compare = nrow(modelset_matrix) -
@@ -177,18 +206,19 @@ postcAIC_CI  = function(cAIC_min,
   sample_fixed_sel = sample_constraints_results$sample_fixed_full[, c(indices_selected)]
 
   # Post-cAIC CI for beta ----------------------------------------------------
+  stopifnot("Parameter alpha must be between 0 and 1" = 0 < alpha & alpha < 1)
   temp_beta_invxVx = tcrossprod(sqrt_invxVx_full[c(indices_selected),
                                                  c(indices_selected)],
                                 sample_fixed_sel)
   q_beta_u = apply(temp_beta_invxVx,
                    1,
                    quantile,
-                   prob = 0.975,
+                   prob = 1 - alpha/2,
                    type = 8)
   q_beta_d = apply(temp_beta_invxVx,
                    1,
                    quantile,
-                   prob = 0.025,
+                   prob = alpha/2,
                    type = 8)
 
   q_beta_u_full  = numeric(p_full)
@@ -216,59 +246,52 @@ postcAIC_CI  = function(cAIC_min,
                                  temp_beta_invxVx)
     q_betax_u = apply(sample_beta_pred, 1,
                       function(x)
-                        quantile(x, 0.975))
+                        quantile(x, 1 - alpha/2))
     q_betax_d = apply(sample_beta_pred, 1,
                       function(x)
-                        quantile(x, 0.025))
+                        quantile(x, alpha/2))
 
 
     beta_x_full = crossprod(t_x_beta_lin_com, full_beta_hat)
 
     #PoSI
-    beta_x_PoSI_CI_up = beta_x_full + q_betax_u
-    beta_x_PoSI_CI_do = beta_x_full + q_betax_d
+    beta_x_PoSI_CI_up = c(beta_x_full + q_betax_u)
+    beta_x_PoSI_CI_do = c(beta_x_full + q_betax_d)
+  } else {
+    beta_x_PoSI_CI_up = "CI for a linear combination of fixed effects not requested"
+    beta_x_PoSI_CI_do = "CI for a linear combination of fixed effects not requested"
   }
 
 
   # Post-cAIC CI for mixed effects-------------------------------------------
-  invK_sel = invK[-indices_not_selected,-indices_not_selected]
-  invK_sqrt_sel = invK_sqrt[-indices_not_selected,-indices_not_selected]
+  invK_sel = invK[-indices_not_selected, - indices_not_selected]
+  invK_sqrt_sel = invK_sqrt[-indices_not_selected, - indices_not_selected]
   temp0_mixed_invK = tcrossprod(invK_sqrt_sel, sample_mix_sel)
-  C_cluster_sel = C_cluster_full[,-indices_not_selected]
+  C_cluster_sel = C_cluster_full[, - indices_not_selected]
   temp_mixed_invK = crossprod(t(C_cluster_sel), temp0_mixed_invK)
 
   q_mixed_u = apply(temp_mixed_invK,
                     1,
                     quantile,
-                    prob = 0.975,
+                    prob = 1 - alpha/2,
                     type = 8)
   q_mixed_d = apply(temp_mixed_invK,
                     1,
                     quantile,
-                    prob = 0.025,
+                    prob = alpha/2,
                     type = 8)
 
-  mixed_PoSI_CI_up = mu_sel + q_mixed_u
-  mixed_PoSI_CI_do = mu_sel + q_mixed_d
+  mixed_PoSI_CI_up = c(mu_sel + q_mixed_u)
+  mixed_PoSI_CI_do = c(mu_sel + q_mixed_d)
 
-  if (is.null(x_beta_lin_com)) {
-    output = list(
-      beta_PoSI_CI_up = beta_PoSI_CI_up,
-      beta_PoSI_CI_do = beta_PoSI_CI_do,
-      mixed_PoSI_CI_up = mixed_PoSI_CI_up,
-      mixed_PoSI_CI_do = mixed_PoSI_CI_do
-    )
-
-  } else {
-    output = list(
-      beta_PoSI_CI_up = beta_PoSI_CI_up,
-      beta_PoSI_CI_do = beta_PoSI_CI_do,
-      mixed_PoSI_CI_up = mixed_PoSI_CI_up,
-      mixed_PoSI_CI_do = mixed_PoSI_CI_do,
-      beta_x_PoSI_CI_up = beta_x_PoSI_CI_up,
-      beta_x_PoSI_CI_do = beta_x_PoSI_CI_do
-    )
-  }
+  output = list(
+    beta_PoSI_CI_up = beta_PoSI_CI_up,
+    beta_PoSI_CI_do = beta_PoSI_CI_do,
+    mixed_PoSI_CI_up = mixed_PoSI_CI_up,
+    mixed_PoSI_CI_do = mixed_PoSI_CI_do,
+    beta_x_PoSI_CI_up = beta_x_PoSI_CI_up,
+    beta_x_PoSI_CI_do = beta_x_PoSI_CI_do
+  )
 
   output
 }

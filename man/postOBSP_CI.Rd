@@ -5,42 +5,44 @@
 \title{Post OBSP confidence intervals}
 \usage{
 postOBSP_CI(
-  X_full,
+  X,
   y,
   clusterID,
-  Z,
-  X_cluster_full,
-  G_full,
-  V_full,
-  R_full,
-  sig_u_full,
-  sig_e_full,
-  modelset_matrix,
+  X_cluster_full = NULL,
+  model = "NERM",
+  covariate_selection_matrix = NULL,
+  modelset = "all_subsets",
+  intercept = FALSE,
+  common = NULL,
   boot = 1000
 )
 }
 \arguments{
-\item{X_full}{Matrix with a full set of covariates}
+\item{X}{Matrix with fixed effects covariates}
 
 \item{y}{Vector of responses}
 
 \item{clusterID}{Vector with cluster labels}
 
-\item{Z}{Matrix with covariates for random effects covariates}
-
 \item{X_cluster_full}{Matrix with cluster level covariates for fixed effects of the full model}
 
-\item{G_full}{Covariance matrix of random effects of the full model}
+\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).}
 
-\item{V_full}{Covariance matrix of response of the full model}
+\item{covariate_selection_matrix}{Matrix composed of zeros and ones
+indicating fixed models in each parameter.
+Default: intercept = TRUE}
 
-\item{R_full}{Covariance matrix of errors of the full model}
+\item{modelset}{Type of model set:
+\itemize{
+\item \code{"all_subsets"} - all possible models for all parameters
+\item \code{"nested"} - a sequence of nested models for all parameters
+\item \code{"part_subset"} - all possible models for a subset of parameters
+}}
 
-\item{sig_u_full}{Variance parameter of random effects from the full model}
+\item{intercept}{Is column of ones, representing the intercept, present in X
+Default: intercept = TRUE}
 
-\item{sig_e_full}{Variance parameter of errors from the full model}
-
-\item{modelset_matrix}{Matrix composed of zeros and ones.}
+\item{common}{A vector indicating variables forced to be present in each model}
 
 \item{boot}{Number of boostrap samples}
 }
@@ -61,4 +63,40 @@ Function \code{postOBSP_CI} provides post-OBSP confidence intervals for mixed pa
 \itemize{
 \item The parameter \code{boot} is needed for the calculation of the boostrap post-OBSP MSE of mixed effects
 }
+}
+\examples{
+# Define basic parameters -------------------------------------------------
+n = 15
+m_i = 5
+m_total = n * m_i
+
+beta = c(2.25, -1.1, 2.43, rep(0, 2))
+sig_e = 1
+sig_u = 1
+
+X = simulations_n15_mi5
+X_intercept = cbind(rep(1, m_total), X)
+
+clusterID = rep(1:n, each = m_i)
+
+# Create responses, errors and random effects  -------------------
+e_ij = rnorm(m_total, 0, sig_e)
+
+u_i = rnorm(n, 0, sig_u)
+u_i_aug = rep(u_i, each = m_i)
+
+y = X_intercept\%*\% beta + u_i_aug + e_ij
+
+# Post-OBSP inference ----------------------------------------
+
+postOBSP_CI_results = postOBSP_CI(X, y,
+                                  clusterID,
+                                  X_cluster_full = NULL,
+                                  model = "NERM",
+                                  covariate_selection_matrix = NULL,
+                                  modelset  = "part_subset",
+                                  intercept = FALSE,
+                                  common = c(1:2),
+                                  boot = 500)
+
 }

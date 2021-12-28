@@ -24,7 +24,7 @@ sample_with_constraints(
 
 \item{n_models_to_compare}{Number of models in the model set to compare with}
 
-\item{list_constraints}{List witch describes the constraints imposed on the normal distribution}
+\item{list_constraints}{List wich describes the constraints imposed on the normal distribution}
 
 \item{n_samples}{Number of samples from constrained distribution}
 
@@ -39,8 +39,9 @@ distribution. Constraints are consequences of model selection.
 }
 \details{
 \itemize{
-\item \code{n_starting_points}  - in practice we use 2 times n_starting_points, becasue
-we sample using initial values and negative inital values obtained applying function
+\item \code{n_starting_points}  - in practice we use 2 times n_starting_points, because
+we sample using initial values and negative initial values obtained applying function
+\code{find_starting_points}
 \item \code{burn.in} -  parameter of function rtmg
 }
 }

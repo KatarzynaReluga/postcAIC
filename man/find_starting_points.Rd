@@ -19,7 +19,7 @@ find_starting_points(
 
 \item{n_models_to_compare}{Number of models in the model set to compare with}
 
-\item{list_constraints}{List witch describes the constraints imposed on the normal distribution}
+\item{list_constraints}{List wich describes the constraints imposed on the normal distribution}
 
 \item{scale_mvrnorm}{Scale parameter for multivariate normal distribution to sample}
 }
