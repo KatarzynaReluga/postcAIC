@@ -21,12 +21,12 @@
 #' @param alpha Construct 1 - alpha confidence intervals
 #'
 #' @return List with parameters
-#' * \code{beta_PoSI_CI_up}  - upper boundary of CI for fixed effects
-#' * \code{beta_PoSI_CI_do} - lower boundary of CI for fixed effects
-#' * \code{mixed_PoSI_CI_up} - upper boundary of CI for mixed effects
-#' * \code{mixed_PoSI_CI_do} - lower boundary of CI for mixed effects
-#' * \code{beta_x_PoSI_CI_up} - upper boundary of CI for linear combinations of fixed effects
-#' * \code{beta_x_PoSI_CI_do} - lower boundary of CI for linear combinations of fixed effects
+#' * \code{beta_postcAIC_CI_up}  - upper boundary of CI for fixed effects
+#' * \code{beta_postcAIC_CI_do} - lower boundary of CI for fixed effects
+#' * \code{mixed_postcAIC_CI_up} - upper boundary of CI for mixed effects
+#' * \code{mixed_postcAIC_CI_do} - lower boundary of CI for mixed effects
+#' * \code{beta_x_postcAIC_CI_up} - upper boundary of CI for linear combinations of fixed effects
+#' * \code{beta_x_postcAIC_CI_do} - lower boundary of CI for linear combinations of fixed effects
 #'
 #'
 #' @importFrom stats quantile
@@ -230,8 +230,8 @@ postcAIC_CI  = function(cAIC_min,
   full_beta_hat = numeric(p_full)
   full_beta_hat[indices_selected] <- beta_sel
 
-  beta_PoSI_CI_up = full_beta_hat + q_beta_u_full
-  beta_PoSI_CI_do = full_beta_hat + q_beta_d_full
+  beta_postcAIC_CI_up = full_beta_hat + q_beta_u_full
+  beta_postcAIC_CI_do = full_beta_hat + q_beta_d_full
 
   #Post-cAIC for  linear combination of betas and covaraites ---------------
   if (!is.null(x_beta_lin_com)) {
@@ -254,12 +254,12 @@ postcAIC_CI  = function(cAIC_min,
 
     beta_x_full = crossprod(t_x_beta_lin_com, full_beta_hat)
 
-    #PoSI
-    beta_x_PoSI_CI_up = c(beta_x_full + q_betax_u)
-    beta_x_PoSI_CI_do = c(beta_x_full + q_betax_d)
+    #postcAIC
+    beta_x_postcAIC_CI_up = c(beta_x_full + q_betax_u)
+    beta_x_postcAIC_CI_do = c(beta_x_full + q_betax_d)
   } else {
-    beta_x_PoSI_CI_up = "CI for a linear combination of fixed effects not requested"
-    beta_x_PoSI_CI_do = "CI for a linear combination of fixed effects not requested"
+    beta_x_postcAIC_CI_up = "CI for a linear combination of fixed effects not requested"
+    beta_x_postcAIC_CI_do = "CI for a linear combination of fixed effects not requested"
   }
 
 
@@ -281,17 +281,18 @@ postcAIC_CI  = function(cAIC_min,
                     prob = alpha/2,
                     type = 8)
 
-  mixed_PoSI_CI_up = c(mu_sel + q_mixed_u)
-  mixed_PoSI_CI_do = c(mu_sel + q_mixed_d)
+  mixed_postcAIC_CI_up = c(mu_sel + q_mixed_u)
+  mixed_postcAIC_CI_do = c(mu_sel + q_mixed_d)
 
   output = list(
-    beta_PoSI_CI_up = beta_PoSI_CI_up,
-    beta_PoSI_CI_do = beta_PoSI_CI_do,
-    mixed_PoSI_CI_up = mixed_PoSI_CI_up,
-    mixed_PoSI_CI_do = mixed_PoSI_CI_do,
-    beta_x_PoSI_CI_up = beta_x_PoSI_CI_up,
-    beta_x_PoSI_CI_do = beta_x_PoSI_CI_do
+    beta_postcAIC_CI_up = beta_postcAIC_CI_up,
+    beta_postcAIC_CI_do = beta_postcAIC_CI_do,
+    mixed_postcAIC_CI_up = mixed_postcAIC_CI_up,
+    mixed_postcAIC_CI_do = mixed_postcAIC_CI_do,
+    beta_x_postcAIC_CI_up = beta_x_postcAIC_CI_up,
+    beta_x_postcAIC_CI_do = beta_x_postcAIC_CI_do
   )
 
+  class(output)  <- "postcAIC_CI"
   output
 }

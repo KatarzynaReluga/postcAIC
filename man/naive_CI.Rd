@@ -118,4 +118,6 @@ naive_CI_results  = naive_CI(
   type_MSE_mixed = "regular",
   x_beta_lin_com)
 
+  plot(naive_CI_results, type = "regular")
+
 }

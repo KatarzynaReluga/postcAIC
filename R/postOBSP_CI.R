@@ -256,6 +256,8 @@ postOBSP_CI <- function(X, y,
                 mu_hat_sel = mu_hat_sel,
                 OBSP_min = OBSP_min,
                 OBSP_models = OBSP_models)
+
+  class(output) <- "postOBSP_CI"
   output
 
 }

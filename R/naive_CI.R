@@ -79,6 +79,8 @@
 #'   type_MSE_mixed = "regular",
 #'   x_beta_lin_com)
 #'
+#'   plot(naive_CI_results, type = "regular")
+#'
 #' @export
 #'
 
@@ -230,7 +232,7 @@ naive_CI  = function(beta_sel,
     beta_x_naive_CI_up = beta_x_naive_CI_up,
     beta_x_naive_CI_do = beta_x_naive_CI_do
   )
-
+  class(output) <- "naive_CI"
   output
 
 }

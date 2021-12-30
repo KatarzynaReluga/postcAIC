@@ -57,12 +57,12 @@ fixed parameters. Default: 'x_beta_lin_com = NULL'}
 \value{
 List with parameters
 \itemize{
-\item \code{beta_PoSI_CI_up}  - upper boundary of CI for fixed effects
-\item \code{beta_PoSI_CI_do} - lower boundary of CI for fixed effects
-\item \code{mixed_PoSI_CI_up} - upper boundary of CI for mixed effects
-\item \code{mixed_PoSI_CI_do} - lower boundary of CI for mixed effects
-\item \code{beta_x_PoSI_CI_up} - upper boundary of CI for linear combinations of fixed effects
-\item \code{beta_x_PoSI_CI_do} - lower boundary of CI for linear combinations of fixed effects
+\item \code{beta_postcAIC_CI_up}  - upper boundary of CI for fixed effects
+\item \code{beta_postcAIC_CI_do} - lower boundary of CI for fixed effects
+\item \code{mixed_postcAIC_CI_up} - upper boundary of CI for mixed effects
+\item \code{mixed_postcAIC_CI_do} - lower boundary of CI for mixed effects
+\item \code{beta_x_postcAIC_CI_up} - upper boundary of CI for linear combinations of fixed effects
+\item \code{beta_x_postcAIC_CI_do} - lower boundary of CI for linear combinations of fixed effects
 }
 }
 \description{

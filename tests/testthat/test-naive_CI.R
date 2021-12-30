@@ -25,7 +25,7 @@ X_full = cAIC_model_set$X_full
 X_cluster_full = cAIC_model_set$X_cluster_full
 
 sig_u_full = cAIC_model_set$sig_u_full
-sig_e_full = cAIC_model_set$sig_u_full
+sig_e_full = cAIC_model_set$sig_e_full
 
 beta_sel = cAIC_model_set$beta_sel
 mu_sel = cAIC_model_set$mu_sel
@@ -52,11 +52,14 @@ naive_CI_results  = naive_CI(
   C_cluster_sel,
   clusterID,
   indices_sel,
-  type_MSE_mixed = "regular",
+  type_MSE_mixed = "both",
   x_beta_lin_com
 )
 
+plot(naive_CI_results, type = "both")
+
 test_that("Output is correct", {
-  expect_match(class(naive_CI_results), "list")
+  expect_match(class(naive_CI_results), "naive_CI")
   expect_length(naive_CI_results, 8)
 })
+

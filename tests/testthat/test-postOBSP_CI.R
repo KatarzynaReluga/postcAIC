@@ -29,10 +29,12 @@ postOBSP_CI_results = postOBSP_CI(X, y,
                                   modelset  = "part_subset",
                                   intercept = FALSE,
                                   common = c(1:2),
-                                  boot = 1000)
+                                  boot = 200)
+
+plot(postOBSP_CI_results, order_estimates = sample(n, replace = T))
 
 test_that("Output is correct", {
-  expect_match(class(postOBSP_CI_results), "list")
+  expect_match(class(postOBSP_CI_results), "postOBSP_CI")
   expect_length(postOBSP_CI_results, 5)
   expect_match(class(postOBSP_CI_results$postOBSP_up), "numeric")
   expect_match(class(postOBSP_CI_results$postOBSP_do), "numeric")
