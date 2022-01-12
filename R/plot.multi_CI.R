@@ -299,7 +299,7 @@ plot.multi_CI <- function(x,
         axis.title = element_text(size = 13, face = "bold"),
         legend.text = element_text(size = 11, hjust = 0),
         legend.title = element_blank(),
-        legend.position = c(0.9, 0.9)
+        legend.position = c(0.85, 0.85)
       )
 
     plot_multi
