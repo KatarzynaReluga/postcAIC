@@ -1,16 +1,13 @@
 #
-# This file is for the low level reusable utility functions
+# This file contains low level reusable utility functions
 # that are not supposed to be visible to a user.
 #
 
-#
-# General helper utilities ----------------------------------------------------
-#
-
 
 #
-#validate matrix
+# Validate matrix
 #
+
 validate_matrix <- function(X, allow.na = FALSE) {
   valid.classes <- c("matrix", "data.frame")
 
@@ -31,7 +28,7 @@ validate_matrix <- function(X, allow.na = FALSE) {
 }
 
 #
-#validate observations
+# Validate observations
 #
 
 validate_observations <- function(V, X, cluster = FALSE) {

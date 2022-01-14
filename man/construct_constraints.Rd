@@ -9,11 +9,17 @@ construct_constraints(degcAIC_models, cAIC_min, var_cov_terms, p)
 \arguments{
 \item{degcAIC_models}{Penalty for all considered models}
 
-\item{cAIC_min}{Index of the selected model among models in the modelset}
+\item{cAIC_min}{Index of the selected model among models in the \code{modelset}}
 
-\item{var_cov_terms}{Variance and covariance terms in each model (appropriate elements from matrix Sigma)}
+\item{var_cov_terms}{Variance and covariance terms in each
+model (appropriate elements from matrix Sigma)}
 
 \item{p}{Number of all fixed parameters under consideration (intercept included)}
+}
+\value{
+\itemize{
+\item \code{list_constraints}  - list with constraints
+}
 }
 \description{
 Function \code{construct_constraints} provides a list of constraints

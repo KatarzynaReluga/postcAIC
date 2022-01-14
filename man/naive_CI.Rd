@@ -2,7 +2,7 @@
 % Please edit documentation in R/naive_CI.R
 \name{naive_CI}
 \alias{naive_CI}
-\title{Naive CI}
+\title{Naive confidence intervals (CI)}
 \usage{
 naive_CI(
   beta_sel,
@@ -16,7 +16,8 @@ naive_CI(
   clusterID,
   indices_sel = NULL,
   type_MSE_mixed = c("regular", "corrected", "both"),
-  x_beta_lin_com = NULL
+  x_beta_lin_com = NULL,
+  alpha = 0.05
 )
 }
 \arguments{
@@ -38,15 +39,17 @@ naive_CI(
 
 \item{clusterID}{Vector with cluster labels}
 
-\item{indices_sel}{Indices of the selected covaraites among full covariate set}
+\item{indices_sel}{Indices of the selected covariates among full covariate set}
 
 \item{type_MSE_mixed}{Type of CI (using first order, second order or both MSE estimators)}
 
 \item{x_beta_lin_com}{Vector or matrix to create linear combinations with
-fixed parameters. Default: 'x_beta_lin_com = NULL'}
+fixed parameters. Default: \code{x_beta_lin_com = NULL}}
+
+\item{alpha}{Construct 1 - alpha confidence intervals. Default: \code{alpha = 0.05}}
 }
 \value{
-List with parameters
+List with elements:
 \itemize{
 \item \code{beta_naive_CI_up}  - upper boundary of naive CI for fixed effects
 \item \code{beta_naive_CI_do} - lower boundary of naive CI for fixed effects
@@ -59,7 +62,15 @@ List with parameters
 }
 }
 \description{
-Function \code{naive_CI} provides naive CI for fixed and mixed effects after model selection
+Function \code{naive_CI} provides naive CI for fixed and mixed effects
+after cAIC model selection
+}
+\details{
+The output changes slightly depending on the value
+of the parameter \code{type}. If \code{type = "regular"},
+naive second-order correct CIs are not present.
+If \code{type = "corrected"}, naive first-order correct CIS are not present.
+If \code{type = "both"}, naive first- and second-order correct CIs are present.
 }
 \examples{
 n = 10

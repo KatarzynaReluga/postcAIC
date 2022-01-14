@@ -13,17 +13,30 @@ find_starting_points(
 )
 }
 \arguments{
-\item{n_starting_points}{Number of initial starting points for sampling from truncated distribution}
+\item{n_starting_points}{Number of initial starting points
+for sampling from a truncated normal distribution}
 
 \item{p}{Number of all fixed parameters under consideration (intercept included)}
 
-\item{n_models_to_compare}{Number of models in the model set to compare with}
+\item{n_models_to_compare}{Number of models in a model set to compare with
+(all models in the model set minus the selected model)}
 
-\item{list_constraints}{List wich describes the constraints imposed on the normal distribution}
+\item{list_constraints}{List which describes the constraints imposed on
+the normal distribution}
 
-\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution to sample}
+\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution
+to sample. Default: \code{scale_mvrnorm = 10}.}
+}
+\value{
+\code{starting_points} - n_starting_points different starting points
 }
 \description{
-Function \code{find_starting_points} finds starting points
-to sample from constrained normal distribution
+Function \code{find_starting_points} finds starting points which satisfies
+derived constrains. The starting points are then used to sample from
+a truncated normal distribution
+}
+\details{
+The running time of function \code{find_starting_points} is extremely
+sensitive to the choice of scaling factor \code{scale_mvrnorm}. We suggest
+choosing a larger/smaller value if the running time is longer than 1 minute.
 }

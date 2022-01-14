@@ -2,7 +2,7 @@
 % Please edit documentation in R/postOBSP_CI.R
 \name{postOBSP_CI}
 \alias{postOBSP_CI}
-\title{Post OBSP confidence intervals}
+\title{Post-OBSP confidence intervals (CI)}
 \usage{
 postOBSP_CI(
   X,
@@ -14,42 +14,48 @@ postOBSP_CI(
   modelset = "all_subsets",
   intercept = FALSE,
   common = NULL,
-  boot = 1000
+  boot = 1000,
+  alpha = 0.05
 )
 }
 \arguments{
-\item{X}{Matrix with fixed effects covariates}
+\item{X}{Matrix with covariates for fixed effects}
 
 \item{y}{Vector of responses}
 
 \item{clusterID}{Vector with cluster labels}
 
-\item{X_cluster_full}{Matrix with cluster level covariates for fixed effects of the full model}
+\item{X_cluster_full}{Matrix with cluster level covariates
+for fixed effects of the full model. Default: \code{NULL}}
 
-\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).}
+\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts)}
 
 \item{covariate_selection_matrix}{Matrix composed of zeros and ones
-indicating fixed models in each parameter.
-Default: intercept = TRUE}
+indicating fixed models in each parameter. Default: \code{NULL}}
 
 \item{modelset}{Type of model set:
 \itemize{
-\item \code{"all_subsets"} - all possible models for all parameters
-\item \code{"nested"} - a sequence of nested models for all parameters
-\item \code{"part_subset"} - all possible models for a subset of parameters
+\item \code{"all_subsets"} - all possible models using all covariates
+\item \code{"nested"} - a sequence of nested models using all covariates
+\item \code{"part_subset"} - all possible models using a subset of covariates
 }}
 
 \item{intercept}{Is column of ones, representing the intercept, present in X
-Default: intercept = TRUE}
+Default: \code{TRUE}}
 
-\item{common}{A vector indicating variables forced to be present in each model}
+\item{common}{A vector indicating variables forced to be
+present in each model. Default: \code{NULL}}
 
-\item{boot}{Number of boostrap samples}
+\item{boot}{Number of bootstrap samples.
+Default: \code{boot = 1000}}
+
+\item{alpha}{Construct 1 - alpha confidence intervals.
+Default: \code{alpha = 0.05}}
 }
 \value{
-List with parameters
+List with elements:
 \itemize{
-\item \code{OBSP_min}  - Index of selected model
+\item \code{OBSP_min}  - index of the selected model
 \item \code{OBSP_models} - cAIC for all considered parameters
 \item \code{postOBSP_up} - upper boundary of CI for mixed effects
 \item \code{postOBSP_do} - lower boundary of CI for mixed effects
@@ -57,12 +63,12 @@ List with parameters
 }
 }
 \description{
-Function \code{postOBSP_CI} provides post-OBSP confidence intervals for mixed parameters
+Function \code{postOBSP_CI} provides post-OBSP confidence intervals
+for mixed parameters
 }
 \details{
-\itemize{
-\item The parameter \code{boot} is needed for the calculation of the boostrap post-OBSP MSE of mixed effects
-}
+Parameter \code{boot} is needed for the calculation of the bootstrap
+post-OBSP MSE of mixed effects.
 }
 \examples{
 # Define basic parameters -------------------------------------------------
@@ -97,6 +103,8 @@ postOBSP_CI_results = postOBSP_CI(X, y,
                                   modelset  = "part_subset",
                                   intercept = FALSE,
                                   common = c(1:2),
-                                  boot = 500)
+                                  boot = 250)
+                                  
+plot(postOBSP_CI_results)                                   
 
 }

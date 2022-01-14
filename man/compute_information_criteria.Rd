@@ -16,13 +16,13 @@ compute_information_criteria(
 )
 }
 \arguments{
-\item{X}{Matrix with fixed effects covariates}
+\item{X}{Matrix with covariates for fixed effects}
 
 \item{y}{Vector of responses}
 
 \item{clusterID}{Vector with cluster labels}
 
-\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).}
+\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts)}
 
 \item{sig_u}{Variance parameter of random effects}
 
@@ -42,12 +42,20 @@ List with information criteria
 }
 }
 \description{
-Function \code{compute_infromation_criteria} provides mAIC, cAIC and mBIC for NERM
+Function \code{compute_infromation_criteria} provides
+mAIC, cAIC and mBIC for NERM
+}
+\details{
+Penalty term in cAIC depends on the model selected.
+Function \code{compute_information_criteria} is simplified
+because for now only NERM is supported.
 }
 \examples{
+
 n = 10
 m_i = 5
 m_total = 50
+
 clusterID = rep(1:n, m_i)
 p = 10
 beta = rep(2, p)
@@ -56,6 +64,7 @@ u_i_aug = rep(u_i, each = m_i)
 X = matrix(rnorm(m_total * p), m_total, p)
 y = X\%*\%beta + u_i_aug + rnorm(m_total, 0, 1)
 fit <- estimate_NERM(X, y, clusterID)
+
 IC <- compute_information_criteria(X = X, y = y,
                                    clusterID = clusterID,
                                    model = "NERM",

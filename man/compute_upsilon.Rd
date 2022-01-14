@@ -9,8 +9,19 @@ compute_upsilon(modelset_matrix)
 \arguments{
 \item{modelset_matrix}{Matrix composed of zeros and ones.}
 }
+\value{
+List with elements:
+\itemize{
+\item \code{upsilon} - extended selection matrix,
+see Claesknes, Reluga and Sperlich (2021)
+\item \code{cov_terms_index0} - list with indices of covariance terms
+in each model
+\item \code{index_full_model} - index of the full model in the model set
+}
+}
 \description{
-Function \code{compute_upsilon} computes extended selection matrix upsilon
+Function \code{compute_upsilon} computes extended selection
+matrix upsilon
 }
 \examples{
 modelset_matrix  = create_modelset("all_subsets", p = 5)

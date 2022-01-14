@@ -2,21 +2,22 @@
 % Please edit documentation in R/estimate_NERM.R
 \name{estimate_NERM}
 \alias{estimate_NERM}
-\title{Estimate NERM}
+\title{Estimate nested error regression model (NERM)}
 \usage{
-estimate_NERM(X = NULL, y = NULL, clusterID = NULL, X_cluster = NULL)
+estimate_NERM(X, y, clusterID, X_cluster = NULL)
 }
 \arguments{
-\item{X}{Matrix with fixed effects covariates}
+\item{X}{Matrix with covariates for fixed effects}
 
 \item{y}{Vector of responses}
 
 \item{clusterID}{Vector with cluster labels}
 
-\item{X_cluster}{Matrix with cluster level covariates for fixed effects}
+\item{X_cluster}{Matrix with cluster level covariates for fixed effects.
+Default: \code{NULL}.}
 }
 \value{
-List with parameters
+List with parameters:
 \itemize{
 \item \code{fit_model_fixed} - estimated model using fixed effects
 \item \code{fit_model_mixed} - estimated model using fixed and random effects
@@ -42,6 +43,8 @@ u_i = rnorm(n, 0, 2)
 u_i_aug = rep(u_i, each = m_i)
 X = matrix(rnorm(m_total * p), m_total, p)
 y = X\%*\%beta + u_i_aug + rnorm(m_total, 0, 1)
-fit_nerm <- estimate_NERM(X = X, y = y, clusterID = clusterID, X_cluster = NULL)
+fit_nerm <- estimate_NERM(X = X, y = y,
+                          clusterID = clusterID,
+                          X_cluster = NULL)
 
 }

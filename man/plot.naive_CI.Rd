@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.naive_CI.R
 \name{plot.naive_CI}
 \alias{plot.naive_CI}
-\title{Plots naive CI for mixed effects}
+\title{Plots naive confidence intervals (CI) for mixed effects}
 \usage{
 \method{plot}{naive_CI}(
   x,
@@ -17,7 +17,7 @@
 \arguments{
 \item{x}{An object of class \code{naive_CI}}
 
-\item{col}{Colour of CI}
+\item{col}{Colors of CI}
 
 \item{xlab}{Label for the x axis}
 
@@ -30,6 +30,18 @@ both MSE estimators)}
 
 \item{...}{Additional parameters}
 }
+\value{
+\itemize{
+\item Plot with confidence intervals for mixed effects.
+}
+}
 \description{
-Plots naive CI for mixed effects
+Plots naive confidence intervals (CI) for mixed effects
+}
+\details{
+The output changes slightly depending on the value
+of the parameter \code{type}. If \code{type = "regular"},
+naive second-order correct CIs are not present.
+If \code{type = "corrected"}, naive first-order correct CIS are not present.
+If \code{type = "both"}, naive first- and second-order correct CIs are present.
 }

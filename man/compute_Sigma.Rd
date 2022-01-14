@@ -14,10 +14,10 @@ compute_Sigma(X, invR, invV)
 \item{invV}{Inverse of covariance matrix V of response variable}
 }
 \value{
-A list with the following elements:
+List with elements:
 \itemize{
-\item Sigma - Matrix Sigma
-\item sqrt_invxVx - Square root of variance matrix of fixed effects
+\item \code{Sigma} - matrix Sigma
+\item \code{sqrt_invxVx} - square root of variance matrix of fixed effects
 }
 }
 \description{

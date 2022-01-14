@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{An object of class \code{postOBSP_CI}}
 
-\item{col}{Colour of CI}
+\item{col}{Colors of CI}
 
 \item{xlab}{Label for the x axis}
 
@@ -18,6 +18,11 @@
 \item{order_estimates}{Order of intervals in the plot}
 
 \item{...}{Additional parameters}
+}
+\value{
+\itemize{
+\item Plot with confidence intervals for mixed effects.
+}
 }
 \description{
 Plots post-OBSP CI for mixed effects

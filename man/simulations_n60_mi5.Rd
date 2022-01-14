@@ -15,7 +15,7 @@ and 0.25 elsewhere
 simulations_n60_mi5
 }
 \description{
-Fixed effect covariates with 30 cluster and 5 units in each
+Fixed effect covariates with 60 clusters and 5 units in each
 cluster to run simulations in Claeskens, Reluga and Sperlich (2021)
 }
 \keyword{datasets}

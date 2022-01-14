@@ -2,14 +2,14 @@
 % Please edit documentation in R/plot.postcAIC_CI.R
 \name{plot.postcAIC_CI}
 \alias{plot.postcAIC_CI}
-\title{Plots post-cAIC CI for mixed effects}
+\title{Plots post-cAIC confidence intervals (CI) for mixed effects}
 \usage{
 \method{plot}{postcAIC_CI}(x, col = NULL, xlab = NULL, ylab = NULL, order_estimates = NULL, ...)
 }
 \arguments{
 \item{x}{An object of class \code{postcAIC_CI}}
 
-\item{col}{Colour of CI}
+\item{col}{Colors of CI}
 
 \item{xlab}{Label for the x axis}
 
@@ -20,5 +20,5 @@
 \item{...}{Additional parameters}
 }
 \description{
-Plots post-cAIC CI for mixed effects
+Plots post-cAIC confidence intervals (CI) for mixed effects
 }

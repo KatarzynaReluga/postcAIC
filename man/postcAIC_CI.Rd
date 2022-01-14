@@ -23,7 +23,7 @@ postcAIC_CI(
 )
 }
 \arguments{
-\item{cAIC_min}{Index of the selected model among models in the modelset}
+\item{cAIC_min}{Index of the selected model among models in the model set}
 
 \item{degcAIC_models}{Penalty for all considered models}
 
@@ -35,7 +35,7 @@ postcAIC_CI(
 
 \item{sig_e_full}{Variance parameter of errors from the full model}
 
-\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).}
+\item{model}{Type of mixed model. For the moment, only NERM is supposted.}
 
 \item{clusterID}{Vector with cluster labels}
 
@@ -43,16 +43,18 @@ postcAIC_CI(
 
 \item{mu_sel}{Mixed effects of the selected model}
 
-\item{modelset_matrix}{Matrix composed of zeros and ones.}
+\item{modelset_matrix}{Matrix composed of zeros and ones}
 
 \item{x_beta_lin_com}{Vector or matrix to create linear combinations with
-fixed parameters. Default: 'x_beta_lin_com = NULL'}
+fixed parameters. Default: \code{x_beta_lin_com = NULL}}
 
-\item{n_starting_points}{Number of initial starting points for sampling from truncated distribution}
+\item{n_starting_points}{Number of initial starting points for sampling from
+a truncated normal distribution. Default: \code{n_starting_points = NULL}}
 
-\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution to sample}
+\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution
+to sample. Default: \code{scale_mvrnorm = 1}.}
 
-\item{alpha}{Construct 1 - alpha confidence intervals}
+\item{alpha}{Construct 1 - alpha confidence intervals. Default: \code{alpha = 0.05}}
 }
 \value{
 List with parameters
@@ -69,26 +71,51 @@ List with parameters
 Function \code{postcAIC_CI} provides post-cAIC confidence intervals for
 mixed and fixed effects under NERM
 }
+\details{
+The running time of function \code{postcAIC_CI} is extremely
+sensitive to the choice of scaling factor \code{scale_mvrnorm} which affects
+the speed of finding initial starting points in function \code{find_starting_points}.
+These starting points are necessary to sample from a constrained normal distribution
+from which we obtain critical values to construct confidence intervals. We suggest
+choosing a larger/smaller value if the running time of function \code{postcAIC_CI}
+is longer than 1 minute.
+}
 \examples{
-n = 10
+# Define basic parameters -------------------------------------------------
+n = 15
 m_i = 5
-m_total = 50
+m_total = n * m_i
 
-clusterID = rep(1:n, m_i)
-p = 10
-beta = rep(2, p)
-u_i = rnorm(n, 0, 2)
+beta = c(2.25, -1.1, 2.43, rep(0, 2))
+sig_e = 1
+sig_u = 1
+
+X = simulations_n15_mi5
+X_intercept = cbind(rep(1, m_total), X)
+
+clusterID = rep(1:n, each = m_i)
+
+# Create responses, errors and random effects  -------------------
+e_ij = rnorm(m_total, 0, sig_e)
+
+u_i = rnorm(n, 0, sig_u)
 u_i_aug = rep(u_i, each = m_i)
-X = matrix(rnorm(m_total * p), m_total, p)
-y = X\%*\%beta + u_i_aug + rnorm(m_total, 0, 1)
 
-cAIC_model_set =
-compute_cAIC_for_model_set(X, y, clusterID,
-                           model = "NERM",
-                           covariate_selection_matrix = NULL,
-                           modelset  = "part_subset",
-                           common = c(1:8),
-                           intercept = FALSE)
+y = X_intercept\%*\% beta + u_i_aug + e_ij
+
+# Compute cAIC for models from the set of models -----------------------
+
+
+cAIC_model_set = compute_cAIC_for_model_set(
+  X,
+  y,
+  clusterID,
+  model = "NERM",
+  covariate_selection_matrix = NULL,
+  modelset  = "part_subset",
+  common = c(1:3),
+  intercept = FALSE
+)
 
 cAIC_min = cAIC_model_set$cAIC_min
 degcAIC_models = cAIC_model_set$degcAIC_models
@@ -96,7 +123,7 @@ X_full = cAIC_model_set$X_full
 X_cluster_full = cAIC_model_set$X_cluster_full
 
 sig_u_full = cAIC_model_set$sig_u_full
-sig_e_full = cAIC_model_set$sig_u_full
+sig_e_full = cAIC_model_set$sig_e_full
 
 beta_sel = cAIC_model_set$beta_sel
 mu_sel = cAIC_model_set$mu_sel
@@ -104,21 +131,21 @@ mu_sel = cAIC_model_set$mu_sel
 modelset_matrix = cAIC_model_set$modelset_matrix
 x_beta_lin_com = cAIC_model_set$X_cluster_full
 
-postcAIC_CI_results = postcAIC_CI(cAIC_min,
-                                 degcAIC_models,
+# Post-cAIC CI for mixed and fixed parameters ------------------------------------
 
-                                 X_full,
-                                 X_cluster_full,
-                                 sig_u_full,
-                                 sig_e_full,
-                                 model = "NERM",
-                                 clusterID,
+postcAIC_CI_results = postcAIC_CI(
+  cAIC_min,
+  degcAIC_models,
+  X_full,
+  X_cluster_full,
+  sig_u_full,
+  sig_e_full,
+  model = "NERM",
+  clusterID,
+  beta_sel,
+  mu_sel,
+  modelset_matrix,
+  x_beta_lin_com = NULL )
 
-                                 beta_sel,
-                                 mu_sel,
-
-                                 modelset_matrix,
-                                 x_beta_lin_com = NULL)
-
-
+  plot(postcAIC_CI_results)
 }

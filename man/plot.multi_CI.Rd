@@ -17,18 +17,23 @@
 \arguments{
 \item{x}{An object of class \code{multi_CI}}
 
-\item{col}{Colour of CI}
+\item{col}{Colors of CI. Default: \code{NULL}.}
 
-\item{xlab}{Label for the x axis}
+\item{xlab}{Label for the x axis. Default: \code{NULL}.}
 
-\item{ylab}{Label for the y axis}
+\item{ylab}{Label for the y axis. Default: \code{NULL}.}
 
 \item{type}{Type of CI (using first order, second order or
 both MSE estimators)}
 
-\item{order_estimates}{Order of intervals in the plot}
+\item{order_estimates}{Order of intervals in the plot. Default: \code{NULL}.}
 
 \item{...}{Additional parameters}
+}
+\value{
+\itemize{
+\item Plot with confidence intervals for mixed effects.
+}
 }
 \description{
 Plots naive, post-cAIC and post-OBSP CI for mixed effects

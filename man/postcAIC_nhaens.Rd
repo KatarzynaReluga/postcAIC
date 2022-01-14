@@ -3,19 +3,19 @@
 \docType{data}
 \name{postcAIC_nhaens}
 \alias{postcAIC_nhaens}
-\title{Subset of NHAENS data from R pacakge NHAENS}
+\title{Subset of NHAENS data from R package NHAENS}
 \format{
-A data frame with 3009 rows and 7 variables:
+A data frame with 3009 rows and 9 columns:
 \describe{
-\item{\code{PhysActive}}{Participant does sport, fitness or recreational activities (Yes or No).}
-\item{\code{CurrentSmokingStatus}}{Derived variable indicating if person is smoking (1) or is not smoking}
-\item{\code{Diabetes}}{Is person suffering from diabetes?}
-\item{\code{SleepHrsNight}}{NUmber of sleeping hours}
+\item{\code{PhysActive}}{Does participant do sport, fitness or recreational activities? (Yes or No)}
+\item{\code{CurrentSmokingStatus}}{Derived variable indicating if person is smoking (1) or is not smoking (0)}
+\item{\code{Diabetes}}{Is person suffering from diabetes? (Yes or No)}
+\item{\code{SleepHrsNight}}{Number of sleeping hours (numeric value)}
 \item{\code{BPSys2}}{Systolic blood pressure (numeric value)}
-\item{\code{DirectChol}}{Level of direct cholesterol}
-\item{\code{Poverty}}{Numerci indicator with smaller values indicating more poverty}
-\item{\code{clusterID}}{Cluster indicator. Cross-section of varaibles age, biological sex and entinicity. }
-\item{\code{log_BMI}}{Natuarl logartihm of Body Mass Index (BMI)}
+\item{\code{DirectChol}}{Level of direct cholesterol (numeric value)}
+\item{\code{Poverty}}{Numeric indicator with smaller values indicating more poverty}
+\item{\code{clusterID}}{Cluster indicator. Cross-section of variables age, biological sex and entinicity}
+\item{\code{log_BMI}}{Natural logarithm of Body Mass Index (BMI)}
 }
 }
 \source{
@@ -25,7 +25,8 @@ A data frame with 3009 rows and 7 variables:
 postcAIC_nhaens
 }
 \description{
-Fixed effect covariates with 30 cluster and 5 units in each
-cluster to run simulations in Claeskens, Reluga and Sperlich (2021)
+Data set used in Claeskens, Reluga and Sperlich (2021). The code
+to create it can be found in \url{https://github.com/KatarzynaReluga/postcAIC/data_example}
+in directory
 }
 \keyword{datasets}

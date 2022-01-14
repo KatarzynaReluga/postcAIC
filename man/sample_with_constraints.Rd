@@ -16,26 +16,42 @@ sample_with_constraints(
 )
 }
 \arguments{
-\item{n_starting_points}{Number of initial starting points for sampling from truncated distribution}
+\item{n_starting_points}{Number of initial starting points
+for sampling from a truncated normal distribution}
 
 \item{p}{Number of all fixed parameters under consideration (intercept included)}
 
 \item{n}{Number of clusters (random effects)}
 
-\item{n_models_to_compare}{Number of models in the model set to compare with}
+\item{n_models_to_compare}{Number of models in a model set to compare with
+(all models in the model set minus the selected model)}
 
-\item{list_constraints}{List wich describes the constraints imposed on the normal distribution}
+\item{list_constraints}{List which describes the constraints imposed on
+the normal distribution}
 
-\item{n_samples}{Number of samples from constrained distribution}
+\item{n_samples}{Number of samples from a constrained distribution}
 
 \item{burn.in}{The number of burn-in iterations. The Markov chain
 is sampled n_samples + burn.in times, and the last n samples are returned.}
 
-\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution to sample}
+\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution
+to sample. Default: \code{scale_mvrnorm = 10}.}
+}
+\value{
+List with elements:
+\itemize{
+\item \code{sample_fixed_full} - n_samples from a multivariate constrained normal
+distribution to obtain critical values to construct confidence intervals
+for fixed effects
+\item \code{sample_random} - n_samples from a multivariate normal distribution
+to obtain critical values to construct confidence intervals for random effects
+\item \code{sample_mix_full} - n_samples of sample_fixed_full and sample_random stacked
+together
+}
 }
 \description{
-Function \code{sample_with_constraints} provides samples from constrained normal
-distribution. Constraints are consequences of model selection.
+Function \code{sample_with_constraints} provides samples from a constrained normal
+distribution. Constraints are imposed due to the data driven model selection.
 }
 \details{
 \itemize{

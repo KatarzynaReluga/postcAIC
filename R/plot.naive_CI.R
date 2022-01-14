@@ -1,13 +1,24 @@
-#' Plots naive CI for mixed effects
+#' Plots naive confidence intervals (CI) for mixed effects
 #'
 #' @param x An object of class \code{naive_CI}
-#' @param col Colour of CI
+#' @param col Colors of CI
 #' @param xlab Label for the x axis
 #' @param ylab Label for the y axis
 #' @param type Type of CI (using first order, second order or
 #' both MSE estimators)
 #' @param order_estimates Order of intervals in the plot
 #' @param ... Additional parameters
+#'
+#' @return 
+#' * Plot with confidence intervals for mixed effects. 
+#'
+#'
+#' @details
+#' The output changes slightly depending on the value
+#' of the parameter \code{type}. If \code{type = "regular"},
+#' naive second-order correct CIs are not present.
+#' If \code{type = "corrected"}, naive first-order correct CIS are not present.
+#' If \code{type = "both"}, naive first- and second-order correct CIs are present.
 #'
 #' @importFrom ggplot2 ggplot aes coord_cartesian
 #' geom_errorbar labs theme_bw scale_color_manual
@@ -26,20 +37,20 @@ plot.naive_CI <- function(x,
                           order_estimates = NULL,
                           ...) {
   type = match.arg(type)
-
+  
   if (is.null(xlab)) {
     xlab = "ID Cluster"
   }
-
+  
   if (is.null(ylab)) {
     ylab = "Mixed Effect"
   }
-
+  
   if (type == "regular") {
     if (is.null(col)) {
       col = "blue"
     }
-
+    
     x_plot = 1:length(x$mixed_naive_CI_up)
     if (is.null(order_estimates)) {
       order_estimates = x_plot
@@ -51,7 +62,7 @@ plot.naive_CI <- function(x,
                            mu_naive_do,
                            mu_naive_up,
                            x_plot)
-
+    
     plot_naive <-
       ggplot(data_plot, aes(x = x_plot, y = mu_hat_average)) +
       coord_cartesian(ylim = c(min(mu_naive_do),
@@ -79,31 +90,29 @@ plot.naive_CI <- function(x,
         legend.title = element_blank(),
         legend.position = c(0.9, 0.9)
       )
-
+    
     plot_naive
-
+    
   } else if (type == "corrected") {
     if (is.null(col)) {
       col = "blue"
     }
-
+    
     x_plot = 1:length(x$mixed_naive_CI_corrected_up)
     if (is.null(order_estimates)) {
       order_estimates = x_plot
     }
     mu_naive_do = (x$mixed_naive_CI_corrected_do)[order_estimates]
     mu_naive_up = (x$mixed_naive_CI_corrected_up)[order_estimates]
-
-    mu_hat_average = ((
-      mu_naive_up +
-        mu_naive_do
-    ) / 2)[order_estimates]
-
+    
+    mu_hat_average = ((mu_naive_up +
+                         mu_naive_do) / 2)[order_estimates]
+    
     data_plot = data.frame(mu_hat_average,
                            mu_naive_do,
                            mu_naive_up,
                            x_plot)
-
+    
     plot_naive <-
       ggplot(data_plot, aes(x = x_plot, y = mu_hat_average)) +
       coord_cartesian(ylim = c(min(mu_naive_do),
@@ -131,37 +140,35 @@ plot.naive_CI <- function(x,
         legend.title = element_blank(),
         legend.position = c(0.9, 0.9)
       )
-
+    
     plot_naive
-
+    
   } else {
     if (is.null(col)) {
       col = brewer.pal(3, name = "Dark2")
     }
-
+    
     x_plot = 1:length(x$mixed_naive_CI_corrected_up)
-
+    
     if (is.null(order_estimates)) {
       order_estimates = x_plot
     }
-
+    
     mu_naive_do = (x$mixed_naive_CI_do)[order_estimates]
     mu_naive_up = (x$mixed_naive_CI_up)[order_estimates]
     mu_naive2_do = (x$mixed_naive_CI_corrected_do)[order_estimates]
     mu_naive2_up = (x$mixed_naive_CI_corrected_up)[order_estimates]
-
-    mu_hat_average = ((
-      mu_naive_up +
-        mu_naive_do
-    ) / 2)[order_estimates]
-
+    
+    mu_hat_average = ((mu_naive_up +
+                         mu_naive_do) / 2)[order_estimates]
+    
     data_plot = data.frame(mu_hat_average,
                            mu_naive_do,
                            mu_naive_up,
                            mu_naive2_do,
                            mu_naive2_up,
                            x_plot)
-
+    
     plot_naive <-
       ggplot(data_plot, aes(x = x_plot, y = mu_hat_average)) +
       coord_cartesian(ylim = c(min(mu_naive2_do),
@@ -185,7 +192,7 @@ plot.naive_CI <- function(x,
         width = 0.75,
         lwd = 1.5
       ) +
-
+      
       labs(y = ylab, x = xlab) + theme_bw() +
       scale_color_manual(
         name = " ",
@@ -201,9 +208,9 @@ plot.naive_CI <- function(x,
         legend.title = element_blank(),
         legend.position = c(0.88, 0.88)
       )
-
+    
     plot_naive
   }
-
-
+  
+  
 }

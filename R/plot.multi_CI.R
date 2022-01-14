@@ -1,13 +1,16 @@
 #' Plots naive, post-cAIC and post-OBSP CI for mixed effects
 #'
 #' @param x An object of class \code{multi_CI}
-#' @param col Colour of CI
-#' @param xlab Label for the x axis
-#' @param ylab Label for the y axis
+#' @param col Colors of CI. Default: \code{NULL}.
+#' @param xlab Label for the x axis. Default: \code{NULL}.
+#' @param ylab Label for the y axis. Default: \code{NULL}.
 #' @param type Type of CI (using first order, second order or
 #' both MSE estimators)
-#' @param order_estimates Order of intervals in the plot
+#' @param order_estimates Order of intervals in the plot. Default: \code{NULL}.
 #' @param ... Additional parameters
+#'
+#' @return 
+#' * Plot with confidence intervals for mixed effects. 
 #'
 #' @importFrom ggplot2 ggplot aes coord_cartesian
 #' geom_errorbar labs theme_bw scale_color_manual
@@ -26,11 +29,11 @@ plot.multi_CI <- function(x,
                           order_estimates = NULL,
                           ...) {
   type = match.arg(type)
-
+  
   if (is.null(xlab)) {
     xlab = "ID Cluster"
   }
-
+  
   if (is.null(ylab)) {
     ylab = "Mixed Effect"
   }
@@ -38,19 +41,19 @@ plot.multi_CI <- function(x,
     if (is.null(col)) {
       col = brewer.pal(3, name = "Dark2")
     }
-
+    
     x_plot = 1:length(x$mixed_naive_CI_up)
     if (is.null(order_estimates)) {
       order_estimates = x_plot
     }
-
+    
     mu_naive_do = (x$mixed_naive_CI_do)[order_estimates]
     mu_naive_up = (x$mixed_naive_CI_up)[order_estimates]
     mu_postcAIC_do = (x$mixed_postcAIC_CI_do)[order_estimates]
     mu_postcAIC_up = (x$mixed_postcAIC_CI_up)[order_estimates]
     mu_postOBSP_do = (x$postOBSP_do)[order_estimates]
     mu_postOBSP_up = (x$postOBSP_up)[order_estimates]
-
+    
     mu_hat_average = ((mu_naive_up + mu_naive_do) / 2)[order_estimates]
     data_plot = data.frame(
       mu_hat_average,
@@ -62,7 +65,7 @@ plot.multi_CI <- function(x,
       mu_postcAIC_up,
       x_plot
     )
-
+    
     plot_multi <-
       ggplot(data_plot, aes(x = x_plot, y = mu_hat_average)) +
       coord_cartesian(ylim = c(min(mu_naive_do),
@@ -114,28 +117,28 @@ plot.multi_CI <- function(x,
         axis.title = element_text(size = 13, face = "bold"),
         legend.text = element_text(size = 11, hjust = 0),
         legend.title = element_blank(),
-        legend.position = c(0.9, 0.9)
+        legend.position = c(0.85, 0.85)
       )
-
+    
     plot_multi
-
+    
   } else if (type == "corrected") {
     if (is.null(col)) {
       col = brewer.pal(3, name = "Dark2")
     }
-
+    
     x_plot = 1:length(x$mixed_naive_CI_up)
     if (is.null(order_estimates)) {
       order_estimates = x_plot
     }
-
+    
     mu_naive_do = (x$mixed_naive_CI_corrected_do)[order_estimates]
     mu_naive_up = (x$mixed_naive_CI_corrected_up)[order_estimates]
     mu_postcAIC_do = (x$mixed_postcAIC_CI_do)[order_estimates]
     mu_postcAIC_up = (x$mixed_postcAIC_CI_up)[order_estimates]
     mu_postOBSP_do = (x$postOBSP_do)[order_estimates]
     mu_postOBSP_up = (x$postOBSP_up)[order_estimates]
-
+    
     mu_hat_average = ((mu_naive_up + mu_naive_do) / 2)[order_estimates]
     data_plot = data.frame(
       mu_hat_average,
@@ -147,7 +150,7 @@ plot.multi_CI <- function(x,
       mu_postcAIC_up,
       x_plot
     )
-
+    
     plot_multi <-
       ggplot(data_plot, aes(x = x_plot, y = mu_hat_average)) +
       coord_cartesian(ylim = c(min(mu_naive_do),
@@ -199,21 +202,21 @@ plot.multi_CI <- function(x,
         axis.title = element_text(size = 13, face = "bold"),
         legend.text = element_text(size = 11, hjust = 0),
         legend.title = element_blank(),
-        legend.position = c(0.9, 0.9)
+        legend.position = c(0.85, 0.85)
       )
-
+    
     plot_multi
-
+    
   } else {
     if (is.null(col)) {
       col = brewer.pal(4, name = "Dark2")
     }
-
+    
     x_plot = 1:length(x$mixed_naive_CI_up)
     if (is.null(order_estimates)) {
       order_estimates = x_plot
     }
-
+    
     mu_naive_do = (x$mixed_naive_CI_do)[order_estimates]
     mu_naive_up = (x$mixed_naive_CI_up)[order_estimates]
     mu_naive2_do = (x$mixed_naive_CI_corrected_do)[order_estimates]
@@ -222,7 +225,7 @@ plot.multi_CI <- function(x,
     mu_postcAIC_up = (x$mixed_postcAIC_CI_up)[order_estimates]
     mu_postOBSP_do = (x$postOBSP_do)[order_estimates]
     mu_postOBSP_up = (x$postOBSP_up)[order_estimates]
-
+    
     mu_hat_average = ((mu_naive_up + mu_naive_do) / 2)[order_estimates]
     data_plot = data.frame(
       mu_hat_average,
@@ -236,7 +239,7 @@ plot.multi_CI <- function(x,
       mu_postcAIC_up,
       x_plot
     )
-
+    
     plot_multi <-
       ggplot(data_plot, aes(x = x_plot, y = mu_hat_average)) +
       coord_cartesian(ylim = c(min(mu_naive_do),
@@ -301,9 +304,9 @@ plot.multi_CI <- function(x,
         legend.title = element_blank(),
         legend.position = c(0.85, 0.85)
       )
-
+    
     plot_multi
   }
-
-
+  
+  
 }

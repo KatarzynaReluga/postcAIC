@@ -17,13 +17,15 @@ compute_mse(C_cluster, X, sig_u, sig_e, clusterID, model = "NERM")
 
 \item{clusterID}{Vector with cluster labels}
 
-\item{model}{Model we want to fit. Only NERM supported for now.}
+\item{model}{Model we want to fit. Only NERM is supported for now.}
 }
 \value{
-mse MSE of mixed effects
+\itemize{
+\item \code{mse}  - MSE of mixed effects
+}
 }
 \description{
-Function \code{compute_mse} provides first order correct MSE for mixed effects
+Function \code{compute_mse} provides first-order correct MSE for mixed effects
 }
 \examples{
 n = 10
@@ -37,8 +39,12 @@ u_i = rnorm(n, 0, 2)
 u_i_aug = rep(u_i, each = m_i)
 X = matrix(rnorm(m_total * p), m_total, p)
 y = X\%*\%beta + u_i_aug + rnorm(m_total, 0, 1)
-fit_nerm <- estimate_NERM(X = X, y = y, clusterID = clusterID, X_cluster = NULL)
+fit_nerm <- estimate_NERM(X = X, y = y,
+                          clusterID = clusterID,
+                          X_cluster = NULL)
+
 C_cluster = cbind(X[1:10, ], diag(n))
+
 mse_first = compute_mse(C_cluster, X,
                         sig_u = fit_nerm$sig_u,
                         sig_e = fit_nerm$sig_e,

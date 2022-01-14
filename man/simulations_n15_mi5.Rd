@@ -9,13 +9,13 @@ A data matrix with 75 rows and 4 variables generated
 from the multivariate normal distribution
 \code{X = rmvn(n = 15 * 5, mu = rep(0, 4), V = Omega)}
 where \code{Omega} is a variance covariance matrix with 1 on the diagonal
-and 0.25 elsewhere
+and 0.25 elsewhere.
 }
 \usage{
 simulations_n15_mi5
 }
 \description{
-Fixed effect covariates with 15 cluster and 5 units in each
+Fixed effect covariates with 15 clusters and 5 units in each
 cluster to run simulations in Claeskens, Reluga and Sperlich (2021)
 }
 \keyword{datasets}
