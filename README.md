@@ -30,13 +30,14 @@ You can install the most recent version of postcAIC from
 ``` r
 # install.packages("devtools")
 
-# remotes::install_version("tmg", version = "0.3", repos = "http://cran.r-project.org")
+remotes::install_version("tmg", version = "0.3", repos = "http://cran.r-project.org")
 # devtools::install_github("KatarzynaReluga/postcAIC")
 
-#devtools::install_github("KatarzynaReluga/postcAIC",   
-#                         ref="main",
-#                         auth_token =
-#          "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")
+devtools::install_github("KatarzynaReluga/postcAIC",   
+                         ref="main",
+                         auth_token =
+          "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")
+
 ```
 
 ## Example
@@ -176,8 +177,8 @@ functions in package **postcAIC**.
 ## Data illustration from CRS-2021
 
 Claeskens, Reluga, and Sperlich (2021) illustrated the performance of
-post-cAIC CI for mixed and fixed effects using a subset
-of**[NHAENS](https://cran.r-project.org/web/packages/NHANES/index.html)**
+post-cAIC CI for mixed and fixed effects using a subset of
+**[NHAENS](https://cran.r-project.org/web/packages/NHANES/index.html)**
 R-package. The
 [subset](https://github.com/KatarzynaReluga/postcAIC/tree/main/data) and
 the
