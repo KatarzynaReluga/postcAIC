@@ -73,13 +73,9 @@
 "simulations_n30_mi20"
 
 
-#' Subset of NHAENS data from R package NHAENS
+#' Subset of data from R package NHAENS
 #'
 #' Data set used in Claeskens, Reluga and Sperlich (2021). 
-#' The data set can be found in 
-#' \url{https://github.com/KatarzynaReluga/postcAIC/data}
-#' The code to create it can be found in 
-#' \url{https://github.com/KatarzynaReluga/postcAIC/data_raw}
 #'
 #' @format A data frame with 3009 rows and 9 columns:
 #' \describe{
@@ -94,5 +90,7 @@
 #' \item{\code{log_BMI}}{Natural logarithm of Body Mass Index (BMI)}
 #' }
 #'
-#' @source \url{https://cran.r-project.org/web/packages/NHANES/}
+#' @source 
+#' \url{https://cran.r-project.org/web/packages/NHANES/}
+#' \url{https://github.com/KatarzynaReluga/postcAIC}.
 "postcAIC_nhaens"

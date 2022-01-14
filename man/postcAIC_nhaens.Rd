@@ -3,7 +3,7 @@
 \docType{data}
 \name{postcAIC_nhaens}
 \alias{postcAIC_nhaens}
-\title{Subset of NHAENS data from R package NHAENS}
+\title{Subset of data from R package NHAENS}
 \format{
 A data frame with 3009 rows and 9 columns:
 \describe{
@@ -20,13 +20,12 @@ A data frame with 3009 rows and 9 columns:
 }
 \source{
 \url{https://cran.r-project.org/web/packages/NHANES/}
+\url{https://github.com/KatarzynaReluga/postcAIC}.
 }
 \usage{
 postcAIC_nhaens
 }
 \description{
-Data set used in Claeskens, Reluga and Sperlich (2021). The code
-to create it can be found in \url{https://github.com/KatarzynaReluga/postcAIC/data_example}
-in directory
+Data set used in Claeskens, Reluga and Sperlich (2021).
 }
 \keyword{datasets}

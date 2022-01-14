@@ -4,6 +4,7 @@
 # postcAIC
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/KatarzynaReluga/postcAIC/workflows/R-CMD-check/badge.svg)](https://github.com/KatarzynaReluga/postcAIC/actions)
 <!-- badges: end -->
 
 ## Overview
