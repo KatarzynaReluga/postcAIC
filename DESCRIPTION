@@ -30,3 +30,5 @@ Config/testthat/edition: 3
 RoxygenNote: 7.1.2
 Depends: 
     R (>= 2.10)
+URL: https://github.com/KatarzynaReluga/postcAIC
+BugReports: https://github.com/KatarzynaReluga/postcAIC/issues
