@@ -26,6 +26,11 @@ You can install the most recent version of postcAIC from
 install_version("tmg", version = "0.3", repos = "http://cran.r-project.org")
 devtools::install_github("KatarzynaReluga/postcAIC")
 
+#devtools::install_github("KatarzynaReluga/postcAIC",   
+#                         ref="main"
+#                         auth_token = "tokenstring")
+#
+
 library(postcAIC)
 ```
 

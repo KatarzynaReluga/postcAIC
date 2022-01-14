@@ -3,7 +3,7 @@ library(dplyr)
 # Define outcome, covariates (features) and cluster variable ---------------
 y = postcAIC_nhaens$log_BMI
 
-X = data.frame(select(postcAIC_nhaens, -c("clusterID", "log_BMI")))
+X = data.frame(select(postcAIC_nhaens,-c("clusterID", "log_BMI")))
 
 clusterID = postcAIC_nhaens$clusterID
 # Compute cAIC for models from the set of models -----------------------
@@ -36,22 +36,24 @@ x_beta_lin_com = cAIC_model_set$X_cluster_full
 postcAIC_CI_results = postcAIC_CI(
   cAIC_min,
   degcAIC_models,
-
+  
   X_full,
   X_cluster_full,
   sig_u_full,
   sig_e_full,
   model = "NERM",
   clusterID,
-
+  
   beta_sel,
   mu_sel,
-
+  
   modelset_matrix,
   x_beta_lin_com = NULL,
   scale_mvrnorm = 2,
   n_starting_points = 10
 )
+
+plot(postcAIC_CI_results, y_axis_lim = c(3.10, 3.65))
 # Naive CI for mixed and fixed parameters -------------------------------------
 sig_u_sel = cAIC_model_set$sig_u_sel
 sig_e_sel = cAIC_model_set$sig_e_sel
@@ -68,7 +70,7 @@ naive_CI_results  = naive_CI(
   sig_e_sel,
   sig_u_full,
   sig_e_full,
-
+  
   X_full,
   C_cluster_sel,
   clusterID,
@@ -76,7 +78,14 @@ naive_CI_results  = naive_CI(
   type_MSE_mixed = "corrected",
   x_beta_lin_com
 )
+plot(naive_CI_results, type = "corrected", y_axis_lim = c(3.10, 3.65))
 # Post-OBSP CI for mixed parameters -------------------------------------
+
+## The running time of postOBSP_CI is long here due to the bootstrap
+## estimation of MSE which involves inverting big matrices 
+## boot = 1000 number of times. OBSP is a computer intensive 
+## method in this case.  
+
 postOBSP_CI_results = postOBSP_CI(
   X,
   y,
@@ -90,3 +99,9 @@ postOBSP_CI_results = postOBSP_CI(
   boot = 1000
 )
 
+results_to_plot = format_results(x = naive_CI_results,
+                                 y = postcAIC_CI_results,
+                                 z = postOBSP_CI_results,
+                                 type = "corrected")
+
+plot(results_to_plot, type = "corrected", y_axis_lim = c(3.10, 3.65))

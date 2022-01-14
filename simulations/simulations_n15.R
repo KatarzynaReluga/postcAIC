@@ -131,4 +131,4 @@ results_to_plot = format_results(x = naive_CI_results,
                                  type = "both")
 
 plot(results_to_plot, type = "both")
-class(results_to_plot)
+

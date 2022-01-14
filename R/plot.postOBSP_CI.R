@@ -5,6 +5,9 @@
 #' @param xlab Label for the x axis
 #' @param ylab Label for the y axis
 #' @param order_estimates Order of intervals in the plot
+#' @param legend_position Legend position. Default: \code{NULL}
+#' @param y_axis_lim Limits of the y axis. Default: \code{NULL}
+
 #' @param ... Additional parameters
 #'
 #' @return
@@ -24,6 +27,8 @@ plot.postOBSP_CI <- function(x,
                              xlab = NULL,
                              ylab = NULL,
                              order_estimates = NULL,
+                             legend_position = NULL,
+                             y_axis_lim = NULL,
                              ...) {
   if (is.null(xlab)) {
     xlab = "ID Cluster"
@@ -32,6 +37,10 @@ plot.postOBSP_CI <- function(x,
   if (is.null(ylab)) {
     ylab = "Mixed Effect"
   }
+  
+  if (is.null(legend_position)) {
+    legend_position = c(0.88, 0.88)
+  }  
   
   if (is.null(col)) {
     col = "blue"
@@ -45,6 +54,11 @@ plot.postOBSP_CI <- function(x,
   mu_postOBSP_up = (x$postOBSP_up)[order_estimates]
   mu_hat_average = ((mu_postOBSP_up + mu_postOBSP_do) / 2)[order_estimates]
   
+  if (is.null(y_axis_lim)) {
+    y_axis_lim = c(min(mu_postOBSP_do),
+                   1.5 * max(mu_postOBSP_up))
+  } 
+  
   
   data_plot = data.frame(mu_hat_average,
                          mu_postOBSP_do,
@@ -53,8 +67,7 @@ plot.postOBSP_CI <- function(x,
   
   plot_postOBSP <-
     ggplot(data_plot, aes(x = x_plot, y = mu_hat_average)) +
-    coord_cartesian(ylim = c(min(mu_postOBSP_do),
-                             1.5 * max(mu_postOBSP_up)),
+    coord_cartesian(ylim = y_axis_lim,
                     xlim = c(min(x_plot), max(x_plot))) +
     geom_errorbar(
       aes(
@@ -76,7 +89,7 @@ plot.postOBSP_CI <- function(x,
       axis.title = element_text(size = 13, face = "bold"),
       legend.text = element_text(size = 11, hjust = 0),
       legend.title = element_blank(),
-      legend.position = c(0.85, 0.9)
+      legend.position = legend_position
     )
   
   plot_postOBSP

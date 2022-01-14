@@ -4,7 +4,16 @@
 \alias{plot.postcAIC_CI}
 \title{Plots post-cAIC confidence intervals (CI) for mixed effects}
 \usage{
-\method{plot}{postcAIC_CI}(x, col = NULL, xlab = NULL, ylab = NULL, order_estimates = NULL, ...)
+\method{plot}{postcAIC_CI}(
+  x,
+  col = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  order_estimates = NULL,
+  legend_position = NULL,
+  y_axis_lim = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{postcAIC_CI}}
@@ -16,6 +25,10 @@
 \item{ylab}{Label for the y axis}
 
 \item{order_estimates}{Order of intervals in the plot}
+
+\item{legend_position}{Legend position. Default: \code{NULL}}
+
+\item{y_axis_lim}{Limits of the y axis. Default: \code{NULL}}
 
 \item{...}{Additional parameters}
 }

@@ -1,12 +1,15 @@
 #' Plots naive confidence intervals (CI) for mixed effects
 #'
 #' @param x An object of class \code{naive_CI}
-#' @param col Colors of CI
-#' @param xlab Label for the x axis
-#' @param ylab Label for the y axis
+#' @param col Colors of CI. Default: \code{NULL}
+#' @param xlab Label for the x axis. Default: \code{NULL}
+#' @param ylab Label for the y axis. Default: \code{NULL}
 #' @param type Type of CI (using first order, second order or
 #' both MSE estimators)
-#' @param order_estimates Order of intervals in the plot
+#' @param order_estimates Order of intervals in the plot.
+#' Default: \code{NULL}
+#' @param legend_position Legend position. Default: \code{NULL}
+#' @param y_axis_lim Limits of the y axis. Default: \code{NULL}
 #' @param ... Additional parameters
 #'
 #' @return 
@@ -35,6 +38,8 @@ plot.naive_CI <- function(x,
                           ylab = NULL,
                           type = c("regular", "corrected", "both"),
                           order_estimates = NULL,
+                          legend_position = NULL,
+                          y_axis_lim = NULL, 
                           ...) {
   type = match.arg(type)
   
@@ -45,6 +50,11 @@ plot.naive_CI <- function(x,
   if (is.null(ylab)) {
     ylab = "Mixed Effect"
   }
+
+  if (is.null(legend_position)) {
+    legend_position = c(0.88, 0.88)
+  }  
+  
   
   if (type == "regular") {
     if (is.null(col)) {
@@ -57,6 +67,12 @@ plot.naive_CI <- function(x,
     }
     mu_naive_do = (x$mixed_naive_CI_do)[order_estimates]
     mu_naive_up = (x$mixed_naive_CI_up)[order_estimates]
+    
+    if (is.null(y_axis_lim)) {
+      y_axis_lim = c(min(mu_naive_do),
+                     1.5 * max(mu_naive_up))
+    } 
+    
     mu_hat_average = ((mu_naive_up + mu_naive_do) / 2)[order_estimates]
     data_plot = data.frame(mu_hat_average,
                            mu_naive_do,
@@ -65,8 +81,7 @@ plot.naive_CI <- function(x,
     
     plot_naive <-
       ggplot(data_plot, aes(x = x_plot, y = mu_hat_average)) +
-      coord_cartesian(ylim = c(min(mu_naive_do),
-                               1.5 * max(mu_naive_up)),
+      coord_cartesian(ylim = y_axis_lim,
                       xlim = c(min(x_plot), max(x_plot))) +
       geom_errorbar(
         aes(
@@ -88,7 +103,7 @@ plot.naive_CI <- function(x,
         axis.title = element_text(size = 13, face = "bold"),
         legend.text = element_text(size = 11, hjust = 0),
         legend.title = element_blank(),
-        legend.position = c(0.9, 0.9)
+        legend.position = legend_position
       )
     
     plot_naive
@@ -105,6 +120,11 @@ plot.naive_CI <- function(x,
     mu_naive_do = (x$mixed_naive_CI_corrected_do)[order_estimates]
     mu_naive_up = (x$mixed_naive_CI_corrected_up)[order_estimates]
     
+    if (is.null(y_axis_lim)) {
+      y_axis_lim = c(min(mu_naive_do),
+                     1.5 * max(mu_naive_up))
+    } 
+    
     mu_hat_average = ((mu_naive_up +
                          mu_naive_do) / 2)[order_estimates]
     
@@ -115,8 +135,7 @@ plot.naive_CI <- function(x,
     
     plot_naive <-
       ggplot(data_plot, aes(x = x_plot, y = mu_hat_average)) +
-      coord_cartesian(ylim = c(min(mu_naive_do),
-                               1.5 * max(mu_naive_up)),
+      coord_cartesian(ylim = y_axis_lim,
                       xlim = c(min(x_plot), max(x_plot))) +
       geom_errorbar(
         aes(
@@ -138,7 +157,7 @@ plot.naive_CI <- function(x,
         axis.title = element_text(size = 13, face = "bold"),
         legend.text = element_text(size = 11, hjust = 0),
         legend.title = element_blank(),
-        legend.position = c(0.9, 0.9)
+        legend.position = legend_position
       )
     
     plot_naive
@@ -159,6 +178,11 @@ plot.naive_CI <- function(x,
     mu_naive2_do = (x$mixed_naive_CI_corrected_do)[order_estimates]
     mu_naive2_up = (x$mixed_naive_CI_corrected_up)[order_estimates]
     
+    if (is.null(y_axis_lim)) {
+      y_axis_lim = c(min(mu_naive_do),
+                     1.6 * max(mu_naive_up))
+    } 
+    
     mu_hat_average = ((mu_naive_up +
                          mu_naive_do) / 2)[order_estimates]
     
@@ -171,8 +195,7 @@ plot.naive_CI <- function(x,
     
     plot_naive <-
       ggplot(data_plot, aes(x = x_plot, y = mu_hat_average)) +
-      coord_cartesian(ylim = c(min(mu_naive2_do),
-                               1.75 * max(mu_naive2_up)),
+      coord_cartesian(ylim = y_axis_lim,
                       xlim = c(min(x_plot), max(x_plot))) +
       geom_errorbar(
         aes(
@@ -206,7 +229,7 @@ plot.naive_CI <- function(x,
         axis.title = element_text(size = 13, face = "bold"),
         legend.text = element_text(size = 11, hjust = 0),
         legend.title = element_blank(),
-        legend.position = c(0.88, 0.88)
+        legend.position = legend_position
       )
     
     plot_naive

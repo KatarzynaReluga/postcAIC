@@ -11,22 +11,29 @@
   ylab = NULL,
   type = c("regular", "corrected", "both"),
   order_estimates = NULL,
+  legend_position = NULL,
+  y_axis_lim = NULL,
   ...
 )
 }
 \arguments{
 \item{x}{An object of class \code{naive_CI}}
 
-\item{col}{Colors of CI}
+\item{col}{Colors of CI. Default: \code{NULL}}
 
-\item{xlab}{Label for the x axis}
+\item{xlab}{Label for the x axis. Default: \code{NULL}}
 
-\item{ylab}{Label for the y axis}
+\item{ylab}{Label for the y axis. Default: \code{NULL}}
 
 \item{type}{Type of CI (using first order, second order or
 both MSE estimators)}
 
-\item{order_estimates}{Order of intervals in the plot}
+\item{order_estimates}{Order of intervals in the plot.
+Default: \code{NULL}}
+
+\item{legend_position}{Legend position. Default: \code{NULL}}
+
+\item{y_axis_lim}{Limits of the y axis. Default: \code{NULL}}
 
 \item{...}{Additional parameters}
 }

@@ -129,3 +129,10 @@ postOBSP_CI_results = postOBSP_CI(
   boot = 1000
 )
 
+results_to_plot = format_results(x = naive_CI_results,
+                                 y = postcAIC_CI_results,
+                                 z = postOBSP_CI_results,
+                                 type = "corrected")
+
+plot(results_to_plot, type = "corrected")
+
