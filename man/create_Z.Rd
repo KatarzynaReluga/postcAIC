@@ -7,32 +7,32 @@
 create_Z(
   model = c("NERM", "FHM", "RIRS"),
   clusterID,
-  nrandom = 2,
+  nrandom = 1,
   X = NULL,
   intercept = TRUE
 )
 }
 \arguments{
-\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).}
+\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts)}
 
 \item{clusterID}{Vector with cluster labels}
 
-\item{nrandom}{Which slopes should be random? Default: 2}
+\item{nrandom}{Which slopes should be random? Default: \code{1}}
 
-\item{X}{Matrix with fixed effects covariates}
+\item{X}{Matrix with covariates for fixed effects. Default: \code{NULL}}
 
 \item{intercept}{Is column of ones, representing the intercept, present in X
-Default: intercept = TRUE}
+Default: \code{TRUE}}
 }
 \value{
-Z matrix of covariates for random effects
+\code{Z}  - matrix of covariates for random effects
 }
 \description{
 Function \code{create_Z} creates matrix Z which contains
 covariates of random effects
 }
 \details{
-Matrix X is only needed if we select an option model = "RIRS"
+Matrix X is only needed if we select an option \code{model = "RIRS"}.
 }
 \examples{
 
@@ -49,6 +49,7 @@ clusterID = rep(1:5, 10)
 n = 50
 p = 10
 X = matrix(rnorm(n * p), n, p)
-Z = create_Z("RIRS", clusterID, nrandom = 4, X, intercept = FALSE)
+Z = create_Z("RIRS", clusterID, nrandom = 4,
+             X, intercept = FALSE)
 
 }

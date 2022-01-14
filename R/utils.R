@@ -1,16 +1,13 @@
 #
-# This file is for the low level reusable utility functions
+# This file contains low level reusable utility functions
 # that are not supposed to be visible to a user.
 #
 
-#
-# General helper utilities ----------------------------------------------------
-#
-
 
 #
-#validate matrix
+# Validate matrix
 #
+
 validate_matrix <- function(X, allow.na = FALSE) {
   valid.classes <- c("matrix", "data.frame")
 
@@ -31,7 +28,7 @@ validate_matrix <- function(X, allow.na = FALSE) {
 }
 
 #
-#validate observations
+# Validate observations
 #
 
 validate_observations <- function(V, X, cluster = FALSE) {
@@ -96,6 +93,7 @@ format_data_matrix <- function(data, select_row = 1:nrow(data),
 #
 
 combinations <-  function(n){
+  stopifnot("Length of 'common' cannot be larger than p " = n > 0)
   comb = NULL
   for(i in 1:n) comb = rbind(cbind(1,comb),cbind(0,comb))
   return(comb)
@@ -109,3 +107,22 @@ ind_nu = function(x, vec0) {
   vec0[x] <- 1
   vec0
 }
+
+#
+# Elements to create matrix Z
+#
+
+cluster_matrix  <-  function(params = list(id_cluster = 1, n_units = 5),
+           n_cluster, nrandom) {
+    id_cluster = params$id_cluster
+    n_units = params$n_units
+
+    stopifnot("value of 'id_cluster' must be <= n_cluster" = id_cluster <= n_cluster)
+    mat_i <- matrix(0, nrow = n_units,
+                    ncol = n_cluster * nrandom)
+    down <- (id_cluster - 1) * nrandom + 1
+    up <- (id_cluster - 1) * nrandom + nrandom
+    mat_i[, c(down : up)] <- 1
+    mat_i
+  }
+

@@ -16,7 +16,18 @@ vectorize_Sigma(Sigma, index_cov_terms, p, index_full_model)
 
 \item{index_full_model}{Index of a full model in the model set}
 }
+\value{
+List with elements:
+\itemize{
+\item \code{Sigma_ordered} - ordered elements of Sigma
+\item \code{Sigma_order_index} - indices of ordered elements of Sigma
+}
+}
 \description{
 Function \code{vectorise_Sigma} vectorizes and orders
 unique elements of variance matrix Sigma
 }
+\details{
+Matrix \code{Sigma} is defined in Claeskens, Reluga, and Sperlich (2021)
+}
+\keyword{internal}

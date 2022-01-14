@@ -2,13 +2,13 @@
 % Please edit documentation in R/compute_cAIC_for_model_set.R
 \name{compute_cAIC_for_model_set}
 \alias{compute_cAIC_for_model_set}
-\title{Construct post-cAIC confidence intervals}
+\title{Compute cAIC for different models}
 \usage{
 compute_cAIC_for_model_set(
   X,
   y,
   clusterID,
-  X_cluster = NULL,
+  X_cluster_full = NULL,
   model = "NERM",
   covariate_selection_matrix = NULL,
   modelset = "all_subsets",
@@ -17,64 +17,79 @@ compute_cAIC_for_model_set(
 )
 }
 \arguments{
-\item{X}{Matrix with fixed effects covariates}
+\item{X}{Matrix with covariates for fixed effects}
 
 \item{y}{Vector of responses}
 
 \item{clusterID}{Vector with cluster labels}
 
-\item{X_cluster}{Matrix with cluster level covariates for fixed effects}
+\item{X_cluster_full}{Matrix with cluster level covariates
+for fixed effects of the full model. Default: \code{NULL}}
 
-\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts).}
+\item{model}{Type of mixed model: NERM, FHM, RIRS (random slopes and random intercepts)}
 
-\item{covariate_selection_matrix}{Matrix composed of zeros and ones indicating fixed models in each parameter.
-Default: intercept = TRUE}
+\item{covariate_selection_matrix}{Matrix composed of zeros and ones
+indicating fixed models in each parameter. Default: \code{NULL}}
 
 \item{modelset}{Type of model set:
 \itemize{
-\item \code{"all_subsets"} - all possible models for all parameters
-\item \code{"nested"} - a sequence of nested models for all parameters
-\item \code{"part_subset"} - all possible models for a subset of parameters
+\item \code{"all_subsets"} - all possible models using all covariates
+\item \code{"nested"} - a sequence of nested models using all covariates
+\item \code{"part_subset"} - all possible models using a subset of covariates
 }}
 
 \item{intercept}{Is column of ones, representing the intercept, present in X
-Default: intercept = TRUE}
+Default: \code{TRUE}}
 
-\item{common}{A vector indicating variables forced to be present in each model}
+\item{common}{A vector indicating variables forced to be
+present in each model. Default: \code{NULL}}
 }
 \value{
 List with parameters
 \itemize{
-\item \code{cAIC_min}  - Index of selected model
+\item \code{cAIC_min}  - index of selected model
 \item \code{cAIC_models} - cAIC for all considered parameters
-\item \code{degcAIC_models} - Penalty for all considered models
-\item \code{beta_sel} - fixed effects (regression parameters) of the selected model
+\item \code{degcAIC_models} - penalty for all considered models
+\item \code{beta_sel} - fixed effects of the selected model
 \item \code{mu_sel} - mixed effects of the selected model
-\item \code{V_sel} - covariance matrix of response of the selected model
-\item \code{G_sel} - covariance matrix of random effects of the selected model
-\item \code{R_sel} - covariance matrix of response of the selected model
-\item \code{X_sel} - matrix with fixed effects covariates of the selected model
-\item \code{indices_sel} - indices of the selected covaraites among full covariate set
+\item \code{indices_sel} - indices of the selected covariates among full covariate set
 \item \code{sig_u_sel} - variance parameter of random effects of the selected model
 \item \code{sig_e_sel} - variance parameter of errors of the selected model
-\item \code{V_sel} -  covariance matrix of response of the selected model
-\item \code{invV_full} - inverse of covariance matrix of response of the full model
-\item \code{G_full} - covariance matrix of random effects of the selected model
-\item \code{R_full} - covariance matrix of response of the full model
 \item \code{X_full} - matrix with fixed effects covariates of the full model
 \item \code{X_cluster_full} - matrix with cluster level covariates for fixed effects of the full model
-\item \code{Z} - matrix of covariates for random effects
 \item \code{modelset_matrix} -  matrix composed of zeros and ones. Ones correspond to
-parameters in a model which is represented in nth row.
+covariate in a model which is represented in nth row.
 }
 }
 \description{
-Function \code{postcAIC} provides post-cAIC confidence intervals
-for fixed and mixed parameters under LMM
+Function \code{compute_cAIC_for_model_set} computes
+cAIC for different models in the model set
 }
 \details{
 \itemize{
-\item \code{model}  - for the moments, only NERM is supported.
-\item \code{covariate_selection_matrix} - necessary only if modelset = NULL
+\item \code{model}  - for the moment, only NERM is supported
+\item \code{covariate_selection_matrix} - necessary only if \code{modelset = NULL}
 }
+}
+\examples{
+n = 10
+m_i = 5
+m_total = 50
+
+clusterID = rep(1:n, m_i)
+p = 10
+beta = rep(2, p)
+u_i = rnorm(n, 0, 2)
+u_i_aug = rep(u_i, each = m_i)
+X = matrix(rnorm(m_total * p), m_total, p)
+y = X\%*\%beta + u_i_aug + rnorm(m_total, 0, 1)
+
+cAIC_model_set =
+compute_cAIC_for_model_set(X, y, clusterID,
+                           model = "NERM",
+                           covariate_selection_matrix = NULL,
+                           modelset  = "part_subset",
+                           common = c(1:8),
+                           intercept = FALSE)
+
 }

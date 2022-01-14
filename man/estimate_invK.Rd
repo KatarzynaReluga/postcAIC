@@ -4,20 +4,44 @@
 \alias{estimate_invK}
 \title{Estimate inverse of matrix K}
 \usage{
-estimate_invK(X, Z, G, R)
+estimate_invK(X, sig_u, sig_e, model = "NERM", clusterID)
 }
 \arguments{
 \item{X}{Matrix with covariates for fixed effects}
 
-\item{Z}{Matrix with covariates for random effects covariates}
+\item{sig_u}{Variance parameter of random effects}
 
-\item{G}{Covariance matrix of random effects}
+\item{sig_e}{Variance parameter of errors}
 
-\item{R}{Covariance matrix of errrors}
+\item{model}{Model we want to fit. Only NERM is supported for now.}
+
+\item{clusterID}{Vector with cluster labels}
 }
 \value{
-Inverse of Matrix K
+\code{K_inv}  - inverse of Matrix K
 }
 \description{
 Estimate inverse of matrix K
+}
+\examples{
+n = 10
+m_i = 5
+m_total = 50
+
+clusterID = rep(1:n, m_i)
+p = 10
+beta = rep(2, p)
+u_i = rnorm(n, 0, 2)
+u_i_aug = rep(u_i, each = m_i)
+X = matrix(rnorm(m_total * p), m_total, p)
+y = X\%*\%beta + u_i_aug + rnorm(m_total, 0, 1)
+
+fit_nerm <- estimate_NERM(X = X, y = y,
+                          clusterID = clusterID,
+                          X_cluster = NULL)
+
+invK = estimate_invK(X, sig_u = fit_nerm$sig_u,
+                     sig_e = fit_nerm$sig_e,
+                     clusterID = clusterID)
+
 }

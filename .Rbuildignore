@@ -4,7 +4,9 @@
 ^simulations$
 ^data-raw$
 ^LICENSE\.md$
+^LICENSE$
 ^README\.Rmd$
 ^README\.md$
 ^\.git$
 ^git$
+

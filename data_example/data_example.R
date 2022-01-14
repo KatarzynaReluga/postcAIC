@@ -1,201 +1,29 @@
-library(devtools)
-install_github("KatarzynaReluga/postcAIC/postcAIC", 
-               auth_token = "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")
-
 library(dplyr)
-library(mosaic)
-library(NHANES)
-rm(list=ls())
 
-postcAIC_nhaens0 <-
-  NHANES %>%
-  filter(SurveyYr == "2011_12", Age >= 20) %>%
-  select(
-    Poverty,
-    SleepHrsNight,
-    Gender,
-    Age,
-    Race1,
-    BMI,
-    BPSys2,
-    DirectChol,
-    Diabetes,
-    PhysActive,
-    SmokeNow,
-    Smoke100
-  ) %>%
-  mutate(
-    CurrentSmokingStatus = derivedFactor(
-      Yes = SmokeNow == "Yes",
-      No = (SmokeNow == "No" | Smoke100 == "No")
-    ),
-    clusterID = derivedFactor(
-      Age20_f1  = (Age >= 20 & Age < 30 & Gender == "female" &
-                     Race1 == "Black"),
-      Age20_f2  = (Age >= 20 & Age < 30 & Gender == "female" &
-                     Race1 == "Hispanic"),
-      Age20_f3  = (Age >= 20 & Age < 30 & Gender == "female" &
-                     Race1 == "Mexican"),
-      Age20_f4  = (Age >= 20 & Age < 30 & Gender == "female" &
-                     Race1 == "Other"),
-      Age20_f5  = (Age >= 20 & Age < 30 & Gender == "female" &
-                     Race1 == "White"),
-
-      Age20_m1  = (Age >= 20 & Age < 30 & Gender == "male" &
-                     Race1 == "Black"),
-      Age20_m2  = (Age >= 20 & Age < 30 & Gender == "male" &
-                     Race1 == "Hispanic"),
-      Age20_m3  = (Age >= 20 & Age < 30 & Gender == "male" &
-                     Race1 == "Mexican"),
-      Age20_m4  = (Age >= 20 & Age < 30 & Gender == "male" &
-                     Race1 == "Other"),
-      Age20_m5  = (Age >= 20 & Age < 30 & Gender == "male" &
-                     Race1 == "White"),
-
-      Age30_f1  = (Age >= 30 & Age < 40 & Gender == "female" &
-                     Race1 == "Black"),
-      Age30_f2  = (Age >= 30 & Age < 40 & Gender == "female" &
-                     Race1 == "Hispanic"),
-      Age30_f3  = (Age >= 30 & Age < 40 & Gender == "female" &
-                     Race1 == "Mexican"),
-      Age30_f4  = (Age >= 30 & Age < 40 & Gender == "female" &
-                     Race1 == "Other"),
-      Age30_f5  = (Age >= 30 & Age < 40 & Gender == "female" &
-                     Race1 == "White"),
-
-      Age30_m1  = (Age >= 30 & Age < 40 & Gender == "male" &
-                     Race1 == "Black"),
-      Age30_m2  = (Age >= 30 & Age < 40 & Gender == "male" &
-                     Race1 == "Hispanic"),
-      Age30_m3  = (Age >= 30 & Age < 40 & Gender == "male" &
-                     Race1 == "Mexican"),
-      Age30_m4  = (Age >= 30 & Age < 40 & Gender == "male" &
-                     Race1 == "Other"),
-      Age30_m5  = (Age >= 30 & Age < 40 & Gender == "male" &
-                     Race1 == "White"),
-      
-      Age40_f1  = (Age >= 40 & Age < 50 & Gender == "female" &
-                     Race1 == "Black"),
-      Age40_f2  = (Age >= 40 & Age < 50 & Gender == "female" &
-                     Race1 == "Hispanic"),
-      Age40_f3  = (Age >= 40 & Age < 50 & Gender == "female" &
-                     Race1 == "Mexican"),
-      Age40_f4  = (Age >= 40 & Age < 50 & Gender == "female" &
-                     Race1 == "Other"),
-      Age40_f5  = (Age >= 40 & Age < 50 & Gender == "female" &
-                     Race1 == "White"),
-
-      Age40_m1  = (Age >= 40 & Age < 50 & Gender == "male" &
-                     Race1 == "Black"),
-      Age40_m2  = (Age >= 40 & Age < 50 & Gender == "male" &
-                     Race1 == "Hispanic"),
-      Age40_m3  = (Age >= 40 & Age < 50 & Gender == "male" &
-                     Race1 == "Mexican"),
-      Age40_m4  = (Age >= 40 & Age < 50 & Gender == "male" &
-                     Race1 == "Other"),
-      Age40_m5  = (Age >= 40 & Age < 50 & Gender == "male" &
-                     Race1 == "White"),
-
-      Age50_f1  = (Age >= 50 & Age < 60 & Gender == "female" &
-                     Race1 == "Black"),
-      Age50_f2  = (Age >= 50 & Age < 60 & Gender == "female" &
-                     Race1 == "Hispanic"),
-      Age50_f3  = (Age >= 50 & Age < 60 & Gender == "female" &
-                     Race1 == "Mexican"),
-      Age50_f4  = (Age >= 50 & Age < 60 & Gender == "female" &
-                     Race1 == "Other"),
-      Age50_f5  = (Age >= 50 & Age < 60 & Gender == "female" &
-                     Race1 == "White"),
-
-      Age50_m1  = (Age >= 50 & Age < 60 & Gender == "male" &
-                     Race1 == "Black"),
-      Age50_m2  = (Age >= 50 & Age < 60 & Gender == "male" &
-                     Race1 == "Hispanic"),
-      Age50_m3  = (Age >= 50 & Age < 60 & Gender == "male" &
-                     Race1 == "Mexican"),
-      Age50_m4  = (Age >= 50 & Age < 60 & Gender == "male" &
-                     Race1 == "Other"),
-      Age50_m5  = (Age >= 50 & Age < 60 & Gender == "male" &
-                     Race1 == "White"),
-      
-
-      Age60_f1  = (Age >= 60 & Age < 70 & Gender == "female" &
-                     Race1 == "Black"),
-      Age60_f2  = (Age >= 60 & Age < 70 & Gender == "female" &
-                     Race1 == "Hispanic"),
-      Age60_f3  = (Age >= 60 & Age < 70 & Gender == "female" &
-                     Race1 == "Mexican"),
-      Age60_f4  = (Age >= 60 & Age < 70 & Gender == "female" &
-                     Race1 == "Other"),
-      Age60_f5  = (Age >= 60 & Age < 70 & Gender == "female" &
-                     Race1 == "White"),
-      #      : Mexican, Hispanic, White, Black, or Oth
-      Age60_m1  = (Age >= 60 & Age < 70 & Gender == "male" &
-                     Race1 == "Black"),
-      Age60_m2  = (Age >= 60 & Age < 70 & Gender == "male" &
-                     Race1 == "Hispanic"),
-      Age60_m3  = (Age >= 60 & Age < 70 & Gender == "male" &
-                     Race1 == "Mexican"),
-      Age60_m4  = (Age >= 60 & Age < 70 & Gender == "male" &
-                     Race1 == "Other"),
-      Age60_m5  = (Age >= 60 & Age < 70 & Gender == "male" &
-                     Race1 == "White"),
-      
-      Age70_f1  = (Age >= 70 & Age <= 80 & Gender == "female" &
-                     Race1 == "Black"),
-      Age70_f2  = (Age >= 70 & Age <= 80 & Gender == "female" &
-                     Race1 == "Hispanic"),
-      Age70_f3  = (Age >= 70 & Age <= 80 & Gender == "female" &
-                     Race1 == "Mexican"),
-      Age70_f4  = (Age >= 70 & Age <= 80 & Gender == "female" &
-                     Race1 == "Other"),
-      Age70_f5  = (Age >= 70 & Age <= 80 & Gender == "female" &
-                     Race1 == "White"),
-
-      Age70_m1  = (Age >= 70 & Age <= 80 & Gender == "male" &
-                     Race1 == "Black"),
-      Age70_m2  = (Age >= 70 & Age <= 80 & Gender == "male" &
-                     Race1 == "Hispanic"),
-      Age70_m3  = (Age >= 70 & Age <= 80 & Gender == "male" &
-                     Race1 == "Mexican"),
-      Age70_m4  = (Age >= 70 & Age <= 80 & Gender == "male" &
-                     Race1 == "Other"),
-      Age70_m5  = (Age >= 70 & Age <= 80 & Gender == "male" &
-                     Race1 == "White")
-    ), log_BMI = log(BMI),
-  ) %>% 
-  select(c("PhysActive", "CurrentSmokingStatus", "SleepHrsNight", 
-           "BPSys2", "DirectChol", "Poverty",
-           "Diabetes", "clusterID", "log_BMI"))
-
-
-postcAIC_nhaens <- na.omit(postcAIC_nhaens0) 
-
-
-#######################################################
+# Define outcome, covariates (features) and cluster variable ---------------
 y = postcAIC_nhaens$log_BMI
 
-X = data.frame(select(postcAIC_nhaens, -c("clusterID", "log_BMI")))
+X = data.frame(select(postcAIC_nhaens,-c("clusterID", "log_BMI")))
 
 clusterID = postcAIC_nhaens$clusterID
-
-cAIC_model_set = compute_cAIC_for_model_set(X, y, clusterID,
-                                            model = "NERM",
-                                            covariate_selection_matrix = NULL,
-                                            modelset  = "part_subset",
-                                            common = c(1:2),
-                                            intercept = FALSE)
-
-cAIC_min = cAIC_model_set$cAIC_min 
+# Compute cAIC for models from the set of models -----------------------
+cAIC_model_set = compute_cAIC_for_model_set(
+  X,
+  y,
+  clusterID,
+  model = "NERM",
+  covariate_selection_matrix = NULL,
+  modelset  = "part_subset",
+  common = c(1:2),
+  intercept = FALSE
+)
+cAIC_min = cAIC_model_set$cAIC_min
 degcAIC_models = cAIC_model_set$degcAIC_models
-
-Z = cAIC_model_set$Z
 X_full = cAIC_model_set$X_full
 X_cluster_full = cAIC_model_set$X_cluster_full
 
-G_full = cAIC_model_set$G_full
-R_full = cAIC_model_set$R_full
-V_full = cAIC_model_set$V_full
+sig_u_full = cAIC_model_set$sig_u_full
+sig_e_full = cAIC_model_set$sig_e_full
 
 beta_sel = cAIC_model_set$beta_sel
 mu_sel = cAIC_model_set$mu_sel
@@ -203,49 +31,77 @@ mu_sel = cAIC_model_set$mu_sel
 modelset_matrix = cAIC_model_set$modelset_matrix
 x_beta_lin_com = cAIC_model_set$X_cluster_full
 
-
-
 # Post-cAIC CI for mixed and fixed parameters -------------------------------------
-postcAIC_CI_results = postcAIC_CI(cAIC_min, degcAIC_models,
-                                  Z, X_full, X_cluster_full,
-                                  G_full, R_full, V_full,
-                                  
-                                  beta_sel, mu_sel,
-                                  
-                                  modelset  = "part_subset",
-                                  common = c(1:2), 
-                                  modelset_matrix, x_beta_lin_com,
-                                  n_starting_points = 5, 
-                                  scale_mvrnorm = 10)
 
+postcAIC_CI_results = postcAIC_CI(
+  cAIC_min,
+  degcAIC_models,
+  
+  X_full,
+  X_cluster_full,
+  sig_u_full,
+  sig_e_full,
+  model = "NERM",
+  clusterID,
+  
+  beta_sel,
+  mu_sel,
+  
+  modelset_matrix,
+  x_beta_lin_com = NULL,
+  scale_mvrnorm = 2,
+  n_starting_points = 10
+)
+
+plot(postcAIC_CI_results, y_axis_lim = c(3.10, 3.65))
 # Naive CI for mixed and fixed parameters -------------------------------------
-
 sig_u_sel = cAIC_model_set$sig_u_sel
 sig_e_sel = cAIC_model_set$sig_e_sel
 indices_sel = cAIC_model_set$indices_sel
 X_cluster_sel = cAIC_model_set$X_cluster_full[, indices_sel]
-C_cluster_sel = cbind(as.matrix(X_cluster_sel), diag(nlevels(clusterID)))
+C_cluster_sel = cbind(as.matrix(X_cluster_sel), diag(nrow(X_cluster_full)))
 
-R_sel = cAIC_model_set$R_sel
-V_sel = cAIC_model_set$V_sel
-G_sel = cAIC_model_set$G_sel
+x_beta_lin_com = cAIC_model_set$X_cluster_full
 
-naive_CI_results = naive_CI(beta_sel, mu_sel,
-                            G_sel, R_sel, V_full,
-                            sig_u_sel, sig_e_sel,
-                            X_full, Z, C_cluster_sel = C_cluster_sel,
-                            clusterID, indices_sel = indices_sel,
-                            type_MSE_mixed = "corrected",
-                            x_beta_lin_com)
-
+naive_CI_results  = naive_CI(
+  beta_sel,
+  mu_sel,
+  sig_u_sel,
+  sig_e_sel,
+  sig_u_full,
+  sig_e_full,
+  
+  X_full,
+  C_cluster_sel,
+  clusterID,
+  indices_sel,
+  type_MSE_mixed = "corrected",
+  x_beta_lin_com
+)
+plot(naive_CI_results, type = "corrected", y_axis_lim = c(3.10, 3.65))
 # Post-OBSP CI for mixed parameters -------------------------------------
-sig_u_full = cAIC_model_set$sig_u_full
-sig_e_full = cAIC_model_set$sig_e_full
 
-postOBSP_CI_results = postOBSP_CI(X_full, y, clusterID, Z, X_cluster_full,
-                                  G_full, V_full, R_full,
-                                  sig_u_full, sig_e_full,
-                                  modelset_matrix,
-                                  boot = 200)
+## The running time of postOBSP_CI is long here due to the bootstrap
+## estimation of MSE which involves inverting big matrices 
+## boot = 1000 number of times. OBSP is a computer intensive 
+## method in this case.  
 
+postOBSP_CI_results = postOBSP_CI(
+  X,
+  y,
+  clusterID,
+  X_cluster_full,
+  model = "NERM",
+  covariate_selection_matrix = NULL,
+  modelset  = "part_subset",
+  intercept = FALSE,
+  common = c(1:2),
+  boot = 1000
+)
 
+results_to_plot = format_results(x = naive_CI_results,
+                                 y = postcAIC_CI_results,
+                                 z = postOBSP_CI_results,
+                                 type = "corrected")
+
+plot(results_to_plot, type = "corrected", y_axis_lim = c(3.10, 3.65))

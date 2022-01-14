@@ -4,37 +4,27 @@
 \alias{compute_upsilon}
 \title{Compute matrix upsilon}
 \usage{
-compute_upsilon(modelset, p, common = NULL)
+compute_upsilon(modelset_matrix)
 }
 \arguments{
-\item{modelset}{Type of model set:
+\item{modelset_matrix}{Matrix composed of zeros and ones.}
+}
+\value{
+List with elements:
 \itemize{
-\item \code{"all_subsets"} - all possible models for all parameters
-\item \code{"nested"} - a sequence of nested models for all parameters
-\item \code{"part_subset"} - all possible models for a subset of parameters
-}}
-
-\item{p}{Number of all fixed parameters under consideration (intercept included)}
-
-\item{common}{A vector indicating variables forced to be present in each model}
+\item \code{upsilon} - extended selection matrix,
+see Claesknes, Reluga and Sperlich (2021)
+\item \code{cov_terms_index0} - list with indices of covariance terms
+in each model
+\item \code{index_full_model} - index of the full model in the model set
+}
 }
 \description{
-Function \code{compute_upsilon} computes extended selection matrix upsilon
-}
-\details{
-\itemize{
-\item \code{modelset = "nested"}
-The first model contains one covariate
-from the first column of X, then two covariates from the first and the second column
-of X, etc.
-*\code{common}
-A vector of length at most p, consisting of those column numbers of X for which the
-variables are forced to be present in every model (e.g. c(2,5) for variables 2 and 5).
-If provided, it is used in model.set="partsubsets".
-}
+Function \code{compute_upsilon} computes extended selection
+matrix upsilon
 }
 \examples{
-
-upsilon_all_subset = compute_upsilon(modelset = "all_subsets", p = 5)
+modelset_matrix  = create_modelset("all_subsets", p = 5)
+upsilon_example = compute_upsilon(modelset_matrix)
 
 }

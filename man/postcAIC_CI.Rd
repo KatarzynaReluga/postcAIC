@@ -7,97 +7,145 @@
 postcAIC_CI(
   cAIC_min,
   degcAIC_models,
-  Z,
   X_full,
   X_cluster_full,
-  G_full,
-  R_full,
-  V_full,
+  sig_u_full,
+  sig_e_full,
+  model = "NERM",
+  clusterID,
   beta_sel,
   mu_sel,
-  modelset = "all_subsets",
-  common = NULL,
   modelset_matrix,
   x_beta_lin_com = NULL,
   n_starting_points = 5,
-  scale_mvrnorm = 1
+  scale_mvrnorm = 1,
+  alpha = 0.05
 )
 }
 \arguments{
-\item{cAIC_min}{Index of the selected model among models in the modelset}
+\item{cAIC_min}{Index of the selected model among models in the model set}
 
 \item{degcAIC_models}{Penalty for all considered models}
-
-\item{Z}{Matrix with covariates for random effects covariates}
 
 \item{X_full}{Matrix with a full set of covariates}
 
 \item{X_cluster_full}{Matrix with cluster level covariates for fixed effects of the full model}
 
-\item{G_full}{Covariance matrix of random effects of the full model}
+\item{sig_u_full}{Variance parameter of random effects from the full model}
 
-\item{R_full}{Covariance matrix of errors of the full model}
+\item{sig_e_full}{Variance parameter of errors from the full model}
 
-\item{V_full}{Covariance matrix of response of the full model}
+\item{model}{Type of mixed model. For the moment, only NERM is supposted.}
+
+\item{clusterID}{Vector with cluster labels}
 
 \item{beta_sel}{Fixed effects (regression parameters) of the selected model}
 
 \item{mu_sel}{Mixed effects of the selected model}
 
-\item{modelset}{Type of model set:
-\itemize{
-\item \code{"all_subsets"} - all possible models for all parameters
-\item \code{"nested"} - a sequence of nested models for all parameters
-\item \code{"part_subset"} - all possible models for a subset of parameters
-}}
-
-\item{common}{A vector indicating variables forced to be present in each model}
-
-\item{modelset_matrix}{Matrix composed of zeros and ones.}
+\item{modelset_matrix}{Matrix composed of zeros and ones}
 
 \item{x_beta_lin_com}{Vector or matrix to create linear combinations with
-fixed parameters. Default: 'x_beta_lin_com = NULL'}
+fixed parameters. Default: \code{x_beta_lin_com = NULL}}
 
-\item{n_starting_points}{Number of initial starting points for sampling from truncated distribution}
+\item{n_starting_points}{Number of initial starting points for sampling from
+a truncated normal distribution. Default: \code{n_starting_points = NULL}}
 
-\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution to sample}
+\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution
+to sample. Default: \code{scale_mvrnorm = 1}.}
+
+\item{alpha}{Construct 1 - alpha confidence intervals. Default: \code{alpha = 0.05}}
 }
 \value{
 List with parameters
 \itemize{
-\item \code{cAIC_min}  - Index of selected model
-\item \code{degcAIC_models} - Penalty for all considered models
-\item \code{beta_sel} - fixed effects (regression parameters) of the selected model
-\item \code{mu_sel} - mixed effects of the selected model
-\item \code{V_sel} - covariance matrix of response of the selected model
-\item \code{G_sel} - covariance matrix of random effects of the selected model
-\item \code{R_sel} - covariance matrix of response of the selected model
-\item \code{X_sel} - matrix with fixed effects covariates of the selected model
-\item \code{indices_sel} - indices of the selected covaraites among full covariate set
-\item \code{sig_u_sel} - variance parameter of random effects of the selected model
-\item \code{sig_e_sel} - variance parameter of errors of the selected model
-\item \code{V_sel} -  covariance matrix of response of the selected model
-\item \code{invV_full} - inverse of covariance matrix of response of the full model
-\item \code{G_full} - covariance matrix of random effects of the selected model
-\item \code{R_full} - covariance matrix of response of the full model
-\item \code{X_full} - matrix with fixed effects covariates of the full model
-\item \code{X_cluster_full} - matrix with cluster level covariates for fixed effects of the full model
-\item \code{Z} - matrix of covariates for random effects
-\item \code{modelset_matrix} -  matrix composed of zeros and ones. Ones correspond to
-parameters in a model which is represented in nth row.
-}
-
-List with parameters
-\itemize{
-\item \code{beta_PoSI_CI_up}  - upper boundary of CI for fixed effects
-\item \code{beta_PoSI_CI_do} - lower boundary of CI for fixed effects
-\item \code{mixed_PoSI_CI_up} - upper boundary of CI for mixed effects
-\item \code{mixed_PoSI_CI_do} - lower boundary of CI for mixed effects
-\item \code{beta_x_PoSI_CI_up} - upper boundary of CI for linear combinations of fixed effects
-\item \code{beta_x_PoSI_CI_do} - lower boundary of CI for linear combinations of fixed effects
+\item \code{beta_postcAIC_CI_up}  - upper boundary of CI for fixed effects
+\item \code{beta_postcAIC_CI_do} - lower boundary of CI for fixed effects
+\item \code{mixed_postcAIC_CI_up} - upper boundary of CI for mixed effects
+\item \code{mixed_postcAIC_CI_do} - lower boundary of CI for mixed effects
+\item \code{beta_x_postcAIC_CI_up} - upper boundary of CI for linear combinations of fixed effects
+\item \code{beta_x_postcAIC_CI_do} - lower boundary of CI for linear combinations of fixed effects
 }
 }
 \description{
 Function \code{postcAIC_CI} provides post-cAIC confidence intervals for
 mixed and fixed effects under NERM
+}
+\details{
+The running time of function \code{postcAIC_CI} is extremely
+sensitive to the choice of scaling factor \code{scale_mvrnorm} which affects
+the speed of finding initial starting points in function \code{find_starting_points}.
+These starting points are necessary to sample from a constrained normal distribution
+from which we obtain critical values to construct confidence intervals. We suggest
+choosing a larger/smaller value if the running time of function \code{postcAIC_CI}
+is longer than 1 minute.
+}
+\examples{
+# Define basic parameters -------------------------------------------------
+n = 15
+m_i = 5
+m_total = n * m_i
+
+beta = c(2.25, -1.1, 2.43, rep(0, 2))
+sig_e = 1
+sig_u = 1
+
+X = simulations_n15_mi5
+X_intercept = cbind(rep(1, m_total), X)
+
+clusterID = rep(1:n, each = m_i)
+
+# Create responses, errors and random effects  -------------------
+e_ij = rnorm(m_total, 0, sig_e)
+
+u_i = rnorm(n, 0, sig_u)
+u_i_aug = rep(u_i, each = m_i)
+
+y = X_intercept\%*\% beta + u_i_aug + e_ij
+
+# Compute cAIC for models from the set of models -----------------------
+
+
+cAIC_model_set = compute_cAIC_for_model_set(
+  X,
+  y,
+  clusterID,
+  model = "NERM",
+  covariate_selection_matrix = NULL,
+  modelset  = "part_subset",
+  common = c(1:3),
+  intercept = FALSE
+)
+
+cAIC_min = cAIC_model_set$cAIC_min
+degcAIC_models = cAIC_model_set$degcAIC_models
+X_full = cAIC_model_set$X_full
+X_cluster_full = cAIC_model_set$X_cluster_full
+
+sig_u_full = cAIC_model_set$sig_u_full
+sig_e_full = cAIC_model_set$sig_e_full
+
+beta_sel = cAIC_model_set$beta_sel
+mu_sel = cAIC_model_set$mu_sel
+
+modelset_matrix = cAIC_model_set$modelset_matrix
+x_beta_lin_com = cAIC_model_set$X_cluster_full
+
+# Post-cAIC CI for mixed and fixed parameters ------------------------------------
+
+postcAIC_CI_results = postcAIC_CI(
+  cAIC_min,
+  degcAIC_models,
+  X_full,
+  X_cluster_full,
+  sig_u_full,
+  sig_e_full,
+  model = "NERM",
+  clusterID,
+  beta_sel,
+  mu_sel,
+  modelset_matrix,
+  x_beta_lin_com = NULL )
+
+  plot(postcAIC_CI_results)
 }
