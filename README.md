@@ -184,5 +184,5 @@ R-package. The
 the
 [code](https://github.com/KatarzynaReluga/postcAIC/blob/main/data-raw/postcAIC_nhaens.R)
 to construct it can be found in pacakge **postcAIC** together with the
-[code](https://github.com/KatarzynaReluga/postcAIC/blob/main/data_example/data_example.R)to
+[code](https://github.com/KatarzynaReluga/postcAIC/blob/main/data_example/data_example.R) to
 analyse the results.
