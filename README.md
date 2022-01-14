@@ -15,7 +15,9 @@ information criterion (cAIC).
 
 Reference: Claeskens, Reluga, and Sperlich (2021). *Post-selection
 inference for linear mixed model parameters using the conditional Akaike
-information criterion*. Available at <https://arxiv.org/abs/2109.10975>
+information criterion*.
+
+Available at [arXiv.org](https://arxiv.org/abs/2109.10975)
 
 In what follows, we use abbreviaiton CRS-2021 to refer to Claeskens,
 Reluga, and Sperlich (2021).
@@ -28,13 +30,13 @@ You can install the most recent version of postcAIC from
 ``` r
 # install.packages("devtools")
 
-install_version("tmg", version = "0.3", repos = "http://cran.r-project.org")
-#devtools::install_github("KatarzynaReluga/postcAIC")
+# remotes::install_version("tmg", version = "0.3", repos = "http://cran.r-project.org")
+# devtools::install_github("KatarzynaReluga/postcAIC")
 
-devtools::install_github("KatarzynaReluga/postcAIC",   
-                         ref="main",
-                         auth_token =
-          "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")
+#devtools::install_github("KatarzynaReluga/postcAIC",   
+#                         ref="main",
+#                         auth_token =
+#          "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")
 ```
 
 ## Example
@@ -111,7 +113,7 @@ postcAIC_CI_results = postcAIC_CI(
 plot(postcAIC_CI_results, y_axis_lim = c(-0.5, 6.5))
 ```
 
-<img src="man/figures/README-example2-1.png" width="100%" />
+<img src="man/figures/README-example3-1.png" width="100%" />
 
 To compare the performance of post-cAIC CI, we construct naive CI which
 do not take the model selection step into account. In addition, we
@@ -162,7 +164,7 @@ results_to_plot = format_results(x = naive_CI_results,
 plot(results_to_plot, type = "corrected")
 ```
 
-<img src="man/figures/README-example3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
 ## Simulation study from CRS-2021
 
@@ -174,8 +176,8 @@ functions in package **postcAIC**.
 ## Data illustration from CRS-2021
 
 Claeskens, Reluga, and Sperlich (2021) illustrated the performance of
-post-cAIC CI for mixed and fixed effects using a subset of
-**[NHAENS](https://cran.r-project.org/web/packages/NHANES/index.html)**
+post-cAIC CI for mixed and fixed effects using a subset
+of**[NHAENS](https://cran.r-project.org/web/packages/NHANES/index.html)**
 R-package. The
 [subset](https://github.com/KatarzynaReluga/postcAIC/tree/main/data) and
 the
