@@ -37,7 +37,6 @@ devtools::install_github("KatarzynaReluga/postcAIC",
                          ref="main",
                          auth_token =
           "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")
-
 ```
 
 ## Example
@@ -184,5 +183,5 @@ R-package. The
 the
 [code](https://github.com/KatarzynaReluga/postcAIC/blob/main/data-raw/postcAIC_nhaens.R)
 to construct it can be found in pacakge **postcAIC** together with the
-[code](https://github.com/KatarzynaReluga/postcAIC/blob/main/data_example/data_example.R) to
-analyse the results.
+[code](https://github.com/KatarzynaReluga/postcAIC/blob/main/data_example/data_example.R)
+to analyse the results.
