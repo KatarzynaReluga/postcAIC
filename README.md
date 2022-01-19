@@ -36,7 +36,7 @@ remotes::install_version("tmg", version = "0.3", repos = "http://cran.r-project.
 devtools::install_github("KatarzynaReluga/postcAIC",   
                          ref="main",
                          auth_token =
-          "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")
+          "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")
 ```
 
 ## Example
