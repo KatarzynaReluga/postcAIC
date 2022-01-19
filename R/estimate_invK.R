@@ -6,7 +6,8 @@
 #' @param model Model we want to fit. Only NERM is supported for now.
 #' @param clusterID Vector with cluster labels
 #'
-#' @return \code{K_inv}  - inverse of Matrix K
+#' @return 
+#' \item{K_inv}{Inverse of Matrix K}
 #'
 #' @examples
 #' n = 10

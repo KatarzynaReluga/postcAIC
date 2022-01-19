@@ -10,7 +10,8 @@
 #' @param intercept Is column of ones, representing the intercept, present in X
 #' Default: \code{TRUE}
 #'
-#' @return \code{Z}  - matrix of covariates for random effects
+#' @return 
+#' \item{Z}{Matrix of covariates for random effects}
 #'
 #' @details
 #' Matrix X is only needed if we select an option \code{model = "RIRS"}.

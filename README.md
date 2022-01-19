@@ -19,8 +19,8 @@ information criterion*.
 
 Available at [arXiv.org](https://arxiv.org/abs/2109.10975)
 
-In what follows, we use abbreviaiton CRS-2021 to refer to Claeskens,
-Reluga, and Sperlich (2021).
+In what follows, we use abbreviation CRS-2021 to refer to the article of
+Claeskens, Reluga, and Sperlich (2021).
 
 ## Installation
 
@@ -29,6 +29,7 @@ You can install the most recent version of postcAIC from
 
 ``` r
 # install.packages("devtools")
+# install.packages("remotes")
 
 remotes::install_version("tmg", version = "0.3", repos = "http://cran.r-project.org")
 # devtools::install_github("KatarzynaReluga/postcAIC")
@@ -115,10 +116,12 @@ plot(postcAIC_CI_results, y_axis_lim = c(-0.5, 6.5))
 
 <img src="man/figures/README-example3-1.png" width="100%" />
 
-To compare the performance of post-cAIC CI, we construct naive CI which
-do not take the model selection step into account. In addition, we
-construct post-OBSP CI of Sugasawa, S., Kawakubo, Y. and Datta, G. S.
-(2019) for mixed parameters and plot them together.
+We compare the performance of post-cAIC CI for mixed effects with other
+confidence intervals and plot them together. We consider the naive CI
+which does not take the model selection step into account. In addition,
+we construct post-OBSP CI which uses the observed best selective
+prediction (OBSP) of [Sugasawa, S., Kawakubo, Y. and Datta, G. S.
+(2019)](https://www.sciencedirect.com/science/article/pii/S0047259X18300319).
 
 ``` r
 # Construct naive CI for mixed and fixed parameters -------------------

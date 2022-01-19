@@ -12,7 +12,7 @@
 #' @param ... Additional parameters
 #'
 #' @return
-#' * Plot with confidence intervals for mixed effects.
+#' \item{plot_multi}{Plot with confidence intervals for mixed effects}
 #'
 #' @importFrom ggplot2 ggplot aes coord_cartesian
 #' geom_errorbar labs theme_bw scale_color_manual

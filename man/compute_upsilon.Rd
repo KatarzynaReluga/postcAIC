@@ -11,20 +11,18 @@ compute_upsilon(modelset_matrix)
 }
 \value{
 List with elements:
-\itemize{
-\item \code{upsilon} - extended selection matrix,
-see Claesknes, Reluga and Sperlich (2021)
-\item \code{cov_terms_index0} - list with indices of covariance terms
-in each model
-\item \code{index_full_model} - index of the full model in the model set
-}
+\item{upsilon}{extended selection matrix,
+see Claesknes, Reluga and Sperlich (2021)}
+\item{cov_terms_index0}{list with indices of covariance terms
+in each model}
+\item{index_full_model}{index of the full model in the model set}
 }
 \description{
 Function \code{compute_upsilon} computes extended selection
 matrix upsilon
 }
 \examples{
-modelset_matrix  = create_modelset("all_subsets", p = 5)
+modelset_matrix = create_modelset("all_subsets", p = 5)
 upsilon_example = compute_upsilon(modelset_matrix)
 
 }

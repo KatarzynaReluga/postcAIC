@@ -9,13 +9,13 @@
 #' Default: \code{NULL}.
 #'
 #' @return List with parameters:
-#' * \code{fit_model_fixed} - estimated model using fixed effects
-#' * \code{fit_model_mixed} - estimated model using fixed and random effects
-#' * \code{sig_u} - variance parameter of random effects
-#' * \code{sig_e} - variance parameter of errors
-#' * \code{beta} - fixed effects (regression parameters)
-#' * \code{u} - random effects
-#' * \code{mu} - mixed effects
+#' \item{fit_model_fixed}{Estimated model using fixed effects}
+#' \item{fit_model_mixed}{Estimated model using fixed and random effects}
+#' \item{sig_u}{Variance parameter of random effects}
+#' \item{sig_e}{Variance parameter of errors}
+#' \item{beta}{Fixed effects (regression parameters)}
+#' \item{u}{Random effects}
+#' \item{mu}{Mixed effects}
 #'
 #' @importFrom nlme lme VarCorr
 #' @importFrom stats aggregate

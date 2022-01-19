@@ -50,16 +50,14 @@ fixed parameters. Default: \code{x_beta_lin_com = NULL}}
 }
 \value{
 List with elements:
-\itemize{
-\item \code{beta_naive_CI_up}  - upper boundary of naive CI for fixed effects
-\item \code{beta_naive_CI_do} - lower boundary of naive CI for fixed effects
-\item \code{mixed_naive_CI_corrected_up} - upper boundary of naive CI for mixed effects with the second order MSE
-\item \code{mixed_naive_CI_corrected_do} - lower boundary of naive CI for mixed effects with the second order MSE
-\item \code{mixed_naive_CI_up} - upper boundary of naive CI for mixed effects with the first order MSE
-\item \code{mixed_naive_CI_do} - lower boundary of naive CI for mixed effects with the first order MSE
-\item \code{beta_x_naive_CI_up} - upper boundary of naive CI for linear combinations of fixed effects
-\item \code{beta_x_naive_CI_do} - lower boundary of naive CI for linear combinations of fixed effects
-}
+\item{beta_naive_CI_up}{Upper boundary of naive CI for fixed effects}
+\item{beta_naive_CI_do}{Lower boundary of naive CI for fixed effects}
+\item{mixed_naive_CI_corrected_up}{Upper boundary of naive CI for mixed effects with the second order MSE}
+\item{mixed_naive_CI_corrected_do}{Lower boundary of naive CI for mixed effects with the second order MSE}
+\item{mixed_naive_CI_up}{Upper boundary of naive CI for mixed effects with the first order MSE}
+\item{mixed_naive_CI_do}{Lower boundary of naive CI for mixed effects with the first order MSE}
+\item{beta_x_naive_CI_up}{Upper boundary of naive CI for linear combinations of fixed effects}
+\item{beta_x_naive_CI_do}{Lower boundary of naive CI for linear combinations of fixed effects}
 }
 \description{
 Function \code{naive_CI} provides naive CI for fixed and mixed effects

@@ -6,7 +6,7 @@
 #' @param C_cluster Cluster-level covariates for fixed and random parameters
 #'
 #' @return 
-#' * \code{mse}  - MSE of mixed effects
+#' \item{mse}{MSE of mixed effects}
 #'
 #' @examples
 #' n = 10

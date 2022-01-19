@@ -18,7 +18,7 @@ estimate_invK(X, sig_u, sig_e, model = "NERM", clusterID)
 \item{clusterID}{Vector with cluster labels}
 }
 \value{
-\code{K_inv}  - inverse of Matrix K
+\item{K_inv}{Inverse of Matrix K}
 }
 \description{
 Estimate inverse of matrix K

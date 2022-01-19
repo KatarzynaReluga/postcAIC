@@ -8,7 +8,10 @@
 #' @param legend_position Legend position. Default: \code{NULL}
 #' @param y_axis_lim Limits of the y axis. Default: \code{NULL}
 #' @param ... Additional parameters
-#'
+#' 
+#' @return 
+#' \item{plot_postcAIC}{Plot with confidence intervals for mixed effects} 
+#' 
 #' @importFrom ggplot2 ggplot aes coord_cartesian
 #' geom_errorbar labs theme_bw scale_color_manual
 #' theme element_text element_blank

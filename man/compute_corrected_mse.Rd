@@ -21,10 +21,8 @@ compute_corrected_mse(C_cluster, X, sig_u, sig_e, clusterID, model = "NERM")
 }
 \value{
 List with parameters:
-\itemize{
-\item \code{mse} - first-order correct MSE of mixed effects
-\item \code{mse_corrected} - second-order correct MSE of mixed effects
-}
+\item{mse}{First-order correct MSE of mixed effects}
+\item{mse_corrected}{Second-order correct MSE of mixed effects}
 }
 \description{
 Function \code{compute_mse} provides first-and

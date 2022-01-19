@@ -13,14 +13,14 @@
 #' @param alpha Construct 1 - alpha confidence intervals. Default: \code{alpha = 0.05}
 #'
 #' @return List with elements:
-#' * \code{beta_naive_CI_up}  - upper boundary of naive CI for fixed effects
-#' * \code{beta_naive_CI_do} - lower boundary of naive CI for fixed effects
-#' * \code{mixed_naive_CI_corrected_up} - upper boundary of naive CI for mixed effects with the second order MSE
-#' * \code{mixed_naive_CI_corrected_do} - lower boundary of naive CI for mixed effects with the second order MSE
-#' * \code{mixed_naive_CI_up} - upper boundary of naive CI for mixed effects with the first order MSE
-#' * \code{mixed_naive_CI_do} - lower boundary of naive CI for mixed effects with the first order MSE
-#' * \code{beta_x_naive_CI_up} - upper boundary of naive CI for linear combinations of fixed effects
-#' * \code{beta_x_naive_CI_do} - lower boundary of naive CI for linear combinations of fixed effects
+#' \item{beta_naive_CI_up}{Upper boundary of naive CI for fixed effects}
+#' \item{beta_naive_CI_do}{Lower boundary of naive CI for fixed effects}
+#' \item{mixed_naive_CI_corrected_up}{Upper boundary of naive CI for mixed effects with the second order MSE}
+#' \item{mixed_naive_CI_corrected_do}{Lower boundary of naive CI for mixed effects with the second order MSE}
+#' \item{mixed_naive_CI_up}{Upper boundary of naive CI for mixed effects with the first order MSE}
+#' \item{mixed_naive_CI_do}{Lower boundary of naive CI for mixed effects with the first order MSE}
+#' \item{beta_x_naive_CI_up}{Upper boundary of naive CI for linear combinations of fixed effects}
+#' \item{beta_x_naive_CI_do}{Lower boundary of naive CI for linear combinations of fixed effects}
 #'
 #'
 #' @details

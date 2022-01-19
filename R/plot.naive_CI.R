@@ -13,7 +13,7 @@
 #' @param ... Additional parameters
 #'
 #' @return 
-#' * Plot with confidence intervals for mixed effects. 
+#' \item{plot_naive}{Plot with confidence intervals for mixed effects} 
 #'
 #'
 #' @details

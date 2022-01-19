@@ -57,15 +57,13 @@ to sample. Default: \code{scale_mvrnorm = 1}.}
 \item{alpha}{Construct 1 - alpha confidence intervals. Default: \code{alpha = 0.05}}
 }
 \value{
-List with parameters
-\itemize{
-\item \code{beta_postcAIC_CI_up}  - upper boundary of CI for fixed effects
-\item \code{beta_postcAIC_CI_do} - lower boundary of CI for fixed effects
-\item \code{mixed_postcAIC_CI_up} - upper boundary of CI for mixed effects
-\item \code{mixed_postcAIC_CI_do} - lower boundary of CI for mixed effects
-\item \code{beta_x_postcAIC_CI_up} - upper boundary of CI for linear combinations of fixed effects
-\item \code{beta_x_postcAIC_CI_do} - lower boundary of CI for linear combinations of fixed effects
-}
+List with parameters:
+\item{beta_postcAIC_CI_up}{Upper boundary of CI for fixed effects}
+\item{beta_postcAIC_CI_do}{Lower boundary of CI for fixed effects}
+\item{mixed_postcAIC_CI_up}{Upper boundary of CI for mixed effects}
+\item{mixed_postcAIC_CI_do}{Lower boundary of CI for mixed effects}
+\item{beta_x_postcAIC_CI_up}{Upper boundary of CI for linear combinations of fixed effects}
+\item{beta_x_postcAIC_CI_do}{Lower boundary of CI for linear combinations of fixed effects}
 }
 \description{
 Function \code{postcAIC_CI} provides post-cAIC confidence intervals for

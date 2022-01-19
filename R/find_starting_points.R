@@ -14,7 +14,8 @@
 #' @param scale_mvrnorm Scale parameter for multivariate normal distribution
 #' to sample. Default: \code{scale_mvrnorm = 10}.
 #'
-#' @return \code{starting_points} - n_starting_points different starting points
+#' @return 
+#' \item{starting_points}{n_starting_points different starting points}
 #'
 #' @details
 #' The running time of function \code{find_starting_points} is extremely

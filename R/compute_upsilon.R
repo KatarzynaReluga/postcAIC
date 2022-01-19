@@ -6,17 +6,17 @@
 #' @param modelset_matrix Matrix composed of zeros and ones.
 #' 
 #' @return List with elements:
-#' * \code{upsilon} - extended selection matrix, 
-#' see Claesknes, Reluga and Sperlich (2021) 
-#' * \code{cov_terms_index0} - list with indices of covariance terms
-#' in each model
-#' * \code{index_full_model} - index of the full model in the model set
+#' \item{upsilon}{extended selection matrix, 
+#' see Claesknes, Reluga and Sperlich (2021)} 
+#' \item{cov_terms_index0}{list with indices of covariance terms
+#' in each model}
+#' \item{index_full_model}{index of the full model in the model set}
 #' 
 #' @importFrom dplyr select arrange
 #' @importFrom utils combn
 #'
 #' @examples
-#' modelset_matrix  = create_modelset("all_subsets", p = 5)
+#' modelset_matrix = create_modelset("all_subsets", p = 5)
 #' upsilon_example = compute_upsilon(modelset_matrix)
 #'
 #' @export

@@ -28,7 +28,7 @@ the normal distribution}
 to sample. Default: \code{scale_mvrnorm = 10}.}
 }
 \value{
-\code{starting_points} - n_starting_points different starting points
+\item{starting_points}{n_starting_points different starting points}
 }
 \description{
 Function \code{find_starting_points} finds starting points which satisfies

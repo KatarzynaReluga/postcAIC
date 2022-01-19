@@ -38,9 +38,7 @@ Default: \code{NULL}}
 \item{...}{Additional parameters}
 }
 \value{
-\itemize{
-\item Plot with confidence intervals for mixed effects.
-}
+\item{plot_naive}{Plot with confidence intervals for mixed effects}
 }
 \description{
 Plots naive confidence intervals (CI) for mixed effects

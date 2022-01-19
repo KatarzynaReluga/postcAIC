@@ -18,15 +18,13 @@ Default: \code{NULL}.}
 }
 \value{
 List with parameters:
-\itemize{
-\item \code{fit_model_fixed} - estimated model using fixed effects
-\item \code{fit_model_mixed} - estimated model using fixed and random effects
-\item \code{sig_u} - variance parameter of random effects
-\item \code{sig_e} - variance parameter of errors
-\item \code{beta} - fixed effects (regression parameters)
-\item \code{u} - random effects
-\item \code{mu} - mixed effects
-}
+\item{fit_model_fixed}{Estimated model using fixed effects}
+\item{fit_model_mixed}{Estimated model using fixed and random effects}
+\item{sig_u}{Variance parameter of random effects}
+\item{sig_e}{Variance parameter of errors}
+\item{beta}{Fixed effects (regression parameters)}
+\item{u}{Random effects}
+\item{mu}{Mixed effects}
 }
 \description{
 Estimate NERM, store fixed and random parameters and variances

@@ -23,13 +23,13 @@
 #' @param alpha Construct 1 - alpha confidence intervals. Default: \code{alpha = 0.05}
 #'
 #'
-#' @return List with parameters
-#' * \code{beta_postcAIC_CI_up}  - upper boundary of CI for fixed effects
-#' * \code{beta_postcAIC_CI_do} - lower boundary of CI for fixed effects
-#' * \code{mixed_postcAIC_CI_up} - upper boundary of CI for mixed effects
-#' * \code{mixed_postcAIC_CI_do} - lower boundary of CI for mixed effects
-#' * \code{beta_x_postcAIC_CI_up} - upper boundary of CI for linear combinations of fixed effects
-#' * \code{beta_x_postcAIC_CI_do} - lower boundary of CI for linear combinations of fixed effects
+#' @return List with parameters:
+#' \item{beta_postcAIC_CI_up}{Upper boundary of CI for fixed effects}
+#' \item{beta_postcAIC_CI_do}{Lower boundary of CI for fixed effects}
+#' \item{mixed_postcAIC_CI_up}{Upper boundary of CI for mixed effects}
+#' \item{mixed_postcAIC_CI_do}{Lower boundary of CI for mixed effects}
+#' \item{beta_x_postcAIC_CI_up}{Upper boundary of CI for linear combinations of fixed effects}
+#' \item{beta_x_postcAIC_CI_do}{Lower boundary of CI for linear combinations of fixed effects}
 #'
 #' @details
 #' The running time of function \code{postcAIC_CI} is extremely

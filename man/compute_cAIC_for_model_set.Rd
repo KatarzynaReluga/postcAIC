@@ -45,21 +45,19 @@ Default: \code{TRUE}}
 present in each model. Default: \code{NULL}}
 }
 \value{
-List with parameters
-\itemize{
-\item \code{cAIC_min}  - index of selected model
-\item \code{cAIC_models} - cAIC for all considered parameters
-\item \code{degcAIC_models} - penalty for all considered models
-\item \code{beta_sel} - fixed effects of the selected model
-\item \code{mu_sel} - mixed effects of the selected model
-\item \code{indices_sel} - indices of the selected covariates among full covariate set
-\item \code{sig_u_sel} - variance parameter of random effects of the selected model
-\item \code{sig_e_sel} - variance parameter of errors of the selected model
-\item \code{X_full} - matrix with fixed effects covariates of the full model
-\item \code{X_cluster_full} - matrix with cluster level covariates for fixed effects of the full model
-\item \code{modelset_matrix} -  matrix composed of zeros and ones. Ones correspond to
-covariate in a model which is represented in nth row.
-}
+List with parameters:
+\item{cAIC_min}{Index of selected model}
+\item{cAIC_models}{cAIC for all considered parameters}
+\item{degcAIC_models}{Penalty for all considered models}
+\item{beta_sel}{Fixed effects of the selected model}
+\item{mu_sel}{Mixed effects of the selected model}
+\item{indices_sel}{Indices of the selected covariates among full covariate set}
+\item{sig_u_sel}{Variance parameter of random effects of the selected model}
+\item{sig_e_sel}{Variance parameter of errors of the selected model}
+\item{X_full}{Matrix with fixed effects covariates of the full model}
+\item{X_cluster_full}{Matrix with cluster level covariates for fixed effects of the full model}
+\item{modelset_matrix}{Matrix composed of zeros and ones. Ones correspond to
+covariate in a model which is represented in nth row}
 }
 \description{
 Function \code{compute_cAIC_for_model_set} computes

@@ -10,8 +10,8 @@
 #' @param index_full_model Index of a full model in the model set
 #'
 #' @return List with elements:
-#' * \code{Sigma_ordered} - ordered elements of Sigma
-#' * \code{Sigma_order_index} - indices of ordered elements of Sigma
+#' \item{Sigma_ordered}{Ordered elements of Sigma}
+#' \item{Sigma_order_index}{Indices of ordered elements of Sigma}
 #'
 #' @keywords internal
 #'

@@ -10,14 +10,14 @@
 #' both MSE estimators)
 #'
 #' @return List with elements:
-#' * \code{mixed_postcAIC_CI_do} -
-#' * \code{mixed_postcAIC_CI_up} -
-#' * \code{postOBSP_do} -
-#' * \code{postOBSP_up} -
-#' * \code{mixed_naive_CI_corrected_up} - upper boundary of naive CI for mixed effects with the second order MSE
-#' * \code{mixed_naive_CI_corrected_do} - lower boundary of naive CI for mixed effects with the second order MSE
-#' * \code{mixed_naive_CI_up} - upper boundary of naive CI for mixed effects with the first order MSE
-#' * \code{mixed_naive_CI_do} - lower boundary of naive CI for mixed effects with the first order MSE
+#' \item{mixed_postcAIC_CI_up}{Upper boundary of CI for mixed effects}
+#' \item{mixed_postcAIC_CI_do}{Lower boundary of CI for mixed effects}
+#' \item{postOBSP_up}{Upper boundary of CI for mixed effects}
+#' \item{postOBSP_do}{Lower boundary of CI for mixed effects}
+#' \item{mixed_naive_CI_corrected_up}{Upper boundary of naive CI for mixed effects with the second order MSE}
+#' \item{mixed_naive_CI_corrected_do}{Lower boundary of naive CI for mixed effects with the second order MSE}
+#' \item{mixed_naive_CI_up}{Upper boundary of naive CI for mixed effects with the first order MSE}
+#' \item{mixed_naive_CI_do}{Lower boundary of naive CI for mixed effects with the first order MSE}
 #'
 #' @details
 #' The output changes slightly depending on the value

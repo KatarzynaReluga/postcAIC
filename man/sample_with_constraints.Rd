@@ -39,15 +39,13 @@ to sample. Default: \code{scale_mvrnorm = 10}.}
 }
 \value{
 List with elements:
-\itemize{
-\item \code{sample_fixed_full} - n_samples from a multivariate constrained normal
+\item{sample_fixed_full}{n_samples from a multivariate constrained normal
 distribution to obtain critical values to construct confidence intervals
-for fixed effects
-\item \code{sample_random} - n_samples from a multivariate normal distribution
-to obtain critical values to construct confidence intervals for random effects
-\item \code{sample_mix_full} - n_samples of sample_fixed_full and sample_random stacked
-together
-}
+for fixed effects}
+\item{sample_random}{n_samples from a multivariate normal distribution
+to obtain critical values to construct confidence intervals for random effects}
+\item{sample_mix_full}{n_samples of sample_fixed_full and sample_random stacked
+together}
 }
 \description{
 Function \code{sample_with_constraints} provides samples from a constrained normal

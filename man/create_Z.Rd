@@ -25,7 +25,7 @@ create_Z(
 Default: \code{TRUE}}
 }
 \value{
-\code{Z}  - matrix of covariates for random effects
+\item{Z}{Matrix of covariates for random effects}
 }
 \description{
 Function \code{create_Z} creates matrix Z which contains

@@ -12,19 +12,20 @@
 #' @param p Number of all covariates under consideration
 #' (intercept included). Default: \code{5}
 #'
-#' @return \code{modelset_matrix} - matrix composed of zeros and ones.
-#' Ones correspond to covariates in a model which is represented in nth row.
+#' @return 
+#' \item{modelset_matrix}{Matrix composed of zeros and ones.
+#' Ones correspond to covariates in a model which is represented in nth row.}
 #'
 #' @details
-#' \code{modelset = "nested"}
-#' The first model contains one covariate from the first column of X,
-#' then two covariates from the first and the second column of X, etc.
-#'
-#' \code{common}
-#' A vector of length at most \code{p}, consisting of those column
+#' \describe{
+#' \item{\code{modelset = "nested"}}{The first model contains one covariate from the first column of X,
+#' then two covariates from the first and the second column of X, etc.}
+#' \item{\code{common}}{A vector of length at most \code{p}, consisting of those column
 #' numbers of X for which the covariates are forced to be present
 #' in every model (e.g. \code{c(2,5)} for variables 2 and 5). If provided,
 #' it is used in \code{model.set = "partsubsets"}.
+#' }
+#' }
 #'
 #' @examples
 #' # "all_subsets"

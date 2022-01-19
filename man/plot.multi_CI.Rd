@@ -37,9 +37,7 @@ both MSE estimators)}
 \item{...}{Additional parameters}
 }
 \value{
-\itemize{
-\item Plot with confidence intervals for mixed effects.
-}
+\item{plot_multi}{Plot with confidence intervals for mixed effects}
 }
 \description{
 Plots naive, post-cAIC and post-OBSP CI for mixed effects

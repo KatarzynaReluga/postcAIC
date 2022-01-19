@@ -14,11 +14,11 @@
 #' post-OBSP MSE of mixed effects.
 #'
 #' @return List with elements:
-#' * \code{OBSP_min}  - index of the selected model
-#' * \code{OBSP_models} - cAIC for all considered parameters
-#' * \code{postOBSP_up} - upper boundary of CI for mixed effects
-#' * \code{postOBSP_do} - lower boundary of CI for mixed effects
-#' * \code{mu_hat_sel} - mixed effects of the selected model
+#' \item{OBSP_min}{Index of the selected model}
+#' \item{OBSP_models}{cAIC for all considered parameters}
+#' \item{postOBSP_up}{Upper boundary of CI for mixed effects}
+#' \item{postOBSP_do}{Lower boundary of CI for mixed effects}
+#' \item{mu_hat_sel}{Mixed effects of the selected model}
 #'
 #' @importFrom stats aggregate qnorm rnorm
 #'

@@ -33,13 +33,11 @@ compute_information_criteria(
 \item{fit_model_mixed}{Estimated model using fixed and random effects}
 }
 \value{
-List with information criteria
-\itemize{
-\item \code{mAIC} - marginal AIC
-\item \code{mBIC} - marginal BIC
-\item \code{cAIC} - conditional AIC
-\item \code{deg_cAIC} - penalty of conditional AIC
-}
+List with information criteria:
+\item{mAIC}{Marginal AIC}
+\item{mBIC}{Marginal BIC}
+\item{cAIC}{Conditional AIC}
+\item{deg_cAIC}{Penalty of conditional AIC}
 }
 \description{
 Function \code{compute_infromation_criteria} provides

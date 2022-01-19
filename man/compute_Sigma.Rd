@@ -15,10 +15,8 @@ compute_Sigma(X, invR, invV)
 }
 \value{
 List with elements:
-\itemize{
-\item \code{Sigma} - matrix Sigma
-\item \code{sqrt_invxVx} - square root of variance matrix of fixed effects
-}
+\item{Sigma}{Matrix Sigma}
+\item{sqrt_invxVx}{Square root of variance matrix of fixed effects}
 }
 \description{
 Function \code{compute_Sigma} computes matrix Sigma

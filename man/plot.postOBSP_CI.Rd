@@ -33,9 +33,7 @@
 \item{...}{Additional parameters}
 }
 \value{
-\itemize{
-\item Plot with confidence intervals for mixed effects.
-}
+\item{plot_postOBSP}{Plot with confidence intervals for mixed effects}
 }
 \description{
 Plots post-OBSP CI for mixed effects

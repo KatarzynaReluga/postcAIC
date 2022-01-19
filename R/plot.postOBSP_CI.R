@@ -7,11 +7,10 @@
 #' @param order_estimates Order of intervals in the plot
 #' @param legend_position Legend position. Default: \code{NULL}
 #' @param y_axis_lim Limits of the y axis. Default: \code{NULL}
-
 #' @param ... Additional parameters
 #'
 #' @return
-#' * Plot with confidence intervals for mixed effects.
+#' \item{plot_postOBSP}{Plot with confidence intervals for mixed effects}
 #'
 #' @importFrom ggplot2 ggplot aes coord_cartesian
 #' geom_errorbar labs theme_bw scale_color_manual

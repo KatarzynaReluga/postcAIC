@@ -7,8 +7,8 @@
 #' @param invV Inverse of covariance matrix V of response variable
 #'
 #' @return List with elements:
-#' * \code{Sigma} - matrix Sigma
-#' * \code{sqrt_invxVx} - square root of variance matrix of fixed effects
+#' \item{Sigma}{Matrix Sigma}
+#' \item{sqrt_invxVx}{Square root of variance matrix of fixed effects}
 #'
 #' @keywords internal
 #'

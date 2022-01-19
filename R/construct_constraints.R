@@ -10,7 +10,7 @@
 #' @param p Number of all fixed parameters under consideration (intercept included)
 #'
 #' @return 
-#' * \code{list_constraints}  - list with constraints 
+#' \item{list_constraints}{List with constraints} 
 #' 
 #' @importFrom ks invvech
 #'

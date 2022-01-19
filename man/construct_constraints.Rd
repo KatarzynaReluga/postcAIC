@@ -17,9 +17,7 @@ model (appropriate elements from matrix Sigma)}
 \item{p}{Number of all fixed parameters under consideration (intercept included)}
 }
 \value{
-\itemize{
-\item \code{list_constraints}  - list with constraints
-}
+\item{list_constraints}{List with constraints}
 }
 \description{
 Function \code{construct_constraints} provides a list of constraints

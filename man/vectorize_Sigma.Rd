@@ -18,10 +18,8 @@ vectorize_Sigma(Sigma, index_cov_terms, p, index_full_model)
 }
 \value{
 List with elements:
-\itemize{
-\item \code{Sigma_ordered} - ordered elements of Sigma
-\item \code{Sigma_order_index} - indices of ordered elements of Sigma
-}
+\item{Sigma_ordered}{Ordered elements of Sigma}
+\item{Sigma_order_index}{Indices of ordered elements of Sigma}
 }
 \description{
 Function \code{vectorise_Sigma} vectorizes and orders

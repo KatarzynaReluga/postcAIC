@@ -6,8 +6,8 @@
 #' @inheritParams compute_mse
 #'
 #' @return List with parameters:
-#' * \code{mse} - first-order correct MSE of mixed effects
-#' * \code{mse_corrected} - second-order correct MSE of mixed effects
+#' \item{mse}{First-order correct MSE of mixed effects}
+#' \item{mse_corrected}{Second-order correct MSE of mixed effects}
 #'
 #' @examples
 #' n = 10

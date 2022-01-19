@@ -10,11 +10,11 @@
 #' @param fit_model_fixed Estimated model using fixed effects
 #' @param fit_model_mixed Estimated model using fixed and random effects
 #'
-#' @return List with information criteria
-#' * \code{mAIC} - marginal AIC
-#' * \code{mBIC} - marginal BIC
-#' * \code{cAIC} - conditional AIC
-#' * \code{deg_cAIC} - penalty of conditional AIC
+#' @return List with information criteria:
+#' \item{mAIC}{Marginal AIC}
+#' \item{mBIC}{Marginal BIC}
+#' \item{cAIC}{Conditional AIC}
+#' \item{deg_cAIC}{Penalty of conditional AIC}
 #'
 #' @details
 #' Penalty term in cAIC depends on the model selected.

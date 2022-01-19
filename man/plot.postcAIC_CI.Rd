@@ -32,6 +32,9 @@
 
 \item{...}{Additional parameters}
 }
+\value{
+\item{plot_postcAIC}{Plot with confidence intervals for mixed effects}
+}
 \description{
 Plots post-cAIC confidence intervals (CI) for mixed effects
 }

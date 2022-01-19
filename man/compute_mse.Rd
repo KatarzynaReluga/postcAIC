@@ -20,9 +20,7 @@ compute_mse(C_cluster, X, sig_u, sig_e, clusterID, model = "NERM")
 \item{model}{Model we want to fit. Only NERM is supported for now.}
 }
 \value{
-\itemize{
-\item \code{mse}  - MSE of mixed effects
-}
+\item{mse}{MSE of mixed effects}
 }
 \description{
 Function \code{compute_mse} provides first-order correct MSE for mixed effects
