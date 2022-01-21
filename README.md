@@ -24,7 +24,7 @@ Claeskens, Reluga, and Sperlich (2021).
 
 ## Installation
 
-You can install the most recent version of postcAIC from
+You can install the most recent version of **postcAIC** from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -180,6 +180,6 @@ R-package. The
 [subset](https://github.com/KatarzynaReluga/postcAIC/tree/main/data) and
 the
 [code](https://github.com/KatarzynaReluga/postcAIC/blob/main/data-raw/postcAIC_nhaens.R)
-to construct it can be found in pacakge **postcAIC** together with the
+to construct it can be found in package **postcAIC** together with the
 [code](https://github.com/KatarzynaReluga/postcAIC/blob/main/data_example/data_example.R)
 to analyse the results.
