@@ -17,7 +17,7 @@ Reference: Claeskens, Reluga, and Sperlich (2021). *Post-selection
 inference for linear mixed model parameters using the conditional Akaike
 information criterion*.
 
-Available at [arXiv.org](https://arxiv.org/abs/2109.10975)
+Available at [arXiv.org](https://arxiv.org/abs/2109.10975).
 
 In what follows, we use abbreviation CRS-2021 to refer to the article of
 Claeskens, Reluga, and Sperlich (2021).
