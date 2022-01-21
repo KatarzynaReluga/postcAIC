@@ -37,12 +37,7 @@ You can install the most recent version of postcAIC from [GitHub](https://github
 # install.packages("remotes")
 
 remotes::install_version("tmg", version = "0.3", repos = "http://cran.r-project.org")
-# devtools::install_github("KatarzynaReluga/postcAIC")
-
-devtools::install_github("KatarzynaReluga/postcAIC",   
-                         ref="main",
-                         auth_token =
-          "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")
+devtools::install_github("KatarzynaReluga/postcAIC")
 ```
 
 ## Example
