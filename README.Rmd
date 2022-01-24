@@ -91,7 +91,7 @@ cAIC_model_set = compute_cAIC_for_model_set(
   intercept = FALSE
 )
 
-# Construct post-cAIC CI for fixed and mixed parameters and ---
+# Construct post-cAIC CI for fixed and mixed parameters ------
 postcAIC_CI_results = postcAIC_CI(
   cAIC_min = cAIC_model_set$cAIC_min,
   degcAIC_models =  cAIC_model_set$degcAIC_models,
@@ -135,7 +135,7 @@ naive_CI_results  = naive_CI(
   x_beta_lin_com = cAIC_model_set$X_cluster_full
 )
 
-# Construct post-OBSP CI for mixed parameters ---------------
+# Construct post-OBSP CI for mixed parameters ------------------
 postOBSP_CI_results = postOBSP_CI(
   X,
   y,
