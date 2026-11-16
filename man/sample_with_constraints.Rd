@@ -6,56 +6,81 @@
 \usage{
 sample_with_constraints(
   n_starting_points,
-  p,
-  n,
+  dim_w,
   n_models_to_compare,
   list_constraints,
   n_samples = 10000,
   burn.in = 1000,
-  scale_mvrnorm
+  scale_mvrnorm,
+  sampler = c("rejection", "tmg"),
+  min_acceptance = 0.005
 )
 }
 \arguments{
 \item{n_starting_points}{Number of initial starting points
 for sampling from a truncated normal distribution}
 
-\item{p}{Number of all fixed parameters under consideration (intercept included)}
+\item{dim_w}{Dimension of the vector to sample, \eqn{2p}, where \eqn{p} is the
+number of fixed parameters in the full model (intercept included)}
 
-\item{n}{Number of clusters (random effects)}
-
-\item{n_models_to_compare}{Number of models in a model set to compare with
-(all models in the model set minus the selected model)}
+\item{n_models_to_compare}{Number of models the selected model is compared
+with (models in the estimated set of overparametrized models, minus the
+selected model)}
 
 \item{list_constraints}{List which describes the constraints imposed on
 the normal distribution}
 
-\item{n_samples}{Number of samples from a constrained distribution}
+\item{n_samples}{Number of samples from each Markov chain. The total number
+of draws is \code{2 * n_starting_points * n_samples} for every sampler.}
 
-\item{burn.in}{The number of burn-in iterations. The Markov chain
-is sampled n_samples + burn.in times, and the last n samples are returned.}
+\item{burn.in}{The number of burn-in iterations of each Markov chain.
+Each chain is run n_samples + burn.in times, and the last n_samples are
+returned. Not used by rejection sampling.}
 
-\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution
-to sample. Default: \code{scale_mvrnorm = 10}.}
+\item{scale_mvrnorm}{Variance of the normal distribution from which
+candidate starting points are drawn. Default: \code{scale_mvrnorm = 10}.}
+
+\item{sampler}{\code{"rejection"} (default): rejection sampling, with
+elliptical slice sampling as a fallback when the acceptance rate is below
+\code{min_acceptance}. \code{"tmg"}: exact Hamiltonian Monte Carlo of
+function \code{rtmg} of package \code{tmg}, which must be installed
+(it is archived on CRAN).}
+
+\item{min_acceptance}{Smallest acceptance rate of rejection sampling,
+estimated from a pilot batch of draws, for which rejection sampling is used.
+Below it, elliptical slice sampling is used. Default: \code{min_acceptance = 0.005}.}
 }
 \value{
 List with elements:
-\item{sample_fixed_full}{n_samples from a multivariate constrained normal
-distribution to obtain critical values to construct confidence intervals
-for fixed effects}
-\item{sample_random}{n_samples from a multivariate normal distribution
-to obtain critical values to construct confidence intervals for random effects}
-\item{sample_mix_full}{n_samples of sample_fixed_full and sample_random stacked
-together}
+\item{sample_w}{Matrix with \code{2 * n_starting_points * n_samples} rows,
+each a draw from the truncated standard normal distribution in \eqn{R^{2p}}}
+\item{sampler_used}{Sampler actually used: \code{"rejection"},
+\code{"elliptical slice"}, \code{"tmg"} or \code{"none"} (no constraints)}
+\item{acceptance_rate}{Acceptance rate of rejection sampling in the pilot
+batch (\code{NA} for \code{sampler = "tmg"})}
 }
 \description{
-Function \code{sample_with_constraints} provides samples from a constrained normal
-distribution. Constraints are imposed due to the data driven model selection.
+Function \code{sample_with_constraints} provides samples from the standard
+normal distribution in \eqn{R^{2p}} truncated to the selection region.
+Constraints are imposed due to the data driven model selection.
 }
 \details{
 \itemize{
-\item \code{n_starting_points}  - in practice we use 2 times n_starting_points, because
-we sample using initial values and negative initial values obtained applying function
-\code{find_starting_points}
-\item \code{burn.in} -  parameter of function rtmg
+\item Rejection sampling draws from the \eqn{N(0, I)} distribution in batches and
+keeps the draws which satisfy all constraints. The draws are exact and independent.
+\item Elliptical slice sampling (Murray, Adams and MacKay, 2010) is a Markov chain
+whose stationary distribution is the truncated distribution. Its chains
+start from accepted draws of the pilot batch and their negatives, completed
+if necessary by \code{find_starting_points}.
+\item For \code{sampler = "tmg"}, \code{2 * n_starting_points} chains are run, from
+the starting points obtained with \code{find_starting_points} and their negatives
+(the selection region is symmetric about zero).
+\item If \code{n_models_to_compare = 0}, there are no constraints and the
+samples are drawn from the untruncated standard normal distribution.
 }
+}
+\references{
+Murray, I., Adams, R. P. and MacKay, D. J. C. (2010). Elliptical slice
+sampling. Proceedings of the Thirteenth International Conference on
+Artificial Intelligence and Statistics, PMLR 9, 541-548.
 }

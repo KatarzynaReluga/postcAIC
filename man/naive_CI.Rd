@@ -21,17 +21,23 @@ naive_CI(
 )
 }
 \arguments{
-\item{beta_sel}{Fixed effects (regression parameters) of the selected model}
+\item{beta_sel}{Fixed effects (regression parameters) of the selected model,
+computed at the variance parameters of the full model}
 
-\item{mu_sel}{Mixed effects of the selected model}
+\item{mu_sel}{Mixed effects of the selected model, computed at the
+variance parameters of the full model}
 
-\item{sig_u_sel}{Variance parameter of random effects of the selected model}
+\item{sig_u_sel}{Variance parameter of random effects used for the selected
+model (output \code{sig_u_sel} of \code{compute_cAIC_for_model_set}: the
+full-model estimate if \code{theta = "full"}, the estimate under the
+selected model if \code{theta = "refit"})}
 
-\item{sig_e_sel}{Variance parameter of errors of the selected model}
+\item{sig_e_sel}{Variance parameter of errors used for the selected
+model (output \code{sig_e_sel} of \code{compute_cAIC_for_model_set})}
 
-\item{sig_u_full}{Variance parameter of random effects from the full model}
+\item{sig_u_full}{Not used; kept so that existing calls keep working}
 
-\item{sig_e_full}{Variance parameter of errors from the full model}
+\item{sig_e_full}{Not used; kept so that existing calls keep working}
 
 \item{X_full}{Matrix with a full set of covariates}
 
@@ -61,7 +67,8 @@ List with elements:
 }
 \description{
 Function \code{naive_CI} provides naive CI for fixed and mixed effects
-after cAIC model selection
+after cAIC model selection, that is the usual CI for the selected model,
+which ignore the selection
 }
 \details{
 The output changes slightly depending on the value
@@ -69,13 +76,17 @@ of the parameter \code{type}. If \code{type = "regular"},
 naive second-order correct CIs are not present.
 If \code{type = "corrected"}, naive first-order correct CIS are not present.
 If \code{type = "both"}, naive first- and second-order correct CIs are present.
+
+All intervals use the variance parameters \code{sig_u_sel} and \code{sig_e_sel}.
+The CI for fixed effects use the covariance matrix
+\eqn{(X_{M_*}^T V^{-1} X_{M_*})^{-1}} of the selected model.
 }
 \examples{
 n = 10
 m_i = 5
 m_total = 50
 
-clusterID = rep(1:n, m_i)
+clusterID = rep(1:n, each = m_i)
 p = 10
 beta = rep(2, p)
 u_i = rnorm(n, 0, 2)
@@ -99,7 +110,7 @@ X_full = cAIC_model_set$X_full
 X_cluster_full = cAIC_model_set$X_cluster_full
 
 sig_u_full = cAIC_model_set$sig_u_full
-sig_e_full = cAIC_model_set$sig_u_full
+sig_e_full = cAIC_model_set$sig_e_full
 
 beta_sel = cAIC_model_set$beta_sel
 mu_sel = cAIC_model_set$mu_sel

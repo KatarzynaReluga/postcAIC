@@ -84,9 +84,9 @@ X_intercept = cbind(rep(1, m_total), X)
 clusterID = rep(1:n, each = m_i)
 
 # Create responses, errors and random effects  -------------------
-e_ij = rnorm(m_total, 0, sig_e)
+e_ij = rnorm(m_total, 0, sqrt(sig_e))
 
-u_i = rnorm(n, 0, sig_u)
+u_i = rnorm(n, 0, sqrt(sig_u))
 u_i_aug = rep(u_i, each = m_i)
 
 y = X_intercept\%*\% beta + u_i_aug + e_ij

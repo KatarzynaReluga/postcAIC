@@ -4,23 +4,43 @@
 \alias{construct_constraints}
 \title{Construct constraints}
 \usage{
-construct_constraints(degcAIC_models, cAIC_min, var_cov_terms, p)
+construct_constraints(
+  degcAIC_models,
+  cAIC_min,
+  models_compared,
+  modelset_matrix,
+  I_mat,
+  G_mat,
+  Lambda_sqrt
+)
 }
 \arguments{
 \item{degcAIC_models}{Penalty for all considered models}
 
 \item{cAIC_min}{Index of the selected model among models in the \code{modelset}}
 
-\item{var_cov_terms}{Variance and covariance terms in each
-model (appropriate elements from matrix Sigma)}
+\item{models_compared}{Indices (rows of \code{modelset_matrix}) of the models
+the selected model is compared with, that is the estimated set of
+overparametrized models without the selected model}
 
-\item{p}{Number of all fixed parameters under consideration (intercept included)}
+\item{modelset_matrix}{Matrix composed of zeros and ones}
+
+\item{I_mat}{Matrix \eqn{X^T V^{-1} X} of the full model}
+
+\item{G_mat}{Matrix \eqn{X^T V^{-1} Z G Z^T V^{-1} X} of the full model}
+
+\item{Lambda_sqrt}{Symmetric square root of the covariance matrix \eqn{\Lambda}}
 }
 \value{
-\item{list_constraints}{List with constraints}
+\item{list_constraints}{List with constraints. Each element is a list
+\code{(A, B, C)} for the constraint \eqn{w^T A w + B^T w + C \ge 0},
+as required by function \code{rtmg} of package \code{tmg}}
 }
 \description{
-Function \code{construct_constraints} provides a list of constraints
-for multivariate normal distributions
+Function \code{construct_constraints} provides the list of quadratic
+constraints which define the selection region, that is the set of
+\eqn{w} in \eqn{R^{2p}} such that, for every compared model \eqn{M_j},
+\deqn{w^T \Lambda^{1/2} \{\Gamma(M_*) - \Gamma(M_j)\} \Lambda^{1/2} w
+\ge 2 \{\nu(M_*) - \nu(M_j)\}.}
 }
 \keyword{internal}

@@ -6,37 +6,47 @@
 \usage{
 find_starting_points(
   n_starting_points,
-  p,
+  dim_w,
   n_models_to_compare,
   list_constraints,
-  scale_mvrnorm = 10
+  scale_mvrnorm = 10,
+  max_draws = 1e+06
 )
 }
 \arguments{
 \item{n_starting_points}{Number of initial starting points
 for sampling from a truncated normal distribution}
 
-\item{p}{Number of all fixed parameters under consideration (intercept included)}
+\item{dim_w}{Dimension of the vector to sample, \eqn{2p}, where \eqn{p} is the
+number of fixed parameters in the full model (intercept included)}
 
-\item{n_models_to_compare}{Number of models in a model set to compare with
-(all models in the model set minus the selected model)}
+\item{n_models_to_compare}{Number of models the selected model is compared
+with (models in the estimated set of overparametrized models, minus the
+selected model)}
 
 \item{list_constraints}{List which describes the constraints imposed on
 the normal distribution}
 
-\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution
-to sample. Default: \code{scale_mvrnorm = 10}.}
+\item{scale_mvrnorm}{Variance of the normal distribution from which
+candidate starting points are drawn. Default: \code{scale_mvrnorm = 10}.}
+
+\item{max_draws}{Maximal number of candidate draws for each starting point.
+Default: \code{max_draws = 1e6}.}
 }
 \value{
-\item{starting_points}{n_starting_points different starting points}
+\item{starting_points}{Matrix with \code{n_starting_points} columns, each
+a starting point}
 }
 \description{
-Function \code{find_starting_points} finds starting points which satisfies
-derived constrains. The starting points are then used to sample from
-a truncated normal distribution
+Function \code{find_starting_points} finds starting points which satisfy
+the constraints defining the selection region. The starting points are then
+used by the Markov chain samplers (\code{tmg} or elliptical slice sampling)
+of the truncated normal distribution
 }
 \details{
-The running time of function \code{find_starting_points} is extremely
-sensitive to the choice of scaling factor \code{scale_mvrnorm}. We suggest
-choosing a larger/smaller value if the running time is longer than 1 minute.
+Candidate points are drawn from the \eqn{N(0, scale_mvrnorm I)} distribution
+until one satisfies all constraints strictly. The running time of function
+\code{find_starting_points} is sensitive to the choice of scaling factor
+\code{scale_mvrnorm}. We suggest choosing a larger/smaller value if the
+running time is longer than 1 minute.
 }

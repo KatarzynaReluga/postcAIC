@@ -21,7 +21,7 @@
 #' Function \code{compute_information_criteria} is simplified
 #' because for now only NERM is supported.
 #'
-#' @importFrom Matrix Matrix det
+#' @importFrom Matrix bdiag
 #'
 #' @examples
 #'
@@ -29,7 +29,7 @@
 #' m_i = 5
 #' m_total = 50
 #' 
-#' clusterID = rep(1:n, m_i)
+#' clusterID = rep(1:n, each = m_i)
 #' p = 10
 #' beta = rep(2, p)
 #' u_i = rnorm(n, 0, 2)
@@ -69,10 +69,11 @@ compute_information_criteria <- function(X,
   size_fixed_params = ncol(X) + 2
   
   # Estimate matrices and inverses --------------------------
-  R = sig_e * diag(m_total)
   invR = 1 / sig_e * diag(m_total)
-  detR = max(det(Matrix(R, sparse = T)), (0.1) ^ 8)
-  invG = 1 / sig_u * diag(n)
+  # log-determinant of R = sig_e * I (computed directly to avoid underflow)
+  log_detR = m_total * log(sig_e)
+  # sig_e * G^{-1} in Henderson's mixed model equations scaled by sig_e
+  sig_e_invG = sig_e / sig_u * diag(n)
   n_cluster_units = as.data.frame(table(clusterID))$Freq
   
   V_list <- list()
@@ -85,10 +86,12 @@ compute_information_criteria <- function(X,
   }
   V = bdiag(V_list)
   invV = bdiag(invV_list)
-  detV = max(det(Matrix(V, sparse = T)), (0.1) ^ 8)
+  # log-determinant of V, cluster by cluster (computed directly to avoid underflow)
+  log_detV = sum((n_cluster_units - 1) * log(sig_e) +
+                   log(sig_e + n_cluster_units * sig_u))
   
   
-  loglik_marginal = m_total * log(2 * pi) + log(detV) +
+  loglik_marginal = m_total * log(2 * pi) + log_detV +
     (t(y - fit_model_fixed) %*% invV %*% (y - fit_model_fixed))
   
   # Mariginal AIC ------------------------------------------
@@ -101,7 +104,7 @@ compute_information_criteria <- function(X,
   t_X  = t(X)
   t_Z = t(Z)
   trace1 = solve(rbind(cbind(t_X %*% X, t_X %*% Z),
-                       cbind(t_Z %*% X, t_Z %*% Z + invG)))
+                       cbind(t_Z %*% X, t_Z %*% Z + sig_e_invG)))
   trace2 = rbind(cbind(t_X %*% X, t_X %*% Z), cbind(t_Z %*% X, t_Z %*% Z))
   trace_model = sum(diag(trace1 %*% trace2))
   
@@ -109,7 +112,7 @@ compute_information_criteria <- function(X,
   
   deg_cAIC = trace_model + b_c
   
-  loglik_conditional = m_total * log(2 * pi) + log(detR) +
+  loglik_conditional = m_total * log(2 * pi) + log_detR +
     (t(y - fit_model_mixed) %*% invR %*% (y - fit_model_mixed))
   
   cAIC = as.vector(loglik_conditional + 2 * deg_cAIC)

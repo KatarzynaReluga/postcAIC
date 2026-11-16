@@ -14,7 +14,7 @@
 #' m_i = 5
 #' m_total = 50
 #'
-#' clusterID = rep(1:n, m_i)
+#' clusterID = rep(1:n, each = m_i)
 #' p = 10
 #' beta = rep(2, p)
 #' u_i = rnorm(n, 0, 2)
@@ -46,6 +46,37 @@ compute_corrected_mse <- function(C_cluster,
   g1g2 = compute_mse(C_cluster, X, sig_u, sig_e,
                      clusterID = clusterID, model)
   
+  g3 = compute_g3_NERM(m_i, sig_u, sig_e)
+  
+  
+  mse_corrected = g1g2 + 2 * g3
+  
+  output <- list(mse = g1g2, mse_corrected  = mse_corrected)
+  output
+  
+}
+
+
+#' Term g3 of the second-order MSE under NERM
+#'
+#' Function \code{compute_g3_NERM} computes the term \eqn{g_{3i}} of
+#' Prasad and Rao (1990), which accounts for the estimation of the
+#' variance parameters, for the mixed effect of every cluster under NERM.
+#'
+#' @param m_i Vector of cluster sizes
+#' @param sig_u Variance parameter of random effects
+#' @param sig_e Variance parameter of errors
+#'
+#' @return Vector with \eqn{g_{3i}}, one value per cluster
+#'
+#' @details
+#' The asymptotic variances and covariance of the estimators of the
+#' variance parameters are the elements of the inverse Fisher information.
+#'
+#' @keywords internal
+#'
+
+compute_g3_NERM <- function(m_i, sig_u, sig_e) {
   temp3 = m_i * sig_u + sig_e
   temp4 = sum(m_i ^ 2 * temp3 ^ (-2)) * sum(((m_i - 1) * sig_e ^ (-2) +
                                                temp3 ^ (-2))) - (sum(m_i * temp3 ^ (-2))) ^ 2
@@ -54,11 +85,5 @@ compute_corrected_mse <- function(C_cluster,
   temp7 = -2 / temp4 * sum(m_i * temp3 ^ (-2))
   temp8 = sig_e ^ 2 * temp5 + sig_u ^ 2 * temp6 - 2 * sig_e * sig_u * temp7
   g3 = m_i ^ (-2) * (sig_u + sig_e / m_i) ^ (-3) * temp8
-  
-  
-  mse_corrected = g1g2 + 2 * g3
-  
-  output <- list(mse = g1g2, mse_corrected  = mse_corrected)
-  output
-  
+  g3
 }

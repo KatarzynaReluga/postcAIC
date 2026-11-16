@@ -1,6 +1,6 @@
 Package: postcAIC
 Title: Post-cAIC selection inference under Linear Mixed Models
-Version: 1.0.1
+Version: 2.0.0
 Authors@R: 
     person(given = "Katarzyna",
            family = "Reluga",
@@ -16,18 +16,16 @@ Imports:
 	data.table (>= 1.12.2),
 	dplyr (>= 1.0.2),
 	ggplot2 (>= 3.3.4),
-	ks (>= 1.11.7), 
 	Matrix (>= 1.2-18),
-	mgcv (>= 1.8-33),
 	nlme (>= 3.1-149), 
 	RColorBrewer (>= 1.1-2),
 	stats (>= 4.0.3),
-	tmg (>= 0.3), 
 	utils (>= 4.0.3)
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    tmg (>= 0.3)
 Config/testthat/edition: 3
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 2.10)
 URL: https://github.com/KatarzynaReluga/postcAIC

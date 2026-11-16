@@ -1,7 +1,11 @@
 #' Post-cAIC confidence intervals
 #'
 #' Function \code{postcAIC_CI} provides post-cAIC confidence intervals for
-#' mixed and fixed effects under NERM
+#' mixed and fixed effects under NERM, following Algorithm 1 of the paper.
+#' The model must have been selected with
+#' \code{compute_cAIC_for_model_set(..., theta = "full")}, that is with cAIC
+#' computed for every candidate model at the estimate of the variance
+#' parameters from the full model.
 #'
 #' @param degcAIC_models Penalty for all considered models
 #' @param cAIC_min Index of the selected model among models in the model set
@@ -11,28 +15,82 @@
 #' @param clusterID  Vector with cluster labels
 #' @param sig_u_full Variance parameter of random effects from the full model
 #' @param sig_e_full Variance parameter of errors from the full model
-#' @param beta_sel Fixed effects (regression parameters) of the selected model
-#' @param mu_sel Mixed effects of the selected model
+#' @param beta_sel Fixed effects (regression parameters) of the selected model,
+#' computed at the variance parameters of the full model
+#' @param mu_sel Mixed effects of the selected model, computed at the
+#' variance parameters of the full model
 #' @param x_beta_lin_com Vector or matrix to create linear combinations with
 #' fixed parameters. Default: \code{x_beta_lin_com = NULL}
 #' @param modelset_matrix Matrix composed of zeros and ones
 #' @param n_starting_points Number of initial starting points for sampling from
 #' a truncated normal distribution. Default: \code{n_starting_points = NULL}
-#' @param scale_mvrnorm Scale parameter for multivariate normal distribution
-#' to sample. Default: \code{scale_mvrnorm = 1}.
+#' @param scale_mvrnorm Variance of the normal distribution from which candidate
+#' starting points of the Markov chain samplers are drawn (see
+#' \code{find_starting_points}). Default: \code{scale_mvrnorm = 1}.
 #' @param alpha Construct 1 - alpha confidence intervals. Default: \code{alpha = 0.05}
+#' @param theta How the variance parameters were estimated for the selection
+#' (element \code{theta} of the output of \code{compute_cAIC_for_model_set}).
+#' Required, and must be \code{"full"}.
+#' @param cAIC_models cAIC for all considered models (element \code{cAIC_models}
+#' of the output of \code{compute_cAIC_for_model_set}). Required.
+#' @param y Vector of responses. Needed only if \code{vcov = "robust"}.
+#' Default: \code{y = NULL}
+#' @param c_n Threshold defining the estimated set of overparametrized
+#' models, \eqn{\{M: cAIC(M) - cAIC(M_*) \le c_n\}}; the selected model is
+#' compared only with these models. Any \eqn{c_n \to \infty} with
+#' \eqn{c_n / n \to 0} is valid. Default: \code{c_n = NULL}, which gives
+#' \eqn{c_n = 2 \log n}, \eqn{n} the number of clusters.
+#' \code{c_n = Inf} compares the selected model with all candidate models.
+#' @param var_psi Variance of the term \eqn{\psi_i} in the intervals for mixed
+#' effects: \code{"g1"} (default) for \eqn{g_{1i}}, as in the asymptotic
+#' theory, or \code{"g1+2g3"} for \eqn{g_{1i} + 2 g_{3i}}, which adds the
+#' second-order term of Prasad and Rao for the estimation of the variance
+#' parameters
+#' @param vcov Estimate of the covariance matrix \eqn{\Lambda}:
+#' \code{"model"} (default) for the model-based estimate (correctly specified
+#' models, Section 3 of the paper) or \code{"robust"} for the cluster-robust
+#' estimate (misspecified models, Section 4 of the paper)
+#' @param n_samples Number of samples from each Markov chain.
+#' Default: \code{n_samples = 10000}
+#' @param burn.in Number of burn-in iterations of each Markov chain.
+#' Default: \code{burn.in = 1000}
+#' @param sampler Method to sample from the truncated normal distribution:
+#' \code{"rejection"} (default) for rejection sampling, with elliptical slice
+#' sampling as a fallback when the acceptance rate is below \code{min_acceptance},
+#' or \code{"tmg"} for function \code{rtmg} of package \code{tmg}, which must be
+#' installed (it is archived on CRAN). See \code{sample_with_constraints}.
+#' @param min_acceptance Smallest acceptance rate for which rejection sampling
+#' is used. Default: \code{min_acceptance = 0.005}
 #'
 #'
 #' @return List with parameters:
-#' \item{beta_postcAIC_CI_up}{Upper boundary of CI for fixed effects}
-#' \item{beta_postcAIC_CI_do}{Lower boundary of CI for fixed effects}
+#' \item{beta_postcAIC_CI_up}{Upper boundary of CI for fixed effects (zero for
+#' covariates not in the selected model)}
+#' \item{beta_postcAIC_CI_do}{Lower boundary of CI for fixed effects (zero for
+#' covariates not in the selected model)}
 #' \item{mixed_postcAIC_CI_up}{Upper boundary of CI for mixed effects}
 #' \item{mixed_postcAIC_CI_do}{Lower boundary of CI for mixed effects}
 #' \item{beta_x_postcAIC_CI_up}{Upper boundary of CI for linear combinations of fixed effects}
 #' \item{beta_x_postcAIC_CI_do}{Lower boundary of CI for linear combinations of fixed effects}
+#' \item{models_compared}{Indices (rows of \code{modelset_matrix}) of the models
+#' the selected model is compared with}
+#' \item{c_n}{Threshold used to define the estimated set of overparametrized models}
+#' \item{sampler_used}{Sampler actually used: \code{"rejection"},
+#' \code{"elliptical slice"}, \code{"tmg"} or \code{"none"} (no constraints)}
+#' \item{acceptance_rate}{Acceptance rate of rejection sampling in the pilot batch}
 #'
 #' @details
-#' The running time of function \code{postcAIC_CI} is extremely
+#' The intervals are \eqn{[\hat{\beta}_j - q_{1-\alpha/2}, \hat{\beta}_j - q_{\alpha/2}]},
+#' where \eqn{q_\gamma} are empirical quantiles of draws from the post-selection
+#' distribution of \eqn{\hat{\beta}(M_*) - \beta_0(M_*)}, and similarly for
+#' linear combinations and mixed effects.
+#'
+#' The total number of draws is \code{2 * n_starting_points * n_samples}
+#' for every sampler.
+#'
+#' With \code{sampler = "tmg"}, or when elliptical slice sampling is used and
+#' the pilot batch has too few accepted draws, the running time of function
+#' \code{postcAIC_CI} is
 #' sensitive to the choice of scaling factor \code{scale_mvrnorm} which affects
 #' the speed of finding initial starting points in function \code{find_starting_points}.
 #' These starting points are necessary to sample from a constrained normal distribution
@@ -40,8 +98,7 @@
 #' choosing a larger/smaller value if the running time of function \code{postcAIC_CI}
 #' is longer than 1 minute.
 #'
-#' @importFrom stats quantile
-#' @importFrom Matrix bdiag
+#' @importFrom stats quantile rnorm
 #'
 #' @examples
 #' # Define basic parameters -------------------------------------------------
@@ -59,9 +116,9 @@
 #' clusterID = rep(1:n, each = m_i)
 #'
 #' # Create responses, errors and random effects  -------------------
-#' e_ij = rnorm(m_total, 0, sig_e)
+#' e_ij = rnorm(m_total, 0, sqrt(sig_e))
 #'
-#' u_i = rnorm(n, 0, sig_u)
+#' u_i = rnorm(n, 0, sqrt(sig_u))
 #' u_i_aug = rep(u_i, each = m_i)
 #'
 #' y = X_intercept%*% beta + u_i_aug + e_ij
@@ -77,7 +134,8 @@
 #'   covariate_selection_matrix = NULL,
 #'   modelset  = "part_subset",
 #'   common = c(1:3),
-#'   intercept = FALSE
+#'   intercept = FALSE,
+#'   theta = "full"
 #' )
 #'
 #' cAIC_min = cAIC_model_set$cAIC_min
@@ -90,6 +148,7 @@
 #'
 #' beta_sel = cAIC_model_set$beta_sel
 #' mu_sel = cAIC_model_set$mu_sel
+#' cAIC_models = cAIC_model_set$cAIC_models
 #'
 #' modelset_matrix = cAIC_model_set$modelset_matrix
 #' x_beta_lin_com = cAIC_model_set$X_cluster_full
@@ -108,7 +167,9 @@
 #'   beta_sel,
 #'   mu_sel,
 #'   modelset_matrix,
-#'   x_beta_lin_com = NULL )
+#'   x_beta_lin_com = NULL,
+#'   cAIC_models = cAIC_models,
+#'   theta = cAIC_model_set$theta)
 #'
 #'   plot(postcAIC_CI_results)
 #' @export
@@ -132,190 +193,184 @@ postcAIC_CI  = function(cAIC_min,
                         x_beta_lin_com = NULL,
                         n_starting_points = 5,
                         scale_mvrnorm = 1,
-                        alpha = 0.05) {
-  # Parameters to recover -------------------------------------------------
-  p_full = ncol(X_full)
-  Z = create_Z(model, clusterID)
-  n = ncol(Z)
-  C_cluster_full = cbind(X_cluster_full, diag(n))
-  R_full = sig_e_full * diag(nrow(X_full))
-  invR_full = 1 / sig_e_full * diag(nrow(X_full))
-  G_full = sig_u_full * diag(n)
-  n_cluster_units = as.data.frame(table(clusterID))$Freq
-  
-  V_full_list <- list()
-  invV_full_list <- list()
-  
-  for (i in 1:n) {
-    V_full_list[[i]] <- sig_e_full * diag(n_cluster_units[i]) +
-      sig_u_full * matrix(1, nrow = n_cluster_units[i], ncol = n_cluster_units[i])
-    invV_full_list[[i]] <- solve(V_full_list[[i]])
-  }
-  
-  V_full = bdiag(V_full_list)
-  invV_full = bdiag(invV_full_list)
-  
-  # Compute matrix Sigma for a full model ---------------------------------
-  
-  compute_Sigma_results  = compute_Sigma(X = X_full, invR = invR_full,
-                                         invV = invV_full)
-  
-  Sigma_full = as.matrix(compute_Sigma_results$Sigma)
-  sqrt_invxVx_full = compute_Sigma_results$sqrt_invxVx
-  
-  # Compute selection matrix upsilon  -------------------------------------
-  upsilon_output  = compute_upsilon(modelset_matrix)
-  
-  upsilon = upsilon_output$upsilon
-  upsilon_cAIC = upsilon[cAIC_min,]
-  upsilon_cAIC_extended = matrix(
-    upsilon_cAIC,
-    nrow = nrow(modelset_matrix) - 1,
-    ncol = ncol(upsilon),
-    byrow = TRUE
-  )
-  upsilon_not_cAIC = upsilon[-cAIC_min,]
-  
-  upsilon_cAIC_not_cAIC = upsilon_cAIC_extended - upsilon_not_cAIC
-  
-  
-  # Vectorize terms in matrix Sigma ---------------------------------------
-  index_cov_terms = upsilon_output$cov_terms_index0
-  index_full_model = upsilon_output$index_full_model
-  Sigma_ordered_output  = vectorize_Sigma(Sigma = Sigma_full,
-                                          index_cov_terms,
-                                          p = p_full,
-                                          index_full_model)
-  Sigma_ordered = Sigma_ordered_output$Sigma_ordered
-  Sigma_order_index = Sigma_ordered_output$Sigma_order_index
-  
-  
-  # Calculate invK, its inverse and square root-- ------------------------
-  invK = estimate_invK(
-    X = X_full,
-    sig_u = sig_u_full,
-    sig_e = sig_e_full,
-    model = "NERM",
-    clusterID
-  )
-  invK_vec = eigen(invK)$vectors
-  invK_val = sqrt(eigen(invK)$values)
-  solinvK_vec = solve(invK_vec)
-  invK_sqrt = invK_vec %*% diag(invK_val) %*% solinvK_vec
-  
-  # Select terms in Sigma according to cAIC ------------------------------
-  var_cov_terms = matrix(0,
-                         nrow = nrow(upsilon_not_cAIC),
-                         ncol = ncol(upsilon_not_cAIC))
-  
-  for (k in 1:nrow(upsilon_not_cAIC)) {
-    var_cov_terms[k,] = Sigma_ordered * upsilon_cAIC_not_cAIC[k, Sigma_order_index]
-  }
-  
-  # Sample from constrained distribution ------------------------------
-  list_constraints  = construct_constraints(degcAIC_models, cAIC_min,
-                                            var_cov_terms, p = p_full)
-  
-  sample_constraints_results  = sample_with_constraints(
-    n_starting_points = n_starting_points,
-    p = p_full,
-    n = n,
-    n_models_to_compare = nrow(modelset_matrix) -
-      1,
-    list_constraints = list_constraints,
-    scale_mvrnorm = scale_mvrnorm
-  )
-  # Post-cAIC CI ------------------------------------------------
-  
-  covariates_selected = modelset_matrix[cAIC_min,]
-  indices0_selected = c(1:p_full) * covariates_selected
-  indices_selected = indices0_selected[indices0_selected != 0]
-  
-  indices0_not_selected = c(1:p_full) * !covariates_selected
-  indices_not_selected  = indices0_not_selected[indices0_not_selected != 0]
-  
-  sample_mix_sel = sample_constraints_results$sample_mix_full[,-indices_not_selected]
-  sample_fixed_sel = sample_constraints_results$sample_fixed_full[, c(indices_selected)]
-  
-  # Post-cAIC CI for beta ----------------------------------------------------
+                        alpha = 0.05,
+                        cAIC_models,
+                        theta,
+                        y = NULL,
+                        c_n = NULL,
+                        var_psi = c("g1", "g1+2g3"),
+                        vcov = c("model", "robust"),
+                        n_samples = 10000,
+                        burn.in = 1000,
+                        sampler = c("rejection", "tmg"),
+                        min_acceptance = 0.005) {
+  # Check arguments -------------------------------------------------------
   stopifnot("Parameter alpha must be between 0 and 1" = 0 < alpha &
               alpha < 1)
-  temp_beta_invxVx = tcrossprod(sqrt_invxVx_full[c(indices_selected),
-                                                 c(indices_selected)],
-                                sample_fixed_sel)
-  q_beta_u = apply(temp_beta_invxVx,
-                   1,
-                   quantile,
-                   prob = 1 - alpha / 2,
-                   type = 8)
-  q_beta_d = apply(temp_beta_invxVx,
-                   1,
-                   quantile,
-                   prob = alpha / 2,
-                   type = 8)
+  if (missing(cAIC_models)) {
+    stop(
+      "Argument 'cAIC_models' (element 'cAIC_models' of the output of ",
+      "compute_cAIC_for_model_set) is needed to estimate the set of ",
+      "overparametrized models."
+    )
+  }
+  if (missing(theta)) {
+    stop(
+      "Argument 'theta' (element 'theta' of the output of ",
+      "compute_cAIC_for_model_set) is required."
+    )
+  }
+  if (!identical(theta, "full")) {
+    stop(
+      "postcAIC_CI requires the selection to be computed at the variance ",
+      "estimate of the full model: use compute_cAIC_for_model_set(..., theta = \"full\")."
+    )
+  }
+  var_psi = match.arg(var_psi)
+  vcov = match.arg(vcov)
+  sampler = match.arg(sampler)
   
-  q_beta_u_full  = numeric(p_full)
-  q_beta_u_full[indices_selected] <- q_beta_u
+  # Parameters to recover -------------------------------------------------
+  X_full = as.matrix(X_full)
+  X_cluster_full = as.matrix(X_cluster_full)
+  p_full = ncol(X_full)
+  clusterID = droplevels(validate_observations(clusterID, X_full, cluster = TRUE))
+  n = nlevels(clusterID)
   
-  q_beta_d_full  = numeric(p_full)
-  q_beta_d_full[indices_selected] <- q_beta_d
+  indices_selected = which(modelset_matrix[cAIC_min, ] != 0)
+  
+  # Step 2: matrices of the limiting distribution at the full-model estimate
+  Lambda_results = compute_Lambda(
+    X_full = X_full,
+    y = y,
+    clusterID = clusterID,
+    sig_u = sig_u_full,
+    sig_e = sig_e_full,
+    vcov = vcov
+  )
+  I_mat = Lambda_results$I_mat
+  G_mat = Lambda_results$G_mat
+  Lambda_sqrt = Lambda_results$Lambda_sqrt
+  gamma = Lambda_results$gamma
+  X_bar = Lambda_results$X_bar
+  m_i = Lambda_results$m_i
+  
+  # Step 2: estimated set of overparametrized models ------------------------
+  if (is.null(c_n)) {
+    c_n = 2 * log(n)
+  }
+  models_compared = which(cAIC_models - cAIC_models[cAIC_min] <= c_n)
+  models_compared = setdiff(models_compared, cAIC_min)
+  
+  # Step 3: sample from the truncated distribution ------------------------
+  list_constraints  = construct_constraints(
+    degcAIC_models = degcAIC_models,
+    cAIC_min = cAIC_min,
+    models_compared = models_compared,
+    modelset_matrix = modelset_matrix,
+    I_mat = I_mat,
+    G_mat = G_mat,
+    Lambda_sqrt = Lambda_sqrt
+  )
+  
+  sample_results = sample_with_constraints(
+    n_starting_points = n_starting_points,
+    dim_w = 2 * p_full,
+    n_models_to_compare = length(models_compared),
+    list_constraints = list_constraints,
+    n_samples = n_samples,
+    burn.in = burn.in,
+    scale_mvrnorm = scale_mvrnorm,
+    sampler = sampler,
+    min_acceptance = min_acceptance
+  )
+  sample_w = sample_results$sample_w
+  
+  # Step 3: draws of beta_hat(M_*) - beta_0(M_*) --------------------------
+  # delta = I(M_*)^{-1} Pi_{M_*} (I_p, 0) Lambda^{1/2} w, one row per draw
+  I_selected_inv = solve(I_mat[indices_selected, indices_selected, drop = FALSE])
+  map_delta = I_selected_inv %*% Lambda_sqrt[indices_selected, , drop = FALSE]
+  sample_delta = tcrossprod(sample_w, map_delta)
+  
+  # Step 4: post-cAIC CI for beta -----------------------------------------
+  q_beta_u = apply(sample_delta,
+                   2,
+                   quantile,
+                   probs = 1 - alpha / 2,
+                   type = 8)
+  q_beta_d = apply(sample_delta,
+                   2,
+                   quantile,
+                   probs = alpha / 2,
+                   type = 8)
   
   full_beta_hat = numeric(p_full)
   full_beta_hat[indices_selected] <- beta_sel
   
-  beta_postcAIC_CI_up = full_beta_hat + q_beta_u_full
-  beta_postcAIC_CI_do = full_beta_hat + q_beta_d_full
+  beta_postcAIC_CI_up = numeric(p_full)
+  beta_postcAIC_CI_do = numeric(p_full)
+  beta_postcAIC_CI_up[indices_selected] = beta_sel - q_beta_d
+  beta_postcAIC_CI_do[indices_selected] = beta_sel - q_beta_u
   
-  #Post-cAIC for  linear combination of betas and covaraites ---------------
+  # Step 4: post-cAIC CI for linear combinations of betas ------------------
   if (!is.null(x_beta_lin_com)) {
+    if (is.vector(x_beta_lin_com)) {
+      x_beta_lin_com = matrix(x_beta_lin_com,
+                              nrow = 1,
+                              ncol = length(x_beta_lin_com))
+    }
+    x_beta_lin_com = as.matrix(x_beta_lin_com)
     stopifnot(
       "Number of columns in 'x_beta_lin_com'
         has to be the same as number of covariates in a full model" =
         NCOL(x_beta_lin_com) == length(full_beta_hat)
     )
     
-    t_x_beta_lin_com = t(x_beta_lin_com)
-    sample_beta_pred = crossprod(t_x_beta_lin_com[indices_selected,],
-                                 temp_beta_invxVx)
-    q_betax_u = apply(sample_beta_pred, 1,
-                      function(x)
-                        quantile(x, 1 - alpha / 2))
-    q_betax_d = apply(sample_beta_pred, 1,
-                      function(x)
-                        quantile(x, alpha / 2))
+    x_beta_selected = x_beta_lin_com[, indices_selected, drop = FALSE]
+    beta_x_full = as.vector(x_beta_lin_com %*% full_beta_hat)
     
+    beta_x_postcAIC_CI_up = numeric(nrow(x_beta_lin_com))
+    beta_x_postcAIC_CI_do = numeric(nrow(x_beta_lin_com))
     
-    beta_x_full = crossprod(t_x_beta_lin_com, full_beta_hat)
-    
-    #postcAIC
-    beta_x_postcAIC_CI_up = c(beta_x_full + q_betax_u)
-    beta_x_postcAIC_CI_do = c(beta_x_full + q_betax_d)
+    for (k in 1:nrow(x_beta_lin_com)) {
+      sample_beta_x = as.vector(sample_delta %*% x_beta_selected[k, ])
+      q_betax = quantile(sample_beta_x,
+                         probs = c(alpha / 2, 1 - alpha / 2),
+                         type = 8)
+      beta_x_postcAIC_CI_up[k] = beta_x_full[k] - q_betax[1]
+      beta_x_postcAIC_CI_do[k] = beta_x_full[k] - q_betax[2]
+    }
   } else {
     beta_x_postcAIC_CI_up = "CI for a linear combination of fixed effects not requested"
     beta_x_postcAIC_CI_do = "CI for a linear combination of fixed effects not requested"
   }
   
+  # Step 5: post-cAIC CI for mixed effects ---------------------------------
+  # d_i(M_*) = k_i(M_*) - gamma_i xbar_i(M_*), with k_i the cluster-level covariates
+  d_selected = X_cluster_full[, indices_selected, drop = FALSE] -
+    gamma * X_bar[, indices_selected, drop = FALSE]
   
-  # Post-cAIC CI for mixed effects-------------------------------------------
-  invK_sel = invK[-indices_not_selected, -indices_not_selected]
-  invK_sqrt_sel = invK_sqrt[-indices_not_selected, -indices_not_selected]
-  temp0_mixed_invK = tcrossprod(invK_sqrt_sel, sample_mix_sel)
-  C_cluster_sel = C_cluster_full[, -indices_not_selected]
-  temp_mixed_invK = crossprod(t(C_cluster_sel), temp0_mixed_invK)
+  g1 = gamma * sig_e_full / m_i
+  if (var_psi == "g1") {
+    var_psi_values = g1
+  } else {
+    var_psi_values = g1 + 2 * compute_g3_NERM(m_i, sig_u_full, sig_e_full)
+  }
   
-  q_mixed_u = apply(temp_mixed_invK,
-                    1,
-                    quantile,
-                    prob = 1 - alpha / 2,
-                    type = 8)
-  q_mixed_d = apply(temp_mixed_invK,
-                    1,
-                    quantile,
-                    prob = alpha / 2,
-                    type = 8)
+  mu_sel = as.vector(mu_sel)
+  n_draws = nrow(sample_delta)
+  mixed_postcAIC_CI_up = numeric(n)
+  mixed_postcAIC_CI_do = numeric(n)
   
-  mixed_postcAIC_CI_up = c(mu_sel + q_mixed_u)
-  mixed_postcAIC_CI_do = c(mu_sel + q_mixed_d)
+  for (i in 1:n) {
+    sample_tau = rnorm(n_draws, mean = 0, sd = sqrt(var_psi_values[i])) +
+      as.vector(sample_delta %*% d_selected[i, ])
+    q_mixed = quantile(sample_tau,
+                       probs = c(alpha / 2, 1 - alpha / 2),
+                       type = 8)
+    mixed_postcAIC_CI_up[i] = mu_sel[i] - q_mixed[1]
+    mixed_postcAIC_CI_do[i] = mu_sel[i] - q_mixed[2]
+  }
   
   output = list(
     beta_postcAIC_CI_up = beta_postcAIC_CI_up,
@@ -323,7 +378,11 @@ postcAIC_CI  = function(cAIC_min,
     mixed_postcAIC_CI_up = mixed_postcAIC_CI_up,
     mixed_postcAIC_CI_do = mixed_postcAIC_CI_do,
     beta_x_postcAIC_CI_up = beta_x_postcAIC_CI_up,
-    beta_x_postcAIC_CI_do = beta_x_postcAIC_CI_do
+    beta_x_postcAIC_CI_do = beta_x_postcAIC_CI_do,
+    models_compared = models_compared,
+    c_n = c_n,
+    sampler_used = sample_results$sampler_used,
+    acceptance_rate = sample_results$acceptance_rate
   )
   
   class(output)  <- "postcAIC_CI"

@@ -19,7 +19,17 @@ postcAIC_CI(
   x_beta_lin_com = NULL,
   n_starting_points = 5,
   scale_mvrnorm = 1,
-  alpha = 0.05
+  alpha = 0.05,
+  cAIC_models,
+  theta,
+  y = NULL,
+  c_n = NULL,
+  var_psi = c("g1", "g1+2g3"),
+  vcov = c("model", "robust"),
+  n_samples = 10000,
+  burn.in = 1000,
+  sampler = c("rejection", "tmg"),
+  min_acceptance = 0.005
 )
 }
 \arguments{
@@ -39,9 +49,11 @@ postcAIC_CI(
 
 \item{clusterID}{Vector with cluster labels}
 
-\item{beta_sel}{Fixed effects (regression parameters) of the selected model}
+\item{beta_sel}{Fixed effects (regression parameters) of the selected model,
+computed at the variance parameters of the full model}
 
-\item{mu_sel}{Mixed effects of the selected model}
+\item{mu_sel}{Mixed effects of the selected model, computed at the
+variance parameters of the full model}
 
 \item{modelset_matrix}{Matrix composed of zeros and ones}
 
@@ -51,26 +63,92 @@ fixed parameters. Default: \code{x_beta_lin_com = NULL}}
 \item{n_starting_points}{Number of initial starting points for sampling from
 a truncated normal distribution. Default: \code{n_starting_points = NULL}}
 
-\item{scale_mvrnorm}{Scale parameter for multivariate normal distribution
-to sample. Default: \code{scale_mvrnorm = 1}.}
+\item{scale_mvrnorm}{Variance of the normal distribution from which candidate
+starting points of the Markov chain samplers are drawn (see
+\code{find_starting_points}). Default: \code{scale_mvrnorm = 1}.}
 
 \item{alpha}{Construct 1 - alpha confidence intervals. Default: \code{alpha = 0.05}}
+
+\item{cAIC_models}{cAIC for all considered models (element \code{cAIC_models}
+of the output of \code{compute_cAIC_for_model_set}). Required.}
+
+\item{theta}{How the variance parameters were estimated for the selection
+(element \code{theta} of the output of \code{compute_cAIC_for_model_set}).
+Required, and must be \code{"full"}.}
+
+\item{y}{Vector of responses. Needed only if \code{vcov = "robust"}.
+Default: \code{y = NULL}}
+
+\item{c_n}{Threshold defining the estimated set of overparametrized
+models, \eqn{\{M: cAIC(M) - cAIC(M_*) \le c_n\}}; the selected model is
+compared only with these models. Any \eqn{c_n \to \infty} with
+\eqn{c_n / n \to 0} is valid. Default: \code{c_n = NULL}, which gives
+\eqn{c_n = 2 \log n}, \eqn{n} the number of clusters.
+\code{c_n = Inf} compares the selected model with all candidate models.}
+
+\item{var_psi}{Variance of the term \eqn{\psi_i} in the intervals for mixed
+effects: \code{"g1"} (default) for \eqn{g_{1i}}, as in the asymptotic
+theory, or \code{"g1+2g3"} for \eqn{g_{1i} + 2 g_{3i}}, which adds the
+second-order term of Prasad and Rao for the estimation of the variance
+parameters}
+
+\item{vcov}{Estimate of the covariance matrix \eqn{\Lambda}:
+\code{"model"} (default) for the model-based estimate (correctly specified
+models, Section 3 of the paper) or \code{"robust"} for the cluster-robust
+estimate (misspecified models, Section 4 of the paper)}
+
+\item{n_samples}{Number of samples from each Markov chain.
+Default: \code{n_samples = 10000}}
+
+\item{burn.in}{Number of burn-in iterations of each Markov chain.
+Default: \code{burn.in = 1000}}
+
+\item{sampler}{Method to sample from the truncated normal distribution:
+\code{"rejection"} (default) for rejection sampling, with elliptical slice
+sampling as a fallback when the acceptance rate is below \code{min_acceptance},
+or \code{"tmg"} for function \code{rtmg} of package \code{tmg}, which must be
+installed (it is archived on CRAN). See \code{sample_with_constraints}.}
+
+\item{min_acceptance}{Smallest acceptance rate for which rejection sampling
+is used. Default: \code{min_acceptance = 0.005}}
 }
 \value{
 List with parameters:
-\item{beta_postcAIC_CI_up}{Upper boundary of CI for fixed effects}
-\item{beta_postcAIC_CI_do}{Lower boundary of CI for fixed effects}
+\item{beta_postcAIC_CI_up}{Upper boundary of CI for fixed effects (zero for
+covariates not in the selected model)}
+\item{beta_postcAIC_CI_do}{Lower boundary of CI for fixed effects (zero for
+covariates not in the selected model)}
 \item{mixed_postcAIC_CI_up}{Upper boundary of CI for mixed effects}
 \item{mixed_postcAIC_CI_do}{Lower boundary of CI for mixed effects}
 \item{beta_x_postcAIC_CI_up}{Upper boundary of CI for linear combinations of fixed effects}
 \item{beta_x_postcAIC_CI_do}{Lower boundary of CI for linear combinations of fixed effects}
+\item{models_compared}{Indices (rows of \code{modelset_matrix}) of the models
+the selected model is compared with}
+\item{c_n}{Threshold used to define the estimated set of overparametrized models}
+\item{sampler_used}{Sampler actually used: \code{"rejection"},
+\code{"elliptical slice"}, \code{"tmg"} or \code{"none"} (no constraints)}
+\item{acceptance_rate}{Acceptance rate of rejection sampling in the pilot batch}
 }
 \description{
 Function \code{postcAIC_CI} provides post-cAIC confidence intervals for
-mixed and fixed effects under NERM
+mixed and fixed effects under NERM, following Algorithm 1 of the paper.
+The model must have been selected with
+\code{compute_cAIC_for_model_set(..., theta = "full")}, that is with cAIC
+computed for every candidate model at the estimate of the variance
+parameters from the full model.
 }
 \details{
-The running time of function \code{postcAIC_CI} is extremely
+The intervals are \eqn{[\hat{\beta}_j - q_{1-\alpha/2}, \hat{\beta}_j - q_{\alpha/2}]},
+where \eqn{q_\gamma} are empirical quantiles of draws from the post-selection
+distribution of \eqn{\hat{\beta}(M_*) - \beta_0(M_*)}, and similarly for
+linear combinations and mixed effects.
+
+The total number of draws is \code{2 * n_starting_points * n_samples}
+for every sampler.
+
+With \code{sampler = "tmg"}, or when elliptical slice sampling is used and
+the pilot batch has too few accepted draws, the running time of function
+\code{postcAIC_CI} is
 sensitive to the choice of scaling factor \code{scale_mvrnorm} which affects
 the speed of finding initial starting points in function \code{find_starting_points}.
 These starting points are necessary to sample from a constrained normal distribution
@@ -94,9 +172,9 @@ X_intercept = cbind(rep(1, m_total), X)
 clusterID = rep(1:n, each = m_i)
 
 # Create responses, errors and random effects  -------------------
-e_ij = rnorm(m_total, 0, sig_e)
+e_ij = rnorm(m_total, 0, sqrt(sig_e))
 
-u_i = rnorm(n, 0, sig_u)
+u_i = rnorm(n, 0, sqrt(sig_u))
 u_i_aug = rep(u_i, each = m_i)
 
 y = X_intercept\%*\% beta + u_i_aug + e_ij
@@ -112,7 +190,8 @@ cAIC_model_set = compute_cAIC_for_model_set(
   covariate_selection_matrix = NULL,
   modelset  = "part_subset",
   common = c(1:3),
-  intercept = FALSE
+  intercept = FALSE,
+  theta = "full"
 )
 
 cAIC_min = cAIC_model_set$cAIC_min
@@ -125,6 +204,7 @@ sig_e_full = cAIC_model_set$sig_e_full
 
 beta_sel = cAIC_model_set$beta_sel
 mu_sel = cAIC_model_set$mu_sel
+cAIC_models = cAIC_model_set$cAIC_models
 
 modelset_matrix = cAIC_model_set$modelset_matrix
 x_beta_lin_com = cAIC_model_set$X_cluster_full
@@ -143,7 +223,9 @@ postcAIC_CI_results = postcAIC_CI(
   beta_sel,
   mu_sel,
   modelset_matrix,
-  x_beta_lin_com = NULL )
+  x_beta_lin_com = NULL,
+  cAIC_models = cAIC_models,
+  theta = cAIC_model_set$theta)
 
   plot(postcAIC_CI_results)
 }

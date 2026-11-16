@@ -10,6 +10,13 @@
 #' for fixed effects of the full model. Default: \code{NULL}
 #' @param covariate_selection_matrix Matrix composed of zeros and ones
 #' indicating fixed models in each parameter. Default: \code{NULL}
+#' @param theta How the variance parameters are estimated.
+#' \code{"full"} (default): estimated once under the full model, and every
+#' candidate model is fitted and its cAIC computed at this common estimate.
+#' This is the selection rule for which \code{postcAIC_CI} is valid.
+#' \code{"refit"}: estimated separately under every candidate model,
+#' as in the usual implementation of cAIC. Use it only for comparisons,
+#' for instance with \code{naive_CI}.
 
 #' @return List with parameters:
 #' \item{cAIC_min}{Index of selected model}
@@ -18,17 +25,21 @@
 #' \item{beta_sel}{Fixed effects of the selected model}
 #' \item{mu_sel}{Mixed effects of the selected model}
 #' \item{indices_sel}{Indices of the selected covariates among full covariate set}
-#' \item{sig_u_sel}{Variance parameter of random effects of the selected model}
-#' \item{sig_e_sel}{Variance parameter of errors of the selected model}
+#' \item{sig_u_sel}{Variance parameter of random effects used for the selected
+#' model (equal to \code{sig_u_full} if \code{theta = "full"})}
+#' \item{sig_e_sel}{Variance parameter of errors used for the selected
+#' model (equal to \code{sig_e_full} if \code{theta = "full"})}
 #' \item{X_full}{Matrix with fixed effects covariates of the full model}
 #' \item{X_cluster_full}{Matrix with cluster level covariates for fixed effects of the full model}
 #' \item{modelset_matrix}{Matrix composed of zeros and ones. Ones correspond to
 #' covariate in a model which is represented in nth row}
+#' \item{theta}{How the variance parameters were estimated: \code{"full"} or \code{"refit"}}
 #'
 #'
 #' @details
 #' * \code{model}  - for the moment, only NERM is supported
 #' * \code{covariate_selection_matrix} - necessary only if \code{modelset = NULL}
+#' * Observations must be sorted by cluster.
 #'
 #' @importFrom stats aggregate
 #'
@@ -37,7 +48,7 @@
 #' m_i = 5
 #' m_total = 50
 #'
-#' clusterID = rep(1:n, m_i)
+#' clusterID = rep(1:n, each = m_i)
 #' p = 10
 #' beta = rep(2, p)
 #' u_i = rnorm(n, 0, 2)
@@ -65,7 +76,10 @@ compute_cAIC_for_model_set = function(X,
                                       covariate_selection_matrix = NULL,
                                       modelset  = "all_subsets",
                                       intercept = FALSE,
-                                      common = NULL) {
+                                      common = NULL,
+                                      theta = c("full", "refit")) {
+  theta = match.arg(theta)
+
   # Validate and format data matrix X, y, clusterID, Z --------------------
   if (identical(intercept, FALSE)) {
     X = cbind(rep(1, nrow(X)), X)
@@ -86,6 +100,9 @@ compute_cAIC_for_model_set = function(X,
   
   clusterID = validate_observations(clusterID, X_full, cluster = TRUE)
   y = validate_observations(y, X_full)
+  
+  stopifnot("Observations must be sorted by cluster ('clusterID')" =
+              !is.unsorted(as.integer(clusterID)))
   
   p_full = ncol(X_full)
   n = nlevels(clusterID)
@@ -125,9 +142,22 @@ compute_cAIC_for_model_set = function(X,
       format_data_matrix(as.matrix(X_cluster_full[, indices]))
     
     
-    params = estimate_NERM(X, y,
-                           clusterID = clusterID,
-                           X_cluster = X_cluster)
+    if (theta == "full") {
+      # Fit model at the variance parameters of the full model
+      params = fit_NERM_given_theta(
+        X,
+        y,
+        clusterID = clusterID,
+        sig_u = sig_u_full,
+        sig_e = sig_e_full,
+        X_cluster = X_cluster
+      )
+    } else {
+      # Refit model, including its variance parameters
+      params = estimate_NERM(X, y,
+                             clusterID = clusterID,
+                             X_cluster = X_cluster)
+    }
     
     beta_models[[k]] = params$beta
     mu_models[[k]] = params$mu
@@ -175,7 +205,8 @@ compute_cAIC_for_model_set = function(X,
     sig_e_full = sig_e_full,
     sig_u_full = sig_u_full,
     X_cluster_full = X_cluster_full,
-    modelset_matrix = modelset_matrix
+    modelset_matrix = modelset_matrix,
+    theta = theta
   )
   
   output

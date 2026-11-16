@@ -33,7 +33,7 @@ n = 10
 m_i = 5
 m_total = 50
 
-clusterID = rep(1:n, m_i)
+clusterID = rep(1:n, each = m_i)
 p = 10
 beta = rep(2, p)
 u_i = rnorm(n, 0, 2)
