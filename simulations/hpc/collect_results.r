@@ -4,16 +4,20 @@
 # Usage:                                                             #
 #   Rscript collect_results.r results/S2_n90_m5                      #
 #                                                                    #
-# Reads all task_*.RData files of the scenario and computes, for     #
-# every method and target,                                           #
+# Reads all task_*.RData files of the scenario. For every method,   #
+# target and unit (coefficient beta_j, the average combination       #
+# k_bar^T beta, or cluster i for k_i^T beta and mu_i) it computes,   #
+# over the simulation runs in which the method returned an interval, #
 #   cov    empirical coverage (%)                                    #
 #   err    |cov - 95| / 95 * 100                                     #
-#   len    average length of the intervals                           #
-#   sd_len standard deviation of the lengths over simulation runs    #
-#   runs   number of runs with an interval (failed runs excluded)    #
-# For beta_j and k_bar^T beta these are computed over runs. For      #
-# k_i^T beta and mu_i they are computed over runs for every cluster  #
-# i and then averaged over clusters.                                 #
+#   len    average length of the finite intervals                    #
+#   sd_len standard deviation of the lengths of the finite intervals #
+#   inf    share of infinite intervals (%)                           #
+#   runs   number of runs with an interval                           #
+# For k_i^T beta and mu_i these per-cluster values are then averaged #
+# over the clusters (runs: the smallest number over the clusters).   #
+# The method of Ruegamer et al. (RBG) is computed only in the first  #
+# 100 runs, and its failures are reported separately.                #
 # Writes results/summary_<scenario>.csv and prints the table.        #
 ######################################################################
 
@@ -31,18 +35,24 @@ all_results = lapply(files, function(f) {
 n_runs = length(all_results)
 
 # Matrix runs x units of lower limits, upper limits or true values -------
-stack_rows = function(get_values) {
-  do.call(rbind, lapply(all_results, get_values))
+stack_rows = function(results, get_values) {
+  do.call(rbind, lapply(results, get_values))
 }
 
 summarise_units = function(lower, upper, truth) {
   covered = (lower <= truth) & (truth <= upper)
   len = upper - lower
+  returned = !is.na(len)
+  infinite = returned & !is.finite(len)
+  len_finite = ifelse(returned & is.finite(len), len, NA)
+  cov = 100 * colMeans(covered, na.rm = TRUE)
   data.frame(
-    cov = 100 * colMeans(covered, na.rm = TRUE),
-    len = colMeans(len, na.rm = TRUE),
-    sd_len = apply(len, 2, sd, na.rm = TRUE),
-    runs = colSums(!is.na(len))
+    cov = cov,
+    err = abs(cov - 95) / 95 * 100,
+    len = colMeans(len_finite, na.rm = TRUE),
+    sd_len = apply(len_finite, 2, sd, na.rm = TRUE),
+    inf = 100 * colSums(infinite) / pmax(colSums(returned), 1),
+    runs = colSums(returned)
   )
 }
 
@@ -50,12 +60,16 @@ methods = unique(unlist(lapply(all_results, function(r) names(r$intervals))))
 summary_rows = list()
 
 for (method in methods) {
-  targets = names(all_results[[1]]$intervals[[method]])
+  # Runs in which the method was computed
+  results_method = Filter(function(r) !is.null(r$intervals[[method]]), all_results)
+  targets = names(results_method[[1]]$intervals[[method]])
 
   for (target in targets) {
-    lower = stack_rows(function(r) r$intervals[[method]][[target]][, "lower"])
-    upper = stack_rows(function(r) r$intervals[[method]][[target]][, "upper"])
-    truth = stack_rows(function(r) r$truth[[target]])
+    lower = stack_rows(results_method,
+                       function(r) r$intervals[[method]][[target]][, "lower"])
+    upper = stack_rows(results_method,
+                       function(r) r$intervals[[method]][[target]][, "upper"])
+    truth = stack_rows(results_method, function(r) r$truth[[target]])
 
     by_unit = summarise_units(lower, upper, truth)
 
@@ -73,8 +87,10 @@ for (method in methods) {
         method = method,
         target = target,
         cov = mean(by_unit$cov, na.rm = TRUE),
+        err = mean(by_unit$err, na.rm = TRUE),
         len = mean(by_unit$len, na.rm = TRUE),
         sd_len = mean(by_unit$sd_len, na.rm = TRUE),
+        inf = mean(by_unit$inf, na.rm = TRUE),
         runs = min(by_unit$runs)
       )
     }
@@ -82,8 +98,8 @@ for (method in methods) {
 }
 
 summary_table = do.call(rbind, summary_rows)
-summary_table$err = abs(summary_table$cov - 95) / 95 * 100
-summary_table = summary_table[, c("method", "target", "cov", "err", "len", "sd_len", "runs")]
+summary_table = summary_table[, c("method", "target", "cov", "err", "len",
+                                  "sd_len", "inf", "runs")]
 rownames(summary_table) = NULL
 
 output_file = file.path(dirname(normalizePath(folder)),
@@ -94,12 +110,17 @@ write.csv(summary_table, output_file, row.names = FALSE)
 cat("Scenario", scenario, ":", n_runs, "runs\n\n")
 print(format(summary_table, digits = 3), row.names = FALSE)
 
-cat("\nAverage running time per run (seconds):\n")
-timings = stack_rows(function(r) unlist(r$timings))
-print(round(colMeans(timings), 1))
+cat("\nAverage running time per run (seconds), over the runs with the method:\n")
+timing_names = unique(unlist(lapply(all_results, function(r) names(r$timings))))
+average_timings = sapply(timing_names, function(name) {
+  mean(unlist(lapply(all_results, function(r) r$timings[[name]])))
+})
+print(round(average_timings, 1))
 
 cat("\nAverage number of seeds tried per run:",
     round(mean(sapply(all_results, function(r) r$n_tries)), 1), "\n")
+cat("Seeds skipped because the selection failed (all runs):",
+    sum(unlist(lapply(all_results, function(r) r$n_selection_errors))), "\n")
 
 cat("\nSampler used by PC, number of runs:\n")
 print(table(sapply(all_results, function(r) r$PC_info[["PC"]]$sampler_used)))
@@ -110,6 +131,25 @@ cat("Average number of models compared with:",
     round(mean(sapply(all_results, function(r)
       length(r$PC_info[["PC"]]$models_compared))), 2), "\n")
 
-cat("\nRuns with failed selections in RBG's congruency checks:",
-    sum(sapply(all_results, function(r) r$n_check_errors) > 0), "\n")
+# Failures of the method of Ruegamer et al. (RBG) ----------------------------
+results_RBG = Filter(function(r) !is.null(r$RBG_info), all_results)
+if (length(results_RBG) > 0) {
+  info = do.call(rbind, lapply(results_RBG, function(r) unlist(r$RBG_info)))
+  n_infinite = sapply(results_RBG, function(r) {
+    limits = do.call(rbind, r$intervals[["RBG"]])
+    len = limits[, "upper"] - limits[, "lower"]
+    sum(!is.na(len) & !is.finite(len))
+  })
+  cat("\nMethod of Ruegamer et al. (RBG):", length(results_RBG), "runs,",
+      info[1, "n_calls"], "calls of mocasin per run\n")
+  cat("  Failed calls (no interval):", sum(info[, "n_failed"]),
+      "in", sum(info[, "n_failed"] > 0), "runs\n")
+  cat("  Infinite intervals:", sum(n_infinite),
+      "in", sum(n_infinite > 0), "runs\n")
+  cat("  Limits that are not the required quantile (warnings):",
+      sum(info[, "n_warnings"]), "in", sum(info[, "n_warnings"] > 0), "runs\n")
+  cat("  Failed selections in the congruency checks:",
+      sum(info[, "n_check_errors"]), "\n")
+}
+
 cat("Saved to", output_file, "\n")
