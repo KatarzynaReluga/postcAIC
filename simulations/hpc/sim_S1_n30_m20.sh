@@ -16,6 +16,10 @@
 module load R/4.5.2-gcc15.2.0
 export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
 export R_LIBS_USER=$HOME/Rlibs/4.5
+# Matrix algebra on a single thread (each task uses one core)
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export FLEXIBLAS_NUM_THREADS=1
 
 ldd /software/R/4.5.2-gcc15.2.0/lib64/R/lib/libR.so | grep "not found"
 Rscript -e 'R.version.string'

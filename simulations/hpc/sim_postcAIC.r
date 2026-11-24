@@ -19,15 +19,19 @@
 #   OBSP      Sugasawa et al. (2019), postOBSP_CI, mu_i only       #
 #   RBG       Ruegamer, Baumann and Greven (2022), selfmade::mocasin #
 #             only in tasks 1, ..., 100 (n_runs_RBG), its 2n + 2     #
-#             calls run in parallel on the cores from --ntasks       #
+#             calls run one after another; its congruency check uses #
+#             the fast version of the selection rule in              #
+#             fast_selection.r (same cAIC values)                    #
 # and saves them, with the true values, in                           #
 #   results/S<setting>_n<n>_m<m_i>/task_<id>.RData                   #
+# The results of all methods but RBG are saved before RBG starts,    #
+# and saved again with RBG once it has finished.                     #
 ######################################################################
 
 library(postcAIC)
 library(selfmade)
 library(lme4)
-library(parallel)
+source("fast_selection.r")
 
 # Scenario ---------------------------------------------------------------
 args = commandArgs(trailingOnly = TRUE)
@@ -41,10 +45,6 @@ stopifnot(setting %in% c(1, 2), !is.na(task_id))
 # RBG is computed only in the first n_runs_RBG tasks
 n_runs_RBG = 100
 run_RBG = task_id <= n_runs_RBG
-
-# Number of cores allocated by Slurm (--ntasks), used for RBG
-n_cores = as.integer(Sys.getenv("SLURM_NTASKS", "1"))
-if (is.na(n_cores) || n_cores < 1) n_cores = 1
 
 m_total = n * m_i
 beta = c(2.25, -1.1, 2.43, 0, 0)
@@ -82,6 +82,10 @@ select_model = function(y) {
     theta = "full"
   )
 }
+
+# Fast version of the same rule (same cAIC values), used in the
+# congruency check of RBG, which applies the rule 1000 times per call
+select_model_fast = make_fast_selection(X, clusterID, modelset_matrix)
 
 # Screen this task's block of seeds until the full model is selected ------
 seed_block = 10000
@@ -236,10 +240,28 @@ if (!is.null(res_OBSP)) {
   intervals[["OBSP"]] = list(mu = as_interval(rep(NA, n), rep(NA, n)))
 }
 
+# Save the results of all methods but RBG -----------------------------------
+# so that they are kept if the task stops during RBG (time limit)
+output_file = file.path(output_dir, sprintf("task_%04d.RData", task_id))
+Results = list(
+  scenario = list(n = n, m_i = m_i, setting = setting,
+                  sig_e = sig_e, sig_u = sig_u),
+  task_id = task_id,
+  seed = seed,
+  n_tries = n_tries,
+  n_selection_errors = n_selection_errors,
+  truth = truth,
+  intervals = intervals,
+  PC_info = PC_info,
+  RBG_info = NULL,
+  RBG_status = if (run_RBG) "started" else "not run",
+  timings = timings
+)
+save("Results", file = output_file)
+
 # RBG: Ruegamer, Baumann and Greven (2022) ----------------------------------
 # Computed only in the first n_runs_RBG tasks, because of its computational
-# cost. Its 2n + 2 calls of mocasin are independent and are run in parallel
-# on the cores allocated by Slurm (--ntasks).
+# cost. Its 2n + 2 calls of mocasin are run one after another.
 RBG_info = NULL
 
 if (run_RBG) {
@@ -253,10 +275,11 @@ if (run_RBG) {
   # First row of each cluster (clusters are numbered 1, ..., n)
   first_row = match(1:n, clusterID)
 
-  # Congruency check: same selection rule as the screening
+  # Congruency check: same selection rule as the screening, computed with
+  # its fast version (fast_selection.r)
   n_check_errors = 0
   checkFun = function(y) {
-    sel_y = tryCatch(select_model(y), error = function(e) NULL)
+    sel_y = tryCatch(select_model_fast(y), error = function(e) NULL)
     if (is.null(sel_y)) {
       n_check_errors <<- n_check_errors + 1
       return(FALSE)
@@ -334,10 +357,9 @@ if (run_RBG) {
   RBG_mu = matrix(NA, nrow = n, ncol = 2, dimnames = list(NULL, c("lower", "upper")))
 
   timings[["RBG"]] = system.time({
-    RNGkind("L'Ecuyer-CMRG")
     set.seed(seed)
-    rbg_results = mclapply(rbg_jobs, run_rbg_job,
-                           mc.cores = n_cores, mc.preschedule = FALSE)
+    rbg_results = lapply(rbg_jobs, function(job)
+      tryCatch(run_rbg_job(job), error = function(e) NULL))
   })[["elapsed"]]
 
   # Collect the limits and the failures ---------------------------------------
@@ -346,7 +368,7 @@ if (run_RBG) {
   n_check_errors_total = 0
   for (k in seq_along(rbg_jobs)) {
     out = rbg_results[[k]]
-    # A job whose process was killed returns NULL or an error object
+    # A job that stopped with an error returns NULL
     if (!is.list(out) || is.null(out$job)) {
       n_failed = n_failed + 1
       next
@@ -375,24 +397,13 @@ if (run_RBG) {
     n_calls = length(rbg_jobs),
     n_failed = n_failed,                 # calls of mocasin that failed
     n_warnings = n_warnings,             # limits that are not the required quantile
-    n_check_errors = n_check_errors_total,
-    n_cores = n_cores
+    n_check_errors = n_check_errors_total
   )
+
+  # Save again, now with RBG ------------------------------------------------
+  Results$intervals = intervals
+  Results$RBG_info = RBG_info
+  Results$RBG_status = "finished"
+  Results$timings = timings
+  save("Results", file = output_file)
 }
-
-# Save ---------------------------------------------------------------------
-Results = list(
-  scenario = list(n = n, m_i = m_i, setting = setting,
-                  sig_e = sig_e, sig_u = sig_u),
-  task_id = task_id,
-  seed = seed,
-  n_tries = n_tries,
-  n_selection_errors = n_selection_errors,
-  truth = truth,
-  intervals = intervals,
-  PC_info = PC_info,
-  RBG_info = RBG_info,
-  timings = timings
-)
-
-save("Results", file = file.path(output_dir, sprintf("task_%04d.RData", task_id)))

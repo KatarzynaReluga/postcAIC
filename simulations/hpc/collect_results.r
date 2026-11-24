@@ -17,7 +17,8 @@
 # For k_i^T beta and mu_i these per-cluster values are then averaged #
 # over the clusters (runs: the smallest number over the clusters).   #
 # The method of Ruegamer et al. (RBG) is computed only in the first  #
-# 100 runs, and its failures are reported separately.                #
+# 100 runs, and its failures are reported separately, together with  #
+# the runs in which it was started but did not finish.               #
 # Writes results/summary_<scenario>.csv and prints the table.        #
 ######################################################################
 
@@ -133,15 +134,24 @@ cat("Average number of models compared with:",
 
 # Failures of the method of Ruegamer et al. (RBG) ----------------------------
 results_RBG = Filter(function(r) !is.null(r$RBG_info), all_results)
+# Runs in which RBG was started but did not finish (e.g. time limit)
+n_RBG_unfinished = sum(sapply(all_results, function(r)
+  identical(r$RBG_status, "started")))
+
+if (length(results_RBG) > 0 || n_RBG_unfinished > 0) {
+  cat("\nMethod of Ruegamer et al. (RBG):", length(results_RBG), "runs\n")
+  cat("  Runs in which RBG was started but did not finish:",
+      n_RBG_unfinished, "\n")
+}
 if (length(results_RBG) > 0) {
-  info = do.call(rbind, lapply(results_RBG, function(r) unlist(r$RBG_info)))
+  info_names = c("n_calls", "n_failed", "n_warnings", "n_check_errors")
+  info = t(sapply(results_RBG, function(r) unlist(r$RBG_info[info_names])))
   n_infinite = sapply(results_RBG, function(r) {
     limits = do.call(rbind, r$intervals[["RBG"]])
     len = limits[, "upper"] - limits[, "lower"]
     sum(!is.na(len) & !is.finite(len))
   })
-  cat("\nMethod of Ruegamer et al. (RBG):", length(results_RBG), "runs,",
-      info[1, "n_calls"], "calls of mocasin per run\n")
+  cat("  Calls of mocasin per run:", info[1, "n_calls"], "\n")
   cat("  Failed calls (no interval):", sum(info[, "n_failed"]),
       "in", sum(info[, "n_failed"] > 0), "runs\n")
   cat("  Infinite intervals:", sum(n_infinite),
