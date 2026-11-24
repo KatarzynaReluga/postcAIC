@@ -18,7 +18,7 @@
 #             mu_i (beta and linear combinations stored under N1)  #
 #   OBSP      Sugasawa et al. (2019), postOBSP_CI, mu_i only       #
 #   RBG       Ruegamer, Baumann and Greven (2022), selfmade::mocasin #
-#             only in tasks 1, ..., 100 (n_runs_RBG), its 2n + 2     #
+#             in all tasks 1, ..., 1000 (n_runs_RBG), its 2n + 2     #
 #             calls run one after another; its congruency check uses #
 #             the fast version of the selection rule in              #
 #             fast_selection.r (same cAIC values)                    #
@@ -42,8 +42,8 @@ task_id = as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 
 stopifnot(setting %in% c(1, 2), !is.na(task_id))
 
-# RBG is computed only in the first n_runs_RBG tasks
-n_runs_RBG = 100
+# RBG is computed in tasks 1, ..., n_runs_RBG (all 1000 runs)
+n_runs_RBG = 1000
 run_RBG = task_id <= n_runs_RBG
 
 m_total = n * m_i
@@ -260,8 +260,8 @@ Results = list(
 save("Results", file = output_file)
 
 # RBG: Ruegamer, Baumann and Greven (2022) ----------------------------------
-# Computed only in the first n_runs_RBG tasks, because of its computational
-# cost. Its 2n + 2 calls of mocasin are run one after another.
+# Computed in tasks 1, ..., n_runs_RBG. Its 2n + 2 calls of mocasin are run
+# one after another.
 RBG_info = NULL
 
 if (run_RBG) {

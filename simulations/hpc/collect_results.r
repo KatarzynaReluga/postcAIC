@@ -16,9 +16,9 @@
 #   runs   number of runs with an interval                           #
 # For k_i^T beta and mu_i these per-cluster values are then averaged #
 # over the clusters (runs: the smallest number over the clusters).   #
-# The method of Ruegamer et al. (RBG) is computed only in the first  #
-# 100 runs, and its failures are reported separately, together with  #
-# the runs in which it was started but did not finish.               #
+# The failures of the method of Ruegamer et al. (RBG) are reported   #
+# separately, together with the runs in which it was started but     #
+# did not finish.                                                    #
 # Writes results/summary_<scenario>.csv and prints the table.        #
 ######################################################################
 
